@@ -1,0 +1,77 @@
+{
+  "$id": "",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JSON lattice file format",
+  "description": "Defines the magnetic lattice format",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "main_cell",
+    "elements"
+  ],
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the lattice"
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of the lattice"
+    },
+    "main_cell": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cells": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/cell"
+        }
+      },
+      "additionalProperties": false
+    },
+    "elements": {
+      "type": "object",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/cell"
+          },
+          {
+            "$ref": "#/definitions/element"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cell": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "element": {
+      "type": "object",
+      "required": [
+        "type",
+        "length"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the element."
+        },
+        "length": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The length of the element."
+        }
+      }
+    }
+  }
+}
