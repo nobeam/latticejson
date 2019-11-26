@@ -22,7 +22,7 @@ setup(
     python_requires='>=3.6',
     include_package_data=True,
     package_data={'latticejson': ['schema.json'], },
-    entry_points={'console_scripts': ["latticejson = latticejson.cli:main"]},
+    entry_points={'console_scripts': ['latticejson=latticejson.cli:main']},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

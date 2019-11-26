@@ -17,11 +17,10 @@ def convert_file(file_path, input_format, output_format):
 
 JSON_TO_ELEGANT = {
     'Drift': 'DRIF',
-    'Bend': 'CSBEND',
-    'Quad': 'KQUAD',
-    'Sext': 'KSEXT',
-    'Cell': 'LINE',
-    'main_cell': 'RING',
+    'Dipole': 'CSBEND',
+    'Quadrupole': 'KQUAD',
+    'Sextupole': 'KSEXT',
+    'Lattice': 'LINE',
     'length': 'L',
     'angle': 'ANGLE',
     'e1': 'e1',
@@ -37,34 +36,36 @@ ELEGANT_CELL_TEMPLATE = '{name}: LINE=({objects})'.format
 
 
 def convert_json_to_elegant(lattice_dict):
-    elements_dict = lattice_dict['elements']
-    cells_dict = lattice_dict['cells']
+    elements = lattice_dict['elements']
+    sub_lattices = lattice_dict['sub_lattices']
 
     elements_string = []
-    for name, element in elements_dict.items():
+    for name, element in elements.items():
         attributes = ', '.join(f'{JSON_TO_ELEGANT[key]}={value}' for key, value in element.items() if key != 'type')
         type_ = JSON_TO_ELEGANT[element['type']]
         elements_string.append(ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes))
 
-    ordered_cells = order_cells(cells_dict)
-    cells_string = [ELEGANT_CELL_TEMPLATE(name=name, objects=', '.join(cells_dict[name])) for name in ordered_cells]
-    cells_string.append(ELEGANT_CELL_TEMPLATE(name=lattice_dict['name'], objects=', '.join(lattice_dict['main_cell'])))
-    return '\n'.join(elements_string + cells_string)
+    ordered_lattices = order_lattices(sub_lattices)
+    lattices_string = [
+        ELEGANT_CELL_TEMPLATE(name=name, objects=', '.join(sub_lattices[name])) for name in ordered_lattices
+    ]
+    lattices_string.append(ELEGANT_CELL_TEMPLATE(name=lattice_dict['name'], objects=', '.join(lattice_dict['lattice'])))
+    return '\n'.join(elements_string + lattices_string)
 
 
-def order_cells(cells_dict: Dict[str, List[str]]):
+def order_lattices(cells_dict: Dict[str, List[str]]):
     cells_dict_copy = cells_dict.copy()
     ordered_cells = []
 
-    def _order_cells(name, cell: List[str]):
-        for cell_name in cell:
-            if cell_name in cells_dict_copy:
-                _order_cells(cell_name, cells_dict_copy[cell_name])
+    def _order_lattices(name, cell: List[str]):
+        for lattice_name in cell:
+            if lattice_name in cells_dict_copy:
+                _order_lattices(lattice_name, cells_dict_copy[lattice_name])
 
         ordered_cells.append(name)
         cells_dict_copy.pop(name)
 
     for name, cell in cells_dict.items():
-        _order_cells(name, cell)
+        _order_lattices(name, cell)
 
     return ordered_cells

@@ -14,19 +14,19 @@ in form of a [JSON Schema](https://json-schema.org).
 A LatticeJSON file for a FODO lattice:
 ```json
 {
-  "name": "FODO lattice",
+  "name": "FODO_RING",
   "description": "This is the simplest possible strong focusing lattice.",
   "elements": {
     "D1": {"type": "Drift", "length": 0.55},
-    "Q1": {"type": "Quad", "length": 0.2, "k1": 1.2},
-    "Q2": {"type": "Quad", "length": 0.4, "k1": -1.2},
-    "B1": {"type": "Bend", "length": 1.5, "angle": 0.392701, "e1": 0.1963505, "e2": 0.1963505}
+    "Q1": {"type": "Quadrupole", "length": 0.2, "k1": 1.2},
+    "Q2": {"type": "Quadrupole", "length": 0.4, "k1": -1.2},
+    "B1": {"type": "Dipole", "length": 1.5, "angle": 0.392701, "e1": 0.1963505, "e2": 0.1963505}
   },
-  "cells": {
-    "fodo": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"]
+  "sub_lattices": {
+    "FODO": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"]
   },
 
-  "main_cell": ["fodo", "fodo", "fodo", "fodo", "fodo", "fodo", "fodo", "fodo"]
+  "lattice": ["FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO"]
 }
 ```
  
@@ -45,6 +45,7 @@ You can install and update it using pip or pipenv:
 pip install -U latticejson
 ``` 
 
+
 Validate a LatticeJSON file:
 ```sh
 latticejson validate /path/to/lattice
@@ -53,6 +54,19 @@ latticejson validate /path/to/lattice
 Convert a LatticeJSON file into the elegant lattice format:
 ```sh
 latticejson convert json elegant /path/to/lattice
+```
+
+To activate Bash completion add
+
+```
+eval "$(_LATTICEJSON_COMPLETE=source latticejson)"
+```
+
+to your `.bashrc`. Or, create an activation script with:
+
+
+```
+_LATTICEJSON_COMPLETE=source latticejson > latticejson-complete.sh
 ```
 
 ## License
