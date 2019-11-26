@@ -45,6 +45,7 @@ You can install and update it using pip or pipenv:
 pip install -U latticejson
 ``` 
 
+
 Validate a LatticeJSON file:
 ```sh
 latticejson validate /path/to/lattice
@@ -53,6 +54,19 @@ latticejson validate /path/to/lattice
 Convert a LatticeJSON file into the elegant lattice format:
 ```sh
 latticejson convert json elegant /path/to/lattice
+```
+
+To activate Bash completion add
+
+```
+eval "$(_LATTICEJSON_COMPLETE=source latticejson)"
+```
+
+to your `.bashrc`. Or, create an activation script with:
+
+
+```
+_LATTICEJSON_COMPLETE=source latticejson > latticejson-complete.sh
 ```
 
 ## License
