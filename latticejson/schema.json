@@ -175,11 +175,11 @@
           "$ref": "#/definitions/Element"
         }
       ],
+      "additionalProperties": false,
       "properties": {
         "type": {
           "const": "Quadrupole"
         },
-        "additionalProperties": false,
         "description": {},
         "length": {},
         "dx": {},
@@ -204,11 +204,11 @@
           "$ref": "#/definitions/Element"
         }
       ],
+      "additionalProperties": false,
       "properties": {
         "type": {
           "const": "Sextupole"
         },
-        "additionalProperties": false,
         "description": {},
         "length": {},
         "dx": {},
@@ -233,11 +233,11 @@
           "$ref": "#/definitions/Element"
         }
       ],
+      "additionalProperties": false,
       "properties": {
         "type": {
           "const": "Octupole"
         },
-        "additionalProperties": false,
         "description": {},
         "length": {},
         "dx": {},
@@ -252,6 +252,41 @@
           "type": "number"
         },
         "conversion_factor_ps_value": {
+          "type": "number"
+        }
+      }
+    },
+    "Cavity": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Element"
+        }
+      ],
+      "additionalProperties": false,
+      "required": [
+        "voltage",
+        "frequency"
+      ],
+      "properties": {
+        "type": {
+          "const": "Cavity"
+        },
+        "voltage": {
+          "type": "number"
+        },
+        "frequency": {
+          "type": "number"
+        },
+        "phase": {
+          "type": "number"
+        },
+        "fiducial": {
+          "type": "string"
+        },
+        "end1_focus": {
+          "type": "number"
+        },
+        "end2_foucs": {
           "type": "number"
         }
       }
