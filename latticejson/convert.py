@@ -12,7 +12,8 @@ def convert_file(file_path, input_format, output_format):
         validate(lattice_dict)
         return convert_json_to_elegant(lattice_dict)
     else:
-        raise NotImplementedError(f'Unknown formats: {input_format}, {output_format}')
+        raise NotImplementedError(
+            f'Unknown formats: {input_format}, {output_format}')
 
 
 JSON_TO_ELEGANT = {
@@ -41,15 +42,26 @@ def convert_json_to_elegant(lattice_dict):
 
     elements_string = []
     for name, element in elements.items():
-        attributes = ', '.join(f'{JSON_TO_ELEGANT[key]}={value}' for key, value in element.items() if key != 'type')
+        attributes = ', '.join(
+            f'{JSON_TO_ELEGANT[key]}={value}' for key,
+            value in element.items() if key != 'type')
         type_ = JSON_TO_ELEGANT[element['type']]
-        elements_string.append(ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes))
+        elements_string.append(
+            ELEGANT_ELEMENT_TEMPLATE(
+                name=name,
+                type=type_,
+                attributes=attributes))
 
     ordered_lattices = order_lattices(sub_lattices)
     lattices_string = [
-        ELEGANT_CELL_TEMPLATE(name=name, objects=', '.join(sub_lattices[name])) for name in ordered_lattices
-    ]
-    lattices_string.append(ELEGANT_CELL_TEMPLATE(name=lattice_dict['name'], objects=', '.join(lattice_dict['lattice'])))
+        ELEGANT_CELL_TEMPLATE(
+            name=name, objects=', '.join(
+                sub_lattices[name])) for name in ordered_lattices]
+    lattices_string.append(
+        ELEGANT_CELL_TEMPLATE(
+            name=lattice_dict['name'],
+            objects=', '.join(
+                lattice_dict['lattice'])))
     return '\n'.join(elements_string + lattices_string)
 
 
