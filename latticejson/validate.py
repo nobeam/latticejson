@@ -3,7 +3,7 @@ import json
 import fastjsonschema
 
 dir_name = os.path.dirname(__file__)
-schema_path = os.path.join(dir_name, 'schema.json')
+schema_path = os.path.join(dir_name, "schema.json")
 
 with open(schema_path) as schema_file:
     schema = json.load(schema_file)

@@ -10,15 +10,15 @@ def main():
 
 
 @main.command()
-@click.argument('input_format')
-@click.argument('output_format')
-@click.argument('file', type=click.Path(exists=True))
+@click.argument("input_format")
+@click.argument("output_format")
+@click.argument("file", type=click.Path(exists=True))
 def convert(**kwargs):
-    x = convert_file(kwargs['file'], kwargs['input_format'], kwargs['output_format'])
+    x = convert_file(kwargs["file"], kwargs["input_format"], kwargs["output_format"])
     print(x)
 
 
 @main.command()
-@click.argument('file', type=click.Path(exists=True))
+@click.argument("file", type=click.Path(exists=True))
 def validate(**kwargs):
-    validate_file(kwargs['file'])
+    validate_file(kwargs["file"])
