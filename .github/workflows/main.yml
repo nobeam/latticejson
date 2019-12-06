@@ -30,10 +30,8 @@ jobs:
         pip install setuptools wheel
         python setup.py sdist bdist_wheel
 
-  # from https://github.com/marketplace/actions/autopep8
   lint:
     name: Lint and Autoformat
-    needs: build
 
     runs-on: ubuntu-latest
 
@@ -41,16 +39,24 @@ jobs:
       - uses: actions/checkout@master
         with:
           ref: ${{ github.ref }}
-      - name: Autoformat with autopep8
-        id: autopep8
-        uses: peter-evans/autopep8@v1.1.0
+      - name: Set up Python
+        uses: actions/setup-python@v1
         with:
-          args: --exit-code --recursive --in-place --aggressive --aggressive .
-      - name: Commit autopep8 changes
-        if: steps.autopep8.outputs.exit-code == 2
+          python-version: 3.8
+      - name: Black Code Formatter
+        id: black
+        run: |
+          pip install black
+          black .
+          git diff --quiet && git diff --staged --quiet
+          has_changed=$?
+          echo "::set-output name=has_changed::$has_changed"
+          echo $has_changed
+      - name: Commit black changes
+        if: steps.black.outputs.has_changed == 1
         run: |
           git config --global user.name 'Felix Andreas'
           git config --global user.email 'felix.andreas95@googlemail.com'
           git remote set-url origin https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/${{ github.repository }}
-          git commit -am "Automated autopep8 fixes"
+          git commit -am "Automated Code Formatting using Black"
           git push
