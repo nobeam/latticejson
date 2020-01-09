@@ -7,3 +7,6 @@ dir_name = os.path.dirname(__file__)
 def test_convert():
     file_path = os.path.join(dir_name, "data", "fodo.json")
     convert_file(file_path, "json", "elegant")
+
+def test_elegant_to_json():
+    

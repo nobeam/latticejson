@@ -29,10 +29,60 @@ JSON_TO_ELEGANT = {
     "k2": "K2",
 }
 
-ELEGANT_TO_JSON = dict(reversed(tup) for tup in JSON_TO_ELEGANT.items())
+ELEGANT_TO_JSON = {value: key for key, value in JSON_TO_ELEGANT.items()}
 
 ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
 ELEGANT_CELL_TEMPLATE = "{name}: LINE=({objects})".format
+
+
+def elegant_to_json(elegant_string)
+    lines = re.sub("[ \t]", "", file.read()).splitlines()
+    lines = [line for line in lines if line and line[0] != "#"]
+
+    # divide lines into object_name, type, parameter and comment
+    length = len(lines)
+    object_name = [""] * length
+    type = [""] * length
+    parameters = [""] * length
+    comments = [""] * length
+    following_lines = []
+    starting_line = 0
+    for i, line in enumerate(lines):
+        # save comments
+        _split = line.split("#")
+        if len(_split) > 1:
+            comments[i] = _split[1]
+        _split = _split[0]
+
+        # divide into starting and following lines
+        _split = _split.split(":")
+        if len(_split) > 1:
+            starting_line = i
+            object_name[i] = _split[0]
+            _split = _split[1].split(",", maxsplit=1)
+            type[i] = _split[0]
+            parameters[i] = _split[1]
+        else:
+            following_lines.append(i)
+            parameters[starting_line] += _split[0]
+            if comments[i]:
+                comments[starting_line] += " " + comments[i]
+
+    # delete following lines (in reverse order)
+    for i in following_lines[::-1]:
+        del object_name[i]
+        del comments[i]
+        del parameters[i]
+
+    # create and execute string
+    lis = [
+        f'{object_name[i]} = {type[i]}("{object_name[i]}", {parameters[i]}, comment="{comments[i]}")'
+        for i in range(len(object_name))
+    ]
+    string = "\n".join(lis)
+    # print(string)
+    exec(string)
+    return list(locals().values())[-1]
 
 
 def convert_json_to_elegant(lattice_dict):
