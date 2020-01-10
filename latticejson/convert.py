@@ -1,4 +1,5 @@
 from typing import List, Dict
+import re
 import json
 
 from .validate import validate
@@ -10,21 +11,26 @@ def convert_file(file_path, input_format, output_format):
             lattice_dict = json.load(lattice_file)
 
         validate(lattice_dict)
-        return convert_json_to_elegant(lattice_dict)
+        return latticejson_to_elegant(lattice_dict)
+    if input_format == "elegant" and output_format == "json":
+        with open(file_path) as file:
+            string = file.read()
+
+        return elegant_to_latticejson(string)
     else:
         raise NotImplementedError(f"Unknown formats: {input_format}, {output_format}")
 
 
 JSON_TO_ELEGANT = {
-    "Drift": "DRIF",
+    "Drift": "DRIFT",
     "Dipole": "CSBEND",
     "Quadrupole": "KQUAD",
     "Sextupole": "KSEXT",
     "Lattice": "LINE",
     "length": "L",
     "angle": "ANGLE",
-    "e1": "e1",
-    "e2": "e2",
+    "e1": "E1",
+    "e2": "E2",
     "k1": "K1",
     "k2": "K2",
 }
@@ -35,57 +41,54 @@ ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
 ELEGANT_CELL_TEMPLATE = "{name}: LINE=({objects})".format
 
 
-def elegant_to_json(elegant_string)
-    lines = re.sub("[ \t]", "", file.read()).splitlines()
-    lines = [line for line in lines if line and line[0] != "#"]
+def elegant_to_latticejson(string, name="", description=""):
+    """Convert elegant lattice file format to latticeJSON dict.
 
-    # divide lines into object_name, type, parameter and comment
-    length = len(lines)
-    object_name = [""] * length
-    type = [""] * length
-    parameters = [""] * length
-    comments = [""] * length
-    following_lines = []
-    starting_line = 0
-    for i, line in enumerate(lines):
-        # save comments
-        _split = line.split("#")
-        if len(_split) > 1:
-            comments[i] = _split[1]
-        _split = _split[0]
+    :param str string: input lattice file as string
+    :param name: name of the lattice
+    :type str, optional
+    :param description: description of the lattice
+    :type str, optional
+    :return: dict in latticeJSON format
+    """
+    string = re.sub("[\t ]", "", string)  # Remove all whitespace
+    string = re.sub("!.*\n", "\n", string)  # Remove all comments
+    string = re.sub("&\n", "", string)  # Join lines which end with &
+    string = re.sub("\n+", "\n", string)  # Remove all empty lines
+    string = string.lstrip("\n")  # Remove possible leading newline
 
-        # divide into starting and following lines
-        _split = _split.split(":")
-        if len(_split) > 1:
-            starting_line = i
-            object_name[i] = _split[0]
-            _split = _split[1].split(",", maxsplit=1)
-            type[i] = _split[0]
-            parameters[i] = _split[1]
+    elements = {}
+    lattices = {}
+    lines = string.splitlines()
+    label = None
+    for line in lines:
+        label, definition = line.split(":")
+        match = re.match("LINE=\((.*)\)", definition)
+        if match:
+            lattices[label] = match.group(1).split(",")
         else:
-            following_lines.append(i)
-            parameters[starting_line] += _split[0]
-            if comments[i]:
-                comments[starting_line] += " " + comments[i]
+            # TODO: bind multiple names to single latticeJSON name (e.g. QUAD and KQUAD)
+            type_, *attributes = definition.split(",")
+            print("ATTTRIBUTES", attributes)
+            attributes = [attribute.split("=") for attribute in attributes]
+            tmp = dict((ELEGANT_TO_JSON[key], value) for key, value in attributes)
+            elements[label] = {"type": ELEGANT_TO_JSON[type_], **tmp}
 
-    # delete following lines (in reverse order)
-    for i in following_lines[::-1]:
-        del object_name[i]
-        del comments[i]
-        del parameters[i]
-
-    # create and execute string
-    lis = [
-        f'{object_name[i]} = {type[i]}("{object_name[i]}", {parameters[i]}, comment="{comments[i]}")'
-        for i in range(len(object_name))
-    ]
-    string = "\n".join(lis)
-    # print(string)
-    exec(string)
-    return list(locals().values())[-1]
+    return dict(
+        name=name,
+        description=description,
+        lattice=lattices.pop(label),
+        sub_lattices=lattices,
+        elements=elements,
+    )
 
 
-def convert_json_to_elegant(lattice_dict):
+def latticejson_to_elegant(lattice_dict):
+    """Convert latticeJSON dict to elegant lattice file format.
+
+    :param dict: dict in latticeJSON format
+    :return: string with in elegant lattice file format
+    """
     elements = lattice_dict["elements"]
     sub_lattices = lattice_dict["sub_lattices"]
 
