@@ -13,4 +13,3 @@ def test_validate():
     file_path = os.path.join(dir_name, "data", "test_undefined.json")
     with pytest.raises(UndefinedObjectError):
         validate_file(file_path)
-
