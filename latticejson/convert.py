@@ -42,8 +42,7 @@ ELEGANT_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v 
 ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
 ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
 PATTERN_LATTICE = re.compile(r"LINE=\((.*)\)")  # TODO: check if correct
-PI = pi
-TWOPI = 2 * pi
+PI, TWOPI = pi, 2 * pi
 
 
 def elegant_to_latticejson(string, name="", description=""):
@@ -75,9 +74,9 @@ def elegant_to_latticejson(string, name="", description=""):
             else:
                 type_, *attributes = definition.split(",")
                 attributes = [attribute.split("=") for attribute in attributes]
-                # TODO: attributes are currently strings
                 element = {"type": ELEGANT_TO_JSON[type_]}
                 for key, value in attributes:
+                    # elegant supports arithmetic expressions
                     element[key] = eval(value)
 
                 elements[label] = element
