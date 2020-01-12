@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import re
 import json
 
@@ -21,24 +21,26 @@ def convert_file(file_path, input_format, output_format):
         raise NotImplementedError(f"Unknown formats: {input_format}, {output_format}")
 
 
-JSON_TO_ELEGANT = {
-    "Drift": "DRIFT",
-    "Dipole": "CSBEND",
-    "Quadrupole": "KQUAD",
-    "Sextupole": "KSEXT",
-    "Lattice": "LINE",
-    "length": "L",
-    "angle": "ANGLE",
-    "e1": "E1",
-    "e2": "E2",
-    "k1": "K1",
-    "k2": "K2",
+LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
+    "Drift": ("DRIFT", "DRIF",),
+    "Dipole": ("CSBEND", "SBEND", "BEND",),
+    "Quadrupole": ("KQUAD", "QUAD", "QUADRUPOLE",),
+    "Sextupole": ("KSEXT", "SEXT", "SEXTUPOLE",),
+    "Lattice": ("LINE",),
+    "length": ("L",),
+    "angle": ("ANGLE",),
+    "e1": ("E1",),
+    "e2": ("E2",),
+    "k1": ("K1",),
+    "k2": ("K2",),
 }
 
-ELEGANT_TO_JSON = {value: key for key, value in JSON_TO_ELEGANT.items()}
+JSON_TO_ELEGANT = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
+ELEGANT_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
 
 ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
-ELEGANT_CELL_TEMPLATE = "{name}: LINE=({objects})".format
+ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
+PATTERN_LATTICE = re.compile(r"LINE=\((.*)\)")  # TODO: check if correct
 
 
 def elegant_to_latticejson(string, name="", description=""):
@@ -61,23 +63,28 @@ def elegant_to_latticejson(string, name="", description=""):
     lattices = {}
     lines = string.splitlines()
     label = None
-    for line in lines:
-        label, definition = line.split(":")
-        match = re.match("LINE=\((.*)\)", definition)
-        if match:
-            lattices[label] = match.group(1).split(",")
-        else:
-            # TODO: bind multiple names to single latticeJSON name (e.g. QUAD and KQUAD)
-            type_, *attributes = definition.split(",")
-            print("ATTTRIBUTES", attributes)
-            attributes = [attribute.split("=") for attribute in attributes]
-            tmp = dict((ELEGANT_TO_JSON[key], value) for key, value in attributes)
-            elements[label] = {"type": ELEGANT_TO_JSON[type_], **tmp}
+    try:
+        for line in lines:
+            label, definition = line.split(":")
+            match = re.match(PATTERN_LATTICE, definition)
+            if match:
+                lattices[label] = match.group(1).split(",")
+            else:
+                type_, *attributes = definition.split(",")
+                attributes = [attribute.split("=") for attribute in attributes]
+                # TODO: attributes are currently strings
+                tmp = dict(
+                    (ELEGANT_TO_JSON[key.upper()], value) for key, value in attributes
+                )
+                elements[label] = {"type": ELEGANT_TO_JSON[type_], **tmp}
+    except:
+        raise Exception(f"Cannot parse line: {line}")
 
+    main_lattice = lattices.pop(label)  # last lattice is used as main lattice
     return dict(
         name=name,
         description=description,
-        lattice=lattices.pop(label),
+        lattice=main_lattice,
         sub_lattices=lattices,
         elements=elements,
     )
@@ -106,11 +113,11 @@ def latticejson_to_elegant(lattice_dict):
 
     ordered_lattices = order_lattices(sub_lattices)
     lattices_string = [
-        ELEGANT_CELL_TEMPLATE(name=name, objects=", ".join(sub_lattices[name]))
+        ELEGANT_LATTICE_TEMPLATE(name=name, objects=", ".join(sub_lattices[name]))
         for name in ordered_lattices
     ]
     lattices_string.append(
-        ELEGANT_CELL_TEMPLATE(
+        ELEGANT_LATTICE_TEMPLATE(
             name=lattice_dict["name"], objects=", ".join(lattice_dict["lattice"])
         )
     )
