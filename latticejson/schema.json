@@ -21,7 +21,7 @@
     },
     "energy": {
       "type": "number",
-      "description": "Energy of the particle beam in eV",
+      "description": "Energy of the particle beam in GeV",
       "minimum": 0
     },
     "lattice": {
