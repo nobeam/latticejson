@@ -19,3 +19,16 @@ def test_elegant_to_latticejson():
 
     d = elegant_to_latticejson(string)
     print(d)
+
+
+def test_mad_to_latticejson():
+    from latticejson.convert import mad_to_latticejson
+    from pprint import pprint as print
+
+    file_path = os.path.join(dir_name, "data", "fodo.mad")
+    with open(file_path) as file:
+        string = file.read()
+
+    d = mad_to_latticejson(string)
+    print(d)
+

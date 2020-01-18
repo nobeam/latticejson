@@ -4,7 +4,7 @@ D1: DRIFT, L=0.55 !! This is a comment with two !!
         Q2:KQUAD, L=0.4, K1=-1.2
 ! Another comment
 
-B1      : CSBEND, L=1.5, ANGLE=TWOPI/16,&
-          E1=0.1963505 * 2 / 2, E2=PI/16
+B1      : CSBEND, L=1.5, ANGLE=0.3926990817, &
+          E1=0.19634954085, E2=0.19634954085
 FODO    : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1)
-LATTICE : LINE = (FODO, FODO, FODO, FODO, FODO, FODO, FODO, FODO)
+RING    : LINE = (FODO, FODO, FODO, FODO, FODO, FODO, FODO, FODO)
