@@ -38,9 +38,9 @@ def elegant_to_latticejson(string, name="", description=""):
     :type str, optional
     :return: dict in latticeJSON format
     """
-    string = re.sub("[\t ]", "", string)  # Remove all whitespace
     string = re.sub("!.*\n", "\n", string)  # Remove all ! comments
     string = re.sub("&\n", "", string)  # Join lines which end with &
+    string = re.sub("[ \t]", "", string)  # Remove all whitespace
     string = re.sub("\n+", "\n", string)  # Remove all \n
     string = string.lstrip("\n")  # Remove possible leading newline
 
@@ -109,9 +109,9 @@ def mad_to_latticejson(string, name="", description=""):
     :type str, optional
     :return: dict in latticeJSON format
     """
-    string = re.sub("[\t ]", "", string)  # Remove all whitespace
     string = re.sub(MAD_COMMENT, "", string)  # remove /* */ comments
-    string = re.sub("//.*\n", "\n", string)  # Remove all // comments
+    string = re.sub("(!|//).*\n", "\n", string)  # Remove all ! and // comments
+    string = re.sub("[ \t]", "", string)  # Remove all whitespace
     string = re.sub("\n+", "", string)  # Remove all empty lines
     string = string.rstrip(";")  # Remove trailing ;
     lines = string.split(";")
@@ -121,6 +121,8 @@ def mad_to_latticejson(string, name="", description=""):
     variables = {}
     label = None
     title = ""
+    energy = None
+    main_lattice = None
     try:
         for line in lines:
             if ":=" in line:
@@ -133,32 +135,39 @@ def mad_to_latticejson(string, name="", description=""):
                     lattices[label] = match.group(1).split(",")
                 else:
                     type_, *attributes = definition.split(",")
-                    attributes = [attribute.split("=") for attribute in attributes]
                     element = {"type": MAD_TO_JSON[type_]}
-                    for key, expr in attributes:
-                        result = eval(expr, MAD_CONSTS, variables)
-                        element[MAD_TO_JSON[key]] = result
+                    for attribute in attributes:
+                        name, expr = attribute.split("=")
+                        element[MAD_TO_JSON[name]] = eval(expr, MAD_CONSTS, variables)
 
                     elements[label] = element
             else:
-                keyword, value = line.split(",", maxsplit=1)
+                keyword, *attributes = line.split(",", maxsplit=1)
                 keyword = keyword.upper()
                 if keyword == "TITLE":
-                    title = value
-                elif keyword in ("START", STOP)
+                    title = attributes[0]
+                elif keyword == "USE":
+                    main_lattice = attributes[0]
+                elif keyword == "BEAM":
+                    beam = {}
+                    for attribute in attributes:
+                        name, expr = attribute.split("=")
+                        beam[name] = eval(expr, MAD_CONSTS, variables)
+                elif keyword in ("EXIT", "QUIT", "STOP", "PRINT", "TWISS"):
+                    pass
                 else:
                     raise Exception(f"Cannot parse line: {line}")
     except:
         raise Exception(f"Cannot parse line: {line}")
 
-    main_lattice = lattices.pop(label)  # last lattice is used as main lattice
-    return dict(
-        name=name,
-        description=description,
-        lattice=main_lattice,
-        sub_lattices=lattices,
-        elements=elements,
+    if main_lattice is None:
+        raise Exception(f"No USES statement found. Please specify a main line.")
+
+    latticejson = dict(
+        name=title, description=description, lattice=main_lattice, elements=elements
     )
+    if energy is not None:
+        latticejson["energy"] = energy
 
 
 def latticejson_to_elegant(lattice_dict):
