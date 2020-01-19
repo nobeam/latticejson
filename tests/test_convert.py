@@ -31,4 +31,3 @@ def test_mad_to_latticejson():
 
     d = mad_to_latticejson(string)
     print(d)
-
