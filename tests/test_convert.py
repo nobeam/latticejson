@@ -6,7 +6,7 @@ dir_name = os.path.dirname(__file__)
 
 def test_convert():
     file_path = os.path.join(dir_name, "data", "fodo.json")
-    convert_file(file_path, "json", "elegant")
+    convert_file(file_path, "latticejson", "elegant")
 
 
 def test_elegant_to_latticejson():
@@ -17,8 +17,7 @@ def test_elegant_to_latticejson():
     with open(file_path) as file:
         string = file.read()
 
-    d = elegant_to_latticejson(string)
-    print(d)
+    print(elegant_to_latticejson(string))
 
 
 def test_mad_to_latticejson():
@@ -29,6 +28,4 @@ def test_mad_to_latticejson():
     with open(file_path) as file:
         string = file.read()
 
-    d = mad_to_latticejson(string)
-    print(d)
-
+    print(mad_to_latticejson(string))

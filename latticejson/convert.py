@@ -28,7 +28,7 @@ ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
 PATTERN_LATTICE = re.compile(r"LINE=\((.*)\)")  # TODO: check if correct
 
 
-def elegant_to_latticejson(string, name="", description=""):
+def elegant_to_latticejson(string, name="", description="") -> dict:
     """Convert an elegant lattice file to a latticeJSON dict.
 
     :param str string: input lattice file as string
@@ -99,78 +99,7 @@ MAD_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 MAD_CONTROL = {"TITLE", "USE"}
 
 
-def mad_to_latticejson(string, name="", description=""):
-    """Convert a MAD lattice file to a latticeJSON dict.
-
-    :param str string: input lattice file as string
-    :param name: name of the lattice
-    :type str, optional
-    :param description: description of the lattice
-    :type str, optional
-    :return: dict in latticeJSON format
-    """
-    string = re.sub(MAD_COMMENT, "", string)  # remove /* */ comments
-    string = re.sub("(!|//).*\n", "\n", string)  # Remove all ! and // comments
-    string = re.sub("[ \t]", "", string)  # Remove all whitespace
-    string = re.sub("\n+", "", string)  # Remove all empty lines
-    string = string.rstrip(";")  # Remove trailing ;
-    lines = string.split(";")
-
-    elements = {}
-    lattices = {}
-    variables = {}
-    label = None
-    title = ""
-    energy = None
-    main_lattice = None
-    try:
-        for line in lines:
-            if ":=" in line:
-                symbol, expr = line.split(":=")
-                variables[symbol] = eval(expr, MAD_CONSTS, variables)
-            elif ":" in line:
-                label, definition = line.split(":")
-                match = re.match(PATTERN_LATTICE, definition)
-                if match:
-                    lattices[label] = match.group(1).split(",")
-                else:
-                    type_, *attributes = definition.split(",")
-                    element = {"type": MAD_TO_JSON[type_]}
-                    for attribute in attributes:
-                        name, expr = attribute.split("=")
-                        element[MAD_TO_JSON[name]] = eval(expr, MAD_CONSTS, variables)
-
-                    elements[label] = element
-            else:
-                keyword, *attributes = line.split(",", maxsplit=1)
-                keyword = keyword.upper()
-                if keyword == "TITLE":
-                    title = attributes[0]
-                elif keyword == "USE":
-                    main_lattice = attributes[0]
-                elif keyword == "BEAM":
-                    beam = {}
-                    for attribute in attributes:
-                        name, expr = attribute.split("=")
-                        beam[name] = eval(expr, MAD_CONSTS, variables)
-                elif keyword in ("EXIT", "QUIT", "STOP", "PRINT", "TWISS"):
-                    pass
-                else:
-                    raise Exception(f"Cannot parse line: {line}")
-    except:
-        raise Exception(f"Cannot parse line: {line}")
-
-    if main_lattice is None:
-        raise Exception(f"No USES statement found. Please specify a main line.")
-
-    latticejson = dict(
-        name=title, description=description, lattice=main_lattice, elements=elements
-    )
-    if energy is not None:
-        latticejson["energy"] = energy
-
-
-def latticejson_to_elegant(lattice_dict):
+def latticejson_to_elegant(lattice_dict) -> dict:
     """Convert latticeJSON dict to elegant lattice file format.
 
     :param dict: dict in latticeJSON format
@@ -214,17 +143,97 @@ def order_lattices(cells_dict: Dict[str, List[str]]):
     return ordered_cells
 
 
-def convert_file(file_path, input_format, output_format):
-    if input_format == "json" and output_format == "elegant":
-        with open(file_path) as lattice_file:
-            lattice_dict = json.load(lattice_file)
+def mad_to_latticejson(string, name="", description=""):
+    """Convert a MAD lattice file to a latticeJSON dict.
 
+    :param str string: input lattice file as string
+    :param name: name of the lattice
+    :type str, optional
+    :param description: description of the lattice
+    :type str, optional
+    :return: dict in latticeJSON format
+    """
+    string = re.sub(MAD_COMMENT, "", string)  # remove /* */ comments
+    string = re.sub("(!|//).*\n", "\n", string)  # Remove all ! and // comments
+    string = re.sub("[ \t\n]", "", string)  # Remove all whitespace
+    string = string.rstrip(";")  # Remove trailing ;
+    lines = string.split(";")
+
+    elements = {}
+    lattices = {}
+    variables = {}
+    label = None
+    beam = None
+    main_lattice = None
+    try:
+        for line in lines:
+            if ":=" in line:
+                symbol, expr = line.split(":=")
+                variables[symbol] = eval(expr, MAD_CONSTS, variables)
+            elif ":" in line:
+                label, definition = line.split(":")
+                match = re.match(PATTERN_LATTICE, definition)
+                if match:
+                    lattices[label] = match.group(1).split(",")
+                else:
+                    type_, *attributes = definition.split(",")
+                    element = {"type": MAD_TO_JSON[type_]}
+                    for attribute in attributes:
+                        key, expr = attribute.split("=")
+                        element[MAD_TO_JSON[key]] = eval(expr, MAD_CONSTS, variables)
+
+                    elements[label] = element
+            else:
+                keyword, *attributes = line.split(",", maxsplit=1)
+                keyword = keyword.upper()
+                if keyword == "TITLE":
+                    name = attributes[0]
+                elif keyword == "USE":
+                    main_lattice = attributes[0]
+                elif keyword == "BEAM":
+                    beam = {}
+                    for attribute in attributes:
+                        key, expr = attribute.split("=")
+                        beam[key.lower()] = eval(expr, MAD_CONSTS, variables)
+                elif keyword in ("EXIT", "QUIT", "STOP", "PRINT", "TWISS"):
+                    pass
+                else:
+                    raise Exception(f"Cannot parse line: {line}")
+    except:
+        raise Exception(f"Cannot parse line: {line}")
+
+    if main_lattice is None:
+        raise Exception(f"No USES statement found. Please specify a main line.")
+
+    latticejson = dict(
+        key=name, description=description, lattice=main_lattice, elements=elements
+    )
+    if beam is not None:
+        latticejson["energy"] = beam["energy"]
+
+    return latticejson
+
+
+LATTICEJSON_NAMES = "latticejson", "json", "laj"
+ELEGANT_NAMES = "elegant", "ele"
+MAD_NAMES = "mad", "madx"
+
+
+def convert_file(file_path, input_format, output_format) -> str:
+    with open(file_path) as file:
+        string = file.read()
+
+    input_format = input_format.lower()
+    output_format = output_format.lower()
+
+    if input_format in LATTICEJSON_NAMES:
+        lattice_dict = json.loads(string)
         validate(lattice_dict)
-        return latticejson_to_elegant(lattice_dict)
-    if input_format == "elegant" and output_format == "json":
-        with open(file_path) as file:
-            string = file.read()
+        if output_format in ELEGANT_NAMES:
+            return str(latticejson_to_elegant(lattice_dict))
+    elif input_format in ELEGANT_NAMES and output_format in LATTICEJSON_NAMES:
+        return str(elegant_to_latticejson(string))
+    elif input_format in MAD_NAMES and output_format in LATTICEJSON_NAMES:
+        return mad_to_latticejson(string)
 
-        return elegant_to_latticejson(string)
-    else:
-        raise NotImplementedError(f"Unknown formats: {input_format}, {output_format}")
+    raise NotImplementedError(f"Cannot convert {input_format} to {output_format}")
