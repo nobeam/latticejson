@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 from math import pi
 import re
 import json
@@ -28,7 +28,7 @@ ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
 PATTERN_LATTICE = re.compile(r"LINE=\((.*)\)")  # TODO: check if correct
 
 
-def elegant_to_latticejson(string, name="", description="") -> dict:
+def elegant_to_latticejson(string, name="", description="") -> Dict[str, Any]:
     """Convert an elegant lattice file to a latticeJSON dict.
 
     :param str string: input lattice file as string
@@ -57,7 +57,7 @@ def elegant_to_latticejson(string, name="", description="") -> dict:
             else:
                 type_, *attributes = definition.split(",")
                 attributes = [attribute.split("=") for attribute in attributes]
-                element = {"type": ELEGANT_TO_JSON[type_]}
+                element: Dict[str, Any] = {"type": ELEGANT_TO_JSON[type_]}
                 for key, value in attributes:
                     element[ELEGANT_TO_JSON[key]] = float(value)
 
@@ -99,7 +99,7 @@ MAD_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 MAD_CONTROL = {"TITLE", "USE"}
 
 
-def latticejson_to_elegant(lattice_dict) -> dict:
+def latticejson_to_elegant(lattice_dict) -> str:
     """Convert latticeJSON dict to elegant lattice file format.
 
     :param dict: dict in latticeJSON format
