@@ -1,7 +1,5 @@
 from lark import Lark, Transformer
 
-)
-
 
 class ElegantTransformer(Transformer):
     def __init__(self):
@@ -41,8 +39,9 @@ class ElegantTransformer(Transformer):
     def names(self, items):
         return items
 
+
 with open("elegant.lark") as file:
     elegant_grammar = file.read()
 
-elegant_parser = Lark(elegant_grammar, parser="lalr", start="file"
+elegant_parser = Lark(elegant_grammar, parser="lalr", start="file")
 elegant_transformer = ElegantTransformer()

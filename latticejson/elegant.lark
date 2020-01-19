@@ -1,0 +1,18 @@
+file: (_NEWLINE | object)*
+?object: element | lattice
+element: name ":" type_ "," attributes
+lattice: name ":" "LINE" "=" "(" names ")"
+names: name ("," name)*
+attributes: attribute ("," attribute)*
+attribute: name "=" number
+number: SIGNED_NUMBER
+
+name: /[a-zA-Z_]\w*/
+type_: /[a-zA-Z_]\w*/
+COMMENT: /![^\n]*/
+_NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
+%import common.ESCAPED_STRING
+%import common.SIGNED_NUMBER
+%import common.WS
+%ignore WS
+%ignore COMMENT
