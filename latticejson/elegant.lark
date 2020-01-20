@@ -1,18 +1,26 @@
-file: (_NEWLINE | object)*
-?object: element | lattice
-element: name ":" type_ "," attributes
-lattice: name ":" "LINE" "=" "(" names ")"
-names: name ("," name)*
-attributes: attribute ("," attribute)*
+file: (_NEWLINE | statement)*
+?statement: element | lattice
+element: name ":" type ("," attribute)*
 attribute: name "=" number
-number: SIGNED_NUMBER
+lattice: name ":" "LINE"i "=" arrangement
+arrangement: "(" object ("," object)* ")"
+?object: name | arrangement | object_expr
+?object_expr: multiply_object | reverse_object
+multiply_object:  int "*" object | object "*" int
+reverse_object: "-" arrangement
 
-name: /[a-zA-Z_]\w*/
-type_: /[a-zA-Z_]\w*/
+
+name: CNAME | ESCAPED_STRING
+type: CNAME
+?number: int | float
+int: /[+|-]0|[1-9]\d*/
+float: /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/
 COMMENT: /![^\n]*/
 _NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
+%import common.CNAME
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER
 %import common.WS
-%ignore WS
 %ignore COMMENT
+%ignore /&[\t \f]*\r?\n/   // LINE_CONT
+%ignore WS
