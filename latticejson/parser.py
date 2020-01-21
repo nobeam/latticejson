@@ -1,4 +1,6 @@
 import os
+import operator as op
+import math
 from lark import Lark, Transformer, v_args
 from typing import List, Tuple, Dict
 
@@ -19,7 +21,7 @@ class ElegantTransformer(Transformer):
     attribute = tuple
     ref_name = lambda self, items: [items[0].value]
     ref_name_inv = lambda self, items: [items[0][0] + "_INV"]
-    command = lambda items: items
+    command = lambda self, items: items
 
     def element(self, items) -> Dict:
         name, type_, *attributes = items
@@ -37,6 +39,23 @@ class ElegantTransformer(Transformer):
     def multiply_object(self, number, object) -> List:
         return number * object
 
+    @v_args(inline=True)
+    def rpn(self, result, name) -> Tuple:
+        return name, result
+
+    @v_args(inline=True)
+    def rpn_binary(self, operand_1, operand_2, operator):
+        return rpn_operators[operator](operand_1, operand_2)
+
+    @v_args(inline=True)
+    def rpn_unary(self, operand, operator):
+        return getattr(math, operator)(operand)
+
+    # rpn_unary_op = lambda self, items: getattr(math, items[0])
+    rpn_constant = lambda self, items: getattr(math, items[0])
+
+
+rpn_operators = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
 
 elegant_parser = Lark(ELEGANT_GRAMMAR, parser="lalr", start="file")
 elegant_transformer = ElegantTransformer()

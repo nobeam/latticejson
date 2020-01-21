@@ -1,17 +1,16 @@
-%import common.WS
 %import common.ESCAPED_STRING
 
-%ignore /&[\t \f]*\r?\n/  // LINE_CONTINUATION
-%ignore WS
-%ignore COMMENT
+%ignore /!.*/ // Ingore comments
+%ignore /[ \t\f\r\n]/+ // ingore whitespace
+%ignore /&[\t \f]*\r?\n/  // line continuation
 
 _NEWLINE: /[\t ]*\r?\n[\t ]*/+
-COMMENT: /![^\n]*/
 
 int: /[+-]?\d+/
 float: /[+-]?\d+\.\d*([eE][+-]?\d+)?/ // needed to parse 1.
      | /[+-]?\d*\.\d+([eE][+-]?\d+)?/ // needed to parse .1
      | /[+-]?\d+[eE][+-]?\d+/         // needed to parse 1e1
+?number: int | float
 string : ESCAPED_STRING
 
 word: /\w+/
@@ -20,11 +19,17 @@ ref_name: ["\""] /[\w:]+/ ["\""]
 ref_name_inv: "-" ref_name
 
 file: statement*
-?statement: element | lattice | command
+?statement: element | lattice | command | rpn
 element: name ":" word ("," attribute)* _NEWLINE
 attribute: word "=" (int | float | string)
-lattice: name ":" "LINE"i "=" arrangement _NEWLINE
+lattice: name ":" "LINE"i "=" arrangement _NEWLINE?
 arrangement: "(" object (","+ object)* ","* ")"
 ?object: ref_name | arrangement | multiply_object | ref_name_inv
 multiply_object: int "*" object | object "*" int
 command: word ["," word] _NEWLINE
+
+rpn: "%" rpn_expr "sto" word _NEWLINE
+?rpn_expr: number | rpn_constant | rpn_unary | rpn_binary
+!rpn_constant: "pi" | "e"
+!rpn_unary: rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
+rpn_binary: rpn_expr rpn_expr ("+" | "-" | "*" | "/")
