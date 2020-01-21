@@ -44,12 +44,12 @@ class ElegantTransformer(Transformer):
         return name, result
 
     @v_args(inline=True)
-    def rpn_binary(self, operand_1, operand_2, operator):
-        return rpn_operators[operator](operand_1, operand_2)
-
-    @v_args(inline=True)
     def rpn_unary(self, operand, operator):
         return getattr(math, operator)(operand)
+
+    @v_args(inline=True)
+    def rpn_binary(self, operand_1, operand_2, operator):
+        return rpn_operators[operator](operand_1, operand_2)
 
     # rpn_unary_op = lambda self, items: getattr(math, items[0])
     rpn_constant = lambda self, items: getattr(math, items[0])

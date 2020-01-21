@@ -1,8 +1,8 @@
 %import common.ESCAPED_STRING
 
-%ignore /!.*/ // Ingore comments
+%ignore /!.*/ // ingore comments
 %ignore /[ \t\f\r\n]/+ // ingore whitespace
-%ignore /&[\t \f]*\r?\n/  // line continuation
+%ignore /&[ \t\f]*\r?\n/  // line continuation
 
 _NEWLINE: /[\t ]*\r?\n[\t ]*/+
 
@@ -32,4 +32,4 @@ rpn: "%" rpn_expr "sto" word _NEWLINE
 ?rpn_expr: number | rpn_constant | rpn_unary | rpn_binary
 !rpn_constant: "pi" | "e"
 !rpn_unary: rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
-rpn_binary: rpn_expr rpn_expr ("+" | "-" | "*" | "/")
+!rpn_binary: rpn_expr rpn_expr ("+" | "-" | "*" | "/")
