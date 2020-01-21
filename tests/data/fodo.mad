@@ -1,0 +1,23 @@
+
+TITLE, "A FODO LATTICE TEST FILE";
+// The messy formatting is intentional to test the converter
+! this is also a comment
+
+D1: DRIFT, L=0.55; !! comment with two !!
+    Q1: QUADRUPOLE, L=0.2, K1=1.2; //// comment with two //
+        Q2:QUADRUPOLE, L=0.4, // comment before terminating ;
+        K1=-1.2;
+
+/* This is a
+   multiline comment */
+
+/**
+ * Another
+ * multiline comment
+ */
+
+B1   : SBEND, L=1.5, ANGLE=TWOPI/16, // MAD supports inline evaluation
+              E1=0.1963505 * 2 / 2, E2=PI/16;
+FODO : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1);
+RING : LINE = (FODO, FODO, FODO, FODO, FODO, FODO, FODO, FODO);
+USE, RING

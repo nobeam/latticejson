@@ -1,6 +1,6 @@
 %import common.WS
-%import common.INT
 %import common.ESCAPED_STRING
+
 %ignore /&[\t \f]*\r?\n/  // LINE_CONTINUATION
 %ignore WS
 %ignore COMMENT

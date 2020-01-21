@@ -9,8 +9,8 @@ path = (
 )
 
 base = os.path.dirname(__file__)
-path = os.path.join(base, "data", "fodo_simple.lte")
-# path = "/home/felix/Git/elegant/lattices-examples/BYBL.lte"
+path = os.path.join(base, "data", "fodo.lte")
+path = "/home/felix/Git/elegant/lattices-examples/chicaneOpt.lte"
 
 
 def test_elegant_parser():
