@@ -1,31 +1,30 @@
-%import common.CNAME
+%import common.WS
+%import common.INT
 %import common.ESCAPED_STRING
+%ignore /&[\t \f]*\r?\n/  // LINE_CONTINUATION
+%ignore WS
+%ignore COMMENT
+
+_NEWLINE: /[\t ]*\r?\n[\t ]*/+
+COMMENT: /![^\n]*/
+
+int: /[+-]?\d+/
+float: /[+-]?\d+\.\d*([eE][+-]?\d+)?/ // needed to parse 1.
+     | /[+-]?\d*\.\d+([eE][+-]?\d+)?/ // needed to parse .1
+     | /[+-]?\d+[eE][+-]?\d+/         // needed to parse 1e1
+string : ESCAPED_STRING
+
+word: /\w+/
+name: /\w+/ | "\"" /[\w:]+/ "\""
+ref_name: ["\""] /[\w:]+/ ["\""]
+ref_name_inv: "-" ref_name
 
 file: statement*
 ?statement: element | lattice | command
 element: name ":" word ("," attribute)* _NEWLINE
-attribute: word"=" value
-?value: number | string
+attribute: word "=" (int | float | string)
 lattice: name ":" "LINE"i "=" arrangement _NEWLINE
-arrangement: "(" object (","+ object)* ")"
-?object: ref_name | arrangement | object_expr
-?object_expr: multiply_object | reverse_object
+arrangement: "(" object (","+ object)* ","* ")"
+?object: ref_name | arrangement | multiply_object | ref_name_inv
 multiply_object: int "*" object | object "*" int
-reverse_object: "-" arrangement
-command: CNAME ["," CNAME] _NEWLINE
-
-
-name: /\w/+ | "\"" /[\w:]+/ "\""
-ref_name: ["\""] /[\w:]+/ ["\""]
-word: /\w+/
-string : ESCAPED_STRING
-?number: int | float
-int: /[+|-]0|[1-9]\d*/
-float: /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/
-_NEWLINE: /\r?\n[\t ]*/+
-
-COMMENT: /![^\n]*/
-%ignore COMMENT
-%ignore /&[\t \f]*\r?\n/  // LINE_CONTINUATION
-%import common.WS
-%ignore WS
+command: word ["," word] _NEWLINE

@@ -10,16 +10,17 @@ with open(ELEGANT_GRAMMAR_PATH) as file:
 
 
 class ElegantTransformer(Transformer):
-    file = lambda self, objects: objects
-    name = lambda self, items: items[0].value
-    string = lambda self, items: items[0][1:-1]
-    word = lambda self, items: items[0].value
-    ref_name = lambda self, items: [items[0].value]
-    attribute = tuple
     int = v_args(inline=True)(int)
     float = v_args(inline=True)(float)
+    string = lambda self, items: items[0][1:-1]
+    name = lambda self, items: items[0].value
+    word = lambda self, items: items[0].value
+    file = lambda self, objects: objects
+    attribute = tuple
+    ref_name = lambda self, items: [items[0].value]
+    ref_name_inv = lambda self, items: [items[0][0] + "_INV"]
+    command = lambda items: items
 
-    @v_args(inline=True)
     def element(self, items) -> Dict:
         name, type_, *attributes = items
         attributes = dict(attributes)
@@ -32,16 +33,9 @@ class ElegantTransformer(Transformer):
     def arrangement(self, items) -> List:
         return [sub_item for item in items for sub_item in item]
 
-    def reverse_object(self, items) -> List:
-        items.reverse()
-        return items
-
     @v_args(inline=True)
     def multiply_object(self, number, object) -> List:
         return number * object
-
-    def command(self, items):
-        return items
 
 
 elegant_parser = Lark(ELEGANT_GRAMMAR, parser="lalr", start="file")
