@@ -1,18 +1,20 @@
-import os
+from pathlib import Path
 from pprint import pprint
-from latticejson.parser import elegant_parser, elegant_transformer
+from latticejson.parser import parse_elegant
 
-base = os.path.dirname(__file__)
-path_list = [os.path.join(base, "data", "scratch.lte")]
+base = Path(__file__).parent.absolute()
+home = Path.home()
+path_list = [base / "data" / "scratch.lte"]
 
 # path_list = [
 #     "/home/felix/Git/hzb/lattice-development/lattices_B2"
 #     "BII_2016-06-10_user_Sym_noID_DesignLattice1996.lte"
 # ]
 
-# base_path = "/home/felix/Git/elegant/lattices-examples"
-# path_list = [os.path.join(base_path, "spear.lte")]
-# path_list = [os.path.join(base_path, file) for file in os.listdir(base_path)]
+## Uncomment to test all elegant examples
+elegant_examples = home / "Git" / "elegant" / "examples"
+path_list = list(elegant_examples.rglob("*.lte"))
+# path_list = [elegant_example / "spear.lte"]
 
 
 def test_elegant_parser():
@@ -21,8 +23,6 @@ def test_elegant_parser():
         with open(path) as file:
             string = file.read()
 
-        tree = elegant_parser.parse(string)
-        res = elegant_transformer.transform(tree)
-
-        # print(tree.pretty())
+        res = parse_elegant(string)
         # print(f"\n{res}")
+    print(f"tested {len(path_list)} lattices!")

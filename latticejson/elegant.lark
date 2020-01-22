@@ -1,34 +1,42 @@
+// This grammer does not 100% comply with elegants parser:
+// - Elegants parser allows tokens to be split by the line continuation character "&".
+//   For example, it parses ANGLE=0.123&\n456 without an error.
+//   This is non-trivial to express with grammar rules and is therefore omitted.
+// - Elegants parser allows a tralling " in attribute definitions.
+//   This means L=1.23" is parsed without an error. Seems like a bug and is left out.
+
+%ignore /!.*/            // ingore comments
+%ignore /[ \t\f]/+       // ingore whitespace
+%ignore /&[ \t\f]*\r?\n/ // line continuation
+
 %import common.ESCAPED_STRING
-
-%ignore /!.*/ // ingore comments
-%ignore /[ \t\f\r\n]/+ // ingore whitespace
-%ignore /&[ \t\f]*\r?\n/  // line continuation
-
-_NEWLINE: /[\t ]*\r?\n[\t ]*/+
+_NEWLINE: /[ \t\f]*\r?\n[ \t\f]*/
 
 int: /[+-]?\d+/
 float: /[+-]?\d+\.\d*([eE][+-]?\d+)?/ // needed to parse 1.
      | /[+-]?\d*\.\d+([eE][+-]?\d+)?/ // needed to parse .1
      | /[+-]?\d+[eE][+-]?\d+/         // needed to parse 1e1
 ?number: int | float
-string : ESCAPED_STRING
-
+string: ESCAPED_STRING
 word: /\w+/
 name: /\w+/ | "\"" /[\w:]+/ "\""
-ref_name: ["\""] /[\w:]+/ ["\""]
-ref_name_inv: "-" ref_name
 
-file: statement*
+file: _NEWLINE* (statement _NEWLINE*)*
 ?statement: element | lattice | command | rpn
-element: name ":" word ("," attribute)* _NEWLINE
-attribute: word "=" (int | float | string)
-lattice: name ":" "LINE"i "=" arrangement _NEWLINE?
+
+element: name ":" name ("," attribute)* ","?
+attribute: word "=" (int | float | string | word)
+
+lattice: name ":" "LINE"i "=" arrangement
 arrangement: "(" object (","+ object)* ","* ")"
 ?object: ref_name | arrangement | multiply_object | ref_name_inv
 multiply_object: int "*" object | object "*" int
-command: word ["," word] _NEWLINE
+ref_name: ["\""] /[\w:]+/ ["\""]
+ref_name_inv: "-" ref_name
 
-rpn: "%" rpn_expr "sto" word _NEWLINE
+command: name ["," word]
+
+rpn: "%" rpn_expr "sto" word
 ?rpn_expr: number | rpn_constant | rpn_unary | rpn_binary
 !rpn_constant: "pi" | "e"
 !rpn_unary: rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")

@@ -1,4 +1,5 @@
 import os
+import re
 import operator as op
 import math
 from lark import Lark, Transformer, v_args
@@ -6,6 +7,7 @@ from typing import List, Tuple, Dict
 
 DIR_NAME = os.path.dirname(__file__)
 ELEGANT_GRAMMAR_PATH = os.path.join(DIR_NAME, "elegant.lark")
+RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
 
 with open(ELEGANT_GRAMMAR_PATH) as file:
     ELEGANT_GRAMMAR = file.read()
@@ -49,13 +51,16 @@ class ElegantTransformer(Transformer):
 
     @v_args(inline=True)
     def rpn_binary(self, operand_1, operand_2, operator):
-        return rpn_operators[operator](operand_1, operand_2)
+        return RPN_OPERATORS[operator](operand_1, operand_2)
 
     # rpn_unary_op = lambda self, items: getattr(math, items[0])
     rpn_constant = lambda self, items: getattr(math, items[0])
 
 
-rpn_operators = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
-
 elegant_parser = Lark(ELEGANT_GRAMMAR, parser="lalr", start="file")
 elegant_transformer = ElegantTransformer()
+
+
+def parse_elegant(string):
+    tree = elegant_parser.parse(string + "\n")  # TODO: remove "\n" when lark has EOF
+    return elegant_transformer.transform(tree)
