@@ -4,6 +4,7 @@
 //   This is non-trivial to express with grammar rules and is therefore omitted.
 // - Elegants parser allows a tralling " in attribute definitions.
 //   This means L=1.23" is parsed without an error. Seems like a bug and is left out.
+// - Elegants parser allows ulimited traling ",". Also seems like a bug.
 
 %ignore /!.*/            // ingore comments
 %ignore /[ \t\f]/+       // ingore whitespace
