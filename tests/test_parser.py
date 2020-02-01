@@ -12,8 +12,8 @@ path_list = [base / "scratch.lte"]
 # ]
 
 # Uncomment to test all elegant examples
-# elegant_examples = Path.home() / "Git/elegant/examples"
-# path_list = list(elegant_examples.rglob("*.lte"))
+elegant_examples = Path.home() / "Git/elegant/examples"
+path_list = list(elegant_examples.rglob("*.lte"))
 # path_list = [elegant_examples / "constructOrbitBump1/par.lte"]
 
 
@@ -24,8 +24,8 @@ def test_elegant_parser():
             string = file.read()
 
         res = parse_elegant(string)
-        pprint(res)
-        print("\n")
+        # pprint(res)
+        # print("\n")
     print(f"tested {len(path_list)} lattices!")
 
 

@@ -66,7 +66,7 @@ class ElegantTransformer(Transformer):
 
     int = int
     float = float
-    name = word = str
+    name = word = rpn_store = str
     string = lambda self, item: item[1:-1]
     file = lambda self, *objects: objects
     attribute = lambda self, name, value: (name, value)
@@ -85,23 +85,6 @@ class ElegantTransformer(Transformer):
 
     def mul_object(self, number, object) -> List:
         return number * object
-
-    def rpn_store(self, result, name) -> Tuple:
-        self._variables[name] = result
-        return name, result
-
-    def rpn_unary(self, operand, operator):
-        return getattr(math, operator)(operand)
-
-    def rpn_binary(self, operand_1, operand_2, operator):
-        return RPN_OPERATORS[operator](operand_1, operand_2)
-
-    def rpn_var(self, name):
-        name = name.lower()
-        try:
-            return self._variables[name]
-        except KeyError:
-            raise Exception(f"Variable {name} is not defined!")
 
 
 def parse_elegant(string: str):

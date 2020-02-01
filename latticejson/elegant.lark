@@ -30,7 +30,7 @@ _NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
 ?statement  : element | lattice | command | rpn_store
 
 element     : name ":" [name] ("," attribute)* ","?
-attribute   : word "=" (int | float | string | word | "\"" rpn_expr "\"")
+attribute   : word "=" (int | float | string | word)
 
 lattice     : name ":" "LINE"i "=" arrangement
 arrangement : "(" object (","+ object)* ")"
@@ -41,8 +41,4 @@ ref_name_inv: "-" ref_name
 
 command     : name ["," word]
 
-rpn_store   : "%" rpn_expr "sto" word
-?rpn_expr   : int | float | rpn_var | rpn_unary | rpn_binary
-!rpn_var    : /\w+/
-!rpn_unary  : rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
-!rpn_binary : rpn_expr rpn_expr ("+" | "-" | "*" | "/")
+rpn_store   : /\%.+sto.+/
