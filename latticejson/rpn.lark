@@ -1,0 +1,12 @@
+%ignore /[ \t\f]/+       // ingore whitespace
+
+int: /[+-]?\d+/
+float: /[+-]?\d+\.\d*([eE][+-]?\d+)?/ // needed to parse 1.
+     | /[+-]?\d*\.\d+([eE][+-]?\d+)?/ // needed to parse .1
+     | /[+-]?\d+[eE][+-]?\d+/         // needed to parse 1e1
+?number: int | float
+
+?rpn_expr: number | rpn_variable | rpn_unary | rpn_binary
+!rpn_variable: /\w+/
+!rpn_unary: rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
+!rpn_binary: rpn_expr rpn_expr ("+" | "-" | "*" | "/")
