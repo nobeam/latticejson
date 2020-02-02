@@ -52,7 +52,6 @@ class RPNTransformer(Transformer):
         return RPN_OPERATORS[operator](operand_1, operand_2)
 
     def rpn_variable(self, name):
-        name = name.lower()
         try:
             return self.variables[name]
         except KeyError:
@@ -84,7 +83,10 @@ class ElegantTransformer(Transformer):
         self.commands = []
         super().transform(tree)
         return dict(
-            elements=self.elements, lattices=self.lattices, commands=self.commands
+            elements=self.elements,
+            lattices=self.lattices,
+            commands=self.commands,
+            variables=self.rpn_calculator.variables.copy(),
         )
 
     def element(self, name, type_, *attributes):

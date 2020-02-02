@@ -6,15 +6,14 @@ base = Path(__file__).resolve().parent / "data"
 path_list = [base / "scratch.lte"]
 path_list = [base / "fodo.lte"]
 
-# path_list = [
-#     "/home/felix/Git/hzb/lattice-development/lattices_B2"
-#     "BII_2016-06-10_user_Sym_noID_DesignLattice1996.lte"
-# ]
+path_list = [
+    Path.home() / "Git/hzb/lattice-development/lattices_B2/"
+    "BII_2016-06-10_user_Sym_noID_DesignLattice1996.lte"
+]
 
-# Uncomment to test all elegant examples
-elegant_examples = Path.home() / "Git/elegant/examples"
-path_list = list(elegant_examples.rglob("*.lte"))
-# path_list = [elegant_examples / "constructOrbitBump1/par.lte"]
+"""Uncomment to test all elegant examples"""
+# elegant_examples = Path.home() / "Git/elegant/examples"
+# path_list = list(elegant_examples.rglob("*.lte"))
 
 
 def test_elegant_parser():
