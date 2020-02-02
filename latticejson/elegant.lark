@@ -41,4 +41,4 @@ ref_name_inv: "-" ref_name
 
 command     : name ["," word]
 
-rpn_store   : /\%.+sto.+/
+rpn_store   : "%" /.+sto.+/
