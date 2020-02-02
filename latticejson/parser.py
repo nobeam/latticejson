@@ -5,6 +5,7 @@ import math
 from lark import Lark, Transformer, v_args
 from lark.exceptions import VisitError
 from typing import List, Tuple, Dict
+import itertools
 
 DIR_NAME = Path(__file__).resolve().parent
 ELEGANT_GRAMMAR_PATH = DIR_NAME / "elegant.lark"
@@ -16,7 +17,9 @@ with open(ELEGANT_GRAMMAR_PATH) as file:
 with open(RPN_GRAMMAR_PATH) as file:
     RPN_GRAMMAR = file.read()
 
-ELEGANT_PARSER = Lark(ELEGANT_GRAMMAR, parser="lalr", start="file")
+ELEGANT_PARSER = Lark(
+    ELEGANT_GRAMMAR, parser="lalr", start="file", maybe_placeholders=True
+)
 RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr", start="start")
 RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
 
@@ -70,12 +73,9 @@ class RPNCalculator:
 class ElegantTransformer(Transformer):
     int = int
     float = float
-    name = word = str
+    word = str
+    name = lambda self, item: item.value.upper()
     string = lambda self, item: item[1:-1]
-    file = lambda self, *objects: objects
-    ref_name = lambda self, item: [item.value]
-    # TODO: better inverse object/arangement
-    ref_name_inv = lambda self, item: [item[0] + "_INV"]
 
     def transform(self, tree):
         self.rpn_calculator = RPNCalculator()
@@ -94,23 +94,44 @@ class ElegantTransformer(Transformer):
         if isinstance(value, str):
             try:
                 value = self.rpn_calculator.execute(value)
-            except VisitError:
+            except:
                 pass
         return name, value
 
     def lattice(self, name, arangement):
-        self.lattices[name] = {"type": "line", "line": arangement}
+        self.lattices[name] = {"type": "line", "line": list(arangement)}
 
-    def arrangement(self, *items) -> List:
-        return [sub_item for item in items for sub_item in item]
+    def arrangement(self, multiplier, is_reversed, *items):
+        multiplier = int(multiplier) if multiplier is not None else 1
+        if is_reversed is not None:
+            multiplier *= -1
 
-    def mul_object(self, number, object) -> List:
-        return number * object
+        if multiplier < 0:
+            items = items[::-1]
+
+        return [x for _ in range(abs(multiplier)) for y in items for x in y]
+
+    def ref_name(self, mutliplier, is_reversed, name):
+        name = str(name).upper()
+        multiplier = int(mutliplier) if mutliplier is not None else 1
+        if is_reversed is not None:
+            multiplier *= -1
+
+        if multiplier < 0:
+            name_regular = name
+            name += "_REV"
+            if name_regular in self.lattices:
+                line = self.lattices[name_regular]["line"][::-1]
+                self.lattices[name] = {"type": "line", "line": line}
+            elif name_regular in self.elements:
+                self.elements[name] = {"type": "REVERSED_ELEMENT"}
+
+        return abs(multiplier) * (name,)
 
     def rpn_store(self, rpn_string):
         return self.rpn_calculator.execute(rpn_string)
 
-    def command(self, items):
+    def command(self, *items):
         self.commands.append(items)
 
 

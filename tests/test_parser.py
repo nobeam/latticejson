@@ -4,7 +4,7 @@ from latticejson.parser import parse_elegant, RPNCalculator
 
 base = Path(__file__).resolve().parent / "data"
 path_list = [base / "scratch.lte"]
-# path_list = [base / "fodo.lte"]
+path_list = [base / "fodo.lte"]
 
 # path_list = [
 #     "/home/felix/Git/hzb/lattice-development/lattices_B2"
@@ -12,8 +12,8 @@ path_list = [base / "scratch.lte"]
 # ]
 
 # Uncomment to test all elegant examples
-# elegant_examples = Path.home() / "Git/elegant/examples"
-# path_list = list(elegant_examples.rglob("*.lte"))
+elegant_examples = Path.home() / "Git/elegant/examples"
+path_list = list(elegant_examples.rglob("*.lte"))
 # path_list = [elegant_examples / "constructOrbitBump1/par.lte"]
 
 
@@ -31,11 +31,11 @@ def test_elegant_parser():
 
 def test_rpn_parser():
     rpn_calculator = RPNCalculator()
-    assert 5 == rpn_calculator.calculate("15 7 1 1 + - / 3 * 2 1 1 + + -")
+    assert 5 == rpn_calculator.execute("15 7 1 1 + - / 3 * 2 1 1 + + -")
 
-    rpn_calculator.assign("x", 5)
-    assert 5 == rpn_calculator.calculate("x")
-    assert 10 == rpn_calculator.calculate("x 2 *")
+    rpn_calculator.execute("5 sto x")
+    assert 5 == rpn_calculator.execute("x")
+    assert 10 == rpn_calculator.execute("x 2 *")
 
     for string in "1", "1.0", "1.", ".1", "-12e34":
-        assert float(string) == rpn_calculator.calculate(string)
+        assert float(string) == rpn_calculator.execute(string)

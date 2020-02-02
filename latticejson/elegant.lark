@@ -20,6 +20,7 @@ FRACTION    :  "." DIGIT_PART
 EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
 
 int         : INT
+u_int       : DIGIT_PART
 float       : FLOAT
 string      : ESCAPED_STRING
 word        : /\w+/
@@ -33,11 +34,9 @@ element     : name ":" [name] ("," attribute)* ","?
 attribute   : word "=" (int | float | string | word)
 
 lattice     : name ":" "LINE"i "=" arrangement
-arrangement : "(" object (","+ object)* ")"
-?object     : ref_name | arrangement | mul_object | ref_name_inv
-mul_object  : int "*" object | object "*" int
-ref_name    : ["\""] /[\w:]+/ ["\""]
-ref_name_inv: "-" ref_name
+arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
+?object     : ref_name | arrangement
+ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
 
 command     : name ["," word]
 
