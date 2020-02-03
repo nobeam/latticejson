@@ -48,12 +48,12 @@ pip install -U latticejson
 
 Validate a LatticeJSON file:
 ```sh
-latticejson validate /path/to/lattice
+latticejson validate /path/to/lattice.json
 ```
 
 Convert a LatticeJSON file into the elegant lattice format:
 ```sh
-latticejson convert json elegant /path/to/lattice
+latticejson convert elegant /path/to/lattice.json
 ```
 
 To activate Bash completion add
