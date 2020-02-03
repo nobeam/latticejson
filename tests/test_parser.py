@@ -13,9 +13,7 @@ path_list = [base / "fodo.lte", base / "scratch.lte"]
 def test_parse_elegant():
     for path in path_list:
         print(path)
-        with open(path) as file:
-            string = file.read()
-
+        string = Path(path).read_text()
         res = parse_elegant(string)
         pprint(res)
         print("\n")

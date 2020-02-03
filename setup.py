@@ -2,14 +2,10 @@ from typing import Dict
 from pathlib import Path
 from setuptools import setup, find_packages
 
-base_path = Path(__file__).parent
-
+base_path = Path(__file__).resolve().parent
 about: Dict[str, str] = {}
-with open(base_path / "latticejson/__about__.py") as file:
-    exec(file.read(), about)
-
-with open(base_path / "README.md") as file:
-    readme = file.read()
+exec((base_path / "latticejson/__about__.py").read_text(), about)
+readme = (base_path / "README.md").read_text()
 
 setup(
     name=about["__title__"],

@@ -1,34 +1,15 @@
-import os
+from pathlib import Path
 import json
 import fastjsonschema
+from .exceptions import UndefinedObjectError
 
-dir_name = os.path.dirname(__file__)
-schema_path = os.path.join(dir_name, "schema.json")
-
-with open(schema_path) as schema_file:
-    schema = json.load(schema_file)
-
+schema_path = Path(__file__).resolve().parent / "schema.json"
+schema = json.loads(schema_path.read_text())
 validate_syntax = fastjsonschema.compile(schema)
 
 
-class UndefinedObjectError(Exception):
-    """Raised if an object is referenced within a lattice but no definition is found.
-
-    :param str object_name: Name of the undfined object.
-    :param str lattice_name: Name of the lattice which contains the undefined object.
-    """
-
-    def __init__(self, object_name, lattice_name):
-        super().__init__(
-            f"The Object {object_name} is referenced in {lattice_name} "
-            "but no definition was found!"
-        )
-
-
-def validate_file(file_path: str):
-    with open(file_path) as file:
-        data = json.load(file)
-
+def validate_file(path: str):
+    data = json.loads(Path(path).read_text())
     validate(data)
 
 

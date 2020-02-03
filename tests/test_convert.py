@@ -4,11 +4,8 @@ import json
 from latticejson.convert import latticejson_to_elegant, elegant_to_latticejson
 
 base_dir = Path(__file__).resolve().parent / "data"
-with open(base_dir / "fodo.lte") as file:
-    fodo_lte = file.read()
-
-with open(base_dir / "fodo.json") as file:
-    fodo_json = json.load(file)
+fodo_lte = (base_dir / "fodo.lte").read_text()
+fodo_json = json.loads((base_dir / "fodo.json").read_text())
 
 
 def test_latticejson_to_elegant():

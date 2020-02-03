@@ -1,11 +1,12 @@
-import re
+from typing import List, Tuple, Dict
 from pathlib import Path
 import operator as op
 import math
 from lark import Lark, Transformer, v_args
 from lark.exceptions import VisitError
-from typing import List, Tuple, Dict
 import itertools
+from .exceptions import UndefinedRPNVariableError
+
 
 DIR_NAME = Path(__file__).resolve().parent
 ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
@@ -16,13 +17,6 @@ ELEGANT_PARSER = Lark(
 )
 RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr", start="start")
 RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
-
-
-class UndefinedRPNVariableError(Exception):
-    """Raised if a rpn variable is not defined."""
-
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(f"RPN variable {name} is not defined!", *args, **kwargs)
 
 
 @v_args(inline=True)
