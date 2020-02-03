@@ -33,14 +33,14 @@ def latticejson_to_elegant(lattice_dict) -> str:
     """
     elements = lattice_dict["elements"]
     sub_lattices = lattice_dict["sub_lattices"]
-    element_template = "{}: {}, {}".format
-    lattice_template = "{}: LINE=({})".format
 
     strings = []
+    element_template = "{}: {}, {}".format
     for name, (type_, attributes) in elements.items():
         attrs_string = ", ".join(f"{JSON_TO_ELE[k]}={v}" for k, v in attributes.items())
         strings.append(element_template(name, type_, attrs_string))
 
+    lattice_template = "{}: LINE=({})".format
     for name in order_lattices(sub_lattices):
         strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
 
