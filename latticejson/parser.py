@@ -8,14 +8,8 @@ from typing import List, Tuple, Dict
 import itertools
 
 DIR_NAME = Path(__file__).resolve().parent
-ELEGANT_GRAMMAR_PATH = DIR_NAME / "elegant.lark"
-RPN_GRAMMAR_PATH = DIR_NAME / "rpn.lark"
-
-with open(ELEGANT_GRAMMAR_PATH) as file:
-    ELEGANT_GRAMMAR = file.read()
-
-with open(RPN_GRAMMAR_PATH) as file:
-    RPN_GRAMMAR = file.read()
+ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
+RPN_GRAMMAR = (DIR_NAME / "rpn.lark").read_text()
 
 ELEGANT_PARSER = Lark(
     ELEGANT_GRAMMAR, parser="lalr", start="file", maybe_placeholders=True
@@ -90,7 +84,7 @@ class ElegantTransformer(Transformer):
         )
 
     def element(self, name, type_, *attributes):
-        self.elements[name] = {"type": type_, **dict(attributes)}
+        self.elements[name] = type_, dict(attributes)
 
     def attribute(self, name, value):
         if isinstance(value, str):
@@ -101,7 +95,7 @@ class ElegantTransformer(Transformer):
         return name, value
 
     def lattice(self, name, arangement):
-        self.lattices[name] = {"type": "line", "line": list(arangement)}
+        self.lattices[name] = list(arangement)
 
     def arrangement(self, multiplier, is_reversed, *items):
         multiplier = int(multiplier) if multiplier is not None else 1

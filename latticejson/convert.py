@@ -1,72 +1,106 @@
-from typing import List, Dict
+from typing import List, Tuple, Dict
 import json
-
-# from .parser import elegant_parser, elegant_transformer
+import warnings
 
 from .validate import validate
+from .parser import parse_elegant
 
 
-def convert_file(file_path, input_format, output_format):
-    if input_format == "json" and output_format == "elegant":
-        with open(file_path) as lattice_file:
-            lattice_dict = json.load(lattice_file)
+LATTICEJSON_NAMES = "latticejson", "json", "lj"
+ELEGANT_NAMES = "elegant", "ele"
+MAD_NAMES = "mad", "madx"
 
-        validate(lattice_dict)
-        return convert_json_to_elegant(lattice_dict)
-    else:
-        raise NotImplementedError(f"Unknown formats: {input_format}, {output_format}")
-
-
-JSON_TO_ELEGANT = {
-    "Drift": "DRIF",
-    "Dipole": "CSBEND",
-    "Quadrupole": "KQUAD",
-    "Sextupole": "KSEXT",
-    "Lattice": "LINE",
-    "length": "L",
-    "angle": "ANGLE",
-    "e1": "e1",
-    "e2": "e2",
-    "k1": "K1",
-    "k2": "K2",
+LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
+    "Drift": ("DRIF", "DRIFT",),
+    "Dipole": ("CSBEND", "SBEND", "BEND",),
+    "Quadrupole": ("KQUAD", "QUAD",),
+    "Sextupole": ("KSEXT", "SEXT",),
+    "Lattice": ("LINE",),
+    "length": ("L",),
+    "angle": ("ANGLE",),
+    "e1": ("E1",),
+    "e2": ("E2",),
+    "k1": ("K1",),
+    "k2": ("K2",),
 }
 
-ELEGANT_TO_JSON = dict(reversed(tup) for tup in JSON_TO_ELEGANT.items())
 
+JSON_TO_ELEGANT = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
+ELEGANT_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
 ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
-ELEGANT_CELL_TEMPLATE = "{name}: LINE=({objects})".format
+ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
 
 
-def convert_json_to_elegant(lattice_dict):
+def elegant_to_latticejson(string):
+    """Convert an elegant lattice file to a latticeJSON dict.
+
+    :param str string: input lattice file as string
+    :param lattice_name: name of the lattice
+    :type str, optional
+    :param description: description of the lattice
+    :type str, optional
+    :return: dict in latticeJSON format
+    """
+    elegant_dict = parse_elegant(string)
+
+    elements = {}
+    for name, (elegant_type, elegant_attributes) in elegant_dict["elements"].items():
+        latticejson_type = ELEGANT_TO_JSON.get(elegant_type)
+        if latticejson_type is None:
+            elements[name] = "Drift", {"length": elegant_attributes["L"]}
+            warnings.warn(f"Element with type {elegant_type} gets replaced by Drift.")
+            continue
+
+        attributes = {}
+        for elegant_key, value in elegant_attributes.items():
+            latticejson_key = ELEGANT_TO_JSON.get(elegant_key)
+            if latticejson_key is None:
+                warnings.warn(f"Ignoring attribute {elegant_key} of element {name}.")
+                continue
+
+            attributes[latticejson_key] = value
+
+        elements[name] = latticejson_type, attributes
+
+    lattices = elegant_dict["lattices"]
+    lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
+    return dict(
+        name=lattice_name,
+        lattice=main_lattice,
+        sub_lattices=lattices,
+        elements=elements,
+    )
+
+
+def latticejson_to_elegant(lattice_dict) -> str:
+    """Convert latticeJSON dict to elegant lattice file format.
+    :param dict: dict in latticeJSON format
+    :return: string with in elegant lattice file format
+    """
     elements = lattice_dict["elements"]
     sub_lattices = lattice_dict["sub_lattices"]
 
-    elements_string = []
+    strings = []
     for name, element in elements.items():
-        attributes = ", ".join(
-            f"{JSON_TO_ELEGANT[key]}={value}"
-            for key, value in element.items()
-            if key != "type"
-        )
-        type_ = JSON_TO_ELEGANT[element["type"]]
-        elements_string.append(
-            ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes)
-        )
+        type_ = JSON_TO_ELEGANT[element.pop("type")]
+        attributes = ", ".join(f"{JSON_TO_ELEGANT[k]}={v}" for k, v in element.items())
+        string = ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes)
+        strings.append(string)
 
-    ordered_lattices = order_lattices(sub_lattices)
-    lattices_string = [
-        ELEGANT_CELL_TEMPLATE(name=name, objects=", ".join(sub_lattices[name]))
-        for name in ordered_lattices
-    ]
-    lattices_string.append(
-        ELEGANT_CELL_TEMPLATE(
-            name=lattice_dict["name"], objects=", ".join(lattice_dict["lattice"])
-        )
-    )
-    return "\n".join(elements_string + lattices_string)
+    for name in order_lattices(sub_lattices):
+        objects = ", ".join(sub_lattices[name])
+        strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
+
+    name = lattice_dict["name"]
+    objects = ", ".join(lattice_dict["lattice"])
+    strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
+    strings.append("\n")
+    return "\n".join(strings)
 
 
 def order_lattices(cells_dict: Dict[str, List[str]]):
+    """Order a dict of lattices."""
+
     cells_dict_copy = cells_dict.copy()
     ordered_cells = []
 
@@ -82,3 +116,25 @@ def order_lattices(cells_dict: Dict[str, List[str]]):
         _order_lattices(name, cell)
 
     return ordered_cells
+
+
+def convert(file_path, input_format, output_format) -> str:
+    """Convert a lattice file with `input_format` to a new one with `output_format`"""
+
+    with open(file_path) as file:
+        string = file.read()
+
+    input_format = input_format.lower()
+    output_format = output_format.lower()
+
+    if input_format in LATTICEJSON_NAMES:
+        lattice_dict = json.loads(string)
+        validate(lattice_dict)
+        if output_format in ELEGANT_NAMES:
+            return str(latticejson_to_elegant(lattice_dict))
+    elif input_format in ELEGANT_NAMES and output_format in LATTICEJSON_NAMES:
+        return str(elegant_to_latticejson(string))
+    elif input_format in MAD_NAMES and output_format in LATTICEJSON_NAMES:
+        pass
+
+    raise NotImplementedError(f"Cannot convert {input_format} to {output_format}")
