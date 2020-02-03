@@ -1,13 +1,13 @@
 # LatticeJSON
 
-LatticeJSON is a JSON based lattice file format. JSON is able to describe complex data structures, 
-has a human readable syntax and is available in all common programming language. It is therefore an 
+LatticeJSON is a JSON based lattice file format. JSON is able to describe complex data structures,
+has a human readable syntax and is available in all common programming language. It is therefore an
 appropriate choice to characterize the magnetic lattice of a particle accelerator.
 
 ## Specification
 This repository contains the
-[Specification of LatticeJSON](https://github.com/andreasfelix/latticejson/blob/master/latticejson/schema.json) 
-in form of a [JSON Schema](https://json-schema.org). 
+[Specification of LatticeJSON](https://github.com/andreasfelix/latticejson/blob/master/latticejson/schema.json)
+in form of a [JSON Schema](https://json-schema.org).
 
 ## Example
 
@@ -17,20 +17,20 @@ A LatticeJSON file for a FODO lattice:
   "name": "FODO_RING",
   "description": "This is the simplest possible strong focusing lattice.",
   "elements": {
-    "D1": {"type": "Drift", "length": 0.55},
-    "Q1": {"type": "Quadrupole", "length": 0.2, "k1": 1.2},
-    "Q2": {"type": "Quadrupole", "length": 0.4, "k1": -1.2},
-    "B1": {"type": "Dipole", "length": 1.5, "angle": 0.392701, "e1": 0.1963505, "e2": 0.1963505}
+    "D1": ["Drift", {"length": 0.55}],
+    "Q1": ["Quadrupole", {"length": 0.2, "k1": 1.2}],
+    "Q2": ["Quadrupole", {"length": 0.4, "k1": -1.2}],
+    "B1": ["Dipole", {"length": 1.5, "angle": 0.392701, "e1": 0.1963505, "e2": 0.1963505}]
   },
   "sub_lattices": {
     "FODO": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"]
   },
-
   "lattice": ["FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO"]
 }
+
 ```
- 
- 
+
+
 # LatticeJSON CLI
 [![Python Version](https://img.shields.io/pypi/pyversions/latticejson)](https://pypi.org/project/latticejson/)
 [![PyPI](https://img.shields.io/pypi/v/latticejson.svg)](https://pypi.org/project/latticejson/)
@@ -43,7 +43,7 @@ You can install and update it using pip or pipenv:
 
 ```sh
 pip install -U latticejson
-``` 
+```
 
 
 Validate a LatticeJSON file:
