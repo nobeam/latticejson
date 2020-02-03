@@ -1,14 +1,11 @@
 from typing import List, Tuple, Dict
 import json
 import warnings
+from pathlib import Path
 
 from .validate import validate
 from .parser import parse_elegant
 
-
-LATTICEJSON_NAMES = "latticejson", "json", "lj"
-ELEGANT_NAMES = "elegant", "ele"
-MAD_NAMES = "mad", "madx"
 
 LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
     "Drift": ("DRIF", "DRIFT",),
@@ -115,24 +112,3 @@ def order_lattices(cells_dict: Dict[str, List[str]]):
 
     return ordered_cells
 
-
-def convert(file_path, input_format, output_format) -> str:
-    """Convert a lattice file with `input_format` to a new one with `output_format`"""
-
-    with open(file_path) as file:
-        string = file.read()
-
-    input_format = input_format.lower()
-    output_format = output_format.lower()
-
-    if input_format in LATTICEJSON_NAMES:
-        lattice_dict = json.loads(string)
-        validate(lattice_dict)
-        if output_format in ELEGANT_NAMES:
-            return str(latticejson_to_elegant(lattice_dict))
-    elif input_format in ELEGANT_NAMES and output_format in LATTICEJSON_NAMES:
-        return str(elegant_to_latticejson(string))
-    elif input_format in MAD_NAMES and output_format in LATTICEJSON_NAMES:
-        pass
-
-    raise NotImplementedError(f"Cannot convert {input_format} to {output_format}")
