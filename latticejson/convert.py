@@ -25,9 +25,6 @@ LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
 JSON_TO_ELE = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
 ELE_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
 
-ELEGANT_ELEMENT_TEMPLATE = "{}: {}, {}".format
-ELEGANT_LATTICE_TEMPLATE = "{}: LINE=({})".format
-
 
 def latticejson_to_elegant(lattice_dict) -> str:
     """Convert latticeJSON dict to elegant lattice file format.
@@ -36,8 +33,8 @@ def latticejson_to_elegant(lattice_dict) -> str:
     """
     elements = lattice_dict["elements"]
     sub_lattices = lattice_dict["sub_lattices"]
-    element_template = ELEGANT_ELEMENT_TEMPLATE
-    lattice_template = ELEGANT_LATTICE_TEMPLATE
+    element_template = "{}: {}, {}".format
+    lattice_template = "{}: LINE=({})".format
 
     strings = []
     for name, (type_, attributes) in elements.items():
