@@ -111,4 +111,3 @@ def order_lattices(cells_dict: Dict[str, List[str]]):
         _order_lattices(name, cell)
 
     return ordered_cells
-
