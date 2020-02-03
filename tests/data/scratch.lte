@@ -6,3 +6,4 @@ D3: DRIFT, L="this_is_a_string"
 B: BEND, L=1.e-0, ANGLE="custom_pi"
 L: LINE=(-2*(D1, D2))
 L2: LINE=(2*-L)
+L3: LINE=(-2*-L2)

@@ -3,15 +3,14 @@ from pprint import pprint
 from latticejson.parser import parse_elegant, RPNCalculator
 
 base = Path(__file__).resolve().parent / "data"
-path_list = [base / "scratch.lte"]
-path_list = [base / "fodo.lte"]
+path_list = [base / "fodo.lte", base / "scratch.lte"]
 
 """Uncomment to test all elegant examples"""
 # elegant_examples = Path.home() / "Git/elegant/examples"
 # path_list = list(elegant_examples.rglob("*.lte"))
 
 
-def test_elegant_parser():
+def test_parse_elegant():
     for path in path_list:
         print(path)
         with open(path) as file:

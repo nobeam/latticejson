@@ -14,9 +14,9 @@ def main():
 @click.argument("file", type=click.Path(exists=True))
 def convert(**kwargs):
     output_format = kwargs["output_format"].lower()
-    if output_format in ("latticejson", "json", "lj"):
+    if output_format in ("latticejson", "lj", "json"):
         output_format = "latticejson"
-    elif output_format in ("elegant", "ele"):
+    elif output_format in ("elegant", "ele", "lte"):
         output_format = "elegant"
     else:
         raise Exception(f"Unknown format {output_format}")

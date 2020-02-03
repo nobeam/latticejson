@@ -117,10 +117,10 @@ class ElegantTransformer(Transformer):
             name_regular = name
             name += "_REV"
             if name_regular in self.lattices:
-                line = self.lattices[name_regular]["line"][::-1]
-                self.lattices[name] = {"type": "line", "line": line}
+                line = self.lattices[name_regular][::-1]
+                self.lattices[name] = line
             elif name_regular in self.elements:
-                self.elements[name] = {"type": "REVERSED_ELEMENT"}
+                self.elements[name] = "REVERSED_ELEMENT", {"ref": name_regular}
 
         return abs(multiplier) * (name,)
 
