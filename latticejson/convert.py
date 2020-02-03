@@ -52,15 +52,13 @@ def elegant_to_latticejson(string):
             continue
 
         attributes = {}
+        elements[name] = latticejson_type, attributes
         for elegant_key, value in elegant_attributes.items():
             latticejson_key = ELEGANT_TO_JSON.get(elegant_key)
-            if latticejson_key is None:
+            if latticejson_key is not None:
+                attributes[latticejson_key] = value
+            else:
                 warnings.warn(f"Ignoring attribute {elegant_key} of element {name}.")
-                continue
-
-            attributes[latticejson_key] = value
-
-        elements[name] = latticejson_type, attributes
 
     lattices = elegant_dict["lattices"]
     lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
