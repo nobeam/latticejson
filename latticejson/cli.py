@@ -1,6 +1,6 @@
 import click
 from .validate import validate_file
-from .convert import convert_file
+from .io import convert_file
 
 
 @click.group()
@@ -10,12 +10,19 @@ def main():
 
 
 @main.command()
-@click.argument("input_format")
 @click.argument("output_format")
 @click.argument("file", type=click.Path(exists=True))
 def convert(**kwargs):
-    x = convert_file(kwargs["file"], kwargs["input_format"], kwargs["output_format"])
-    print(x)
+    output_format = kwargs["output_format"].lower()
+    if output_format in ("latticejson", "lj", "json"):
+        output_format = "latticejson"
+    elif output_format in ("elegant", "ele", "lte"):
+        output_format = "elegant"
+    else:
+        raise Exception(f"Unknown format {output_format}")
+
+    res = convert_file(kwargs["file"], output_format)
+    print(res)
 
 
 @main.command()

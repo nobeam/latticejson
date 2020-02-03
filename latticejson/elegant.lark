@@ -1,0 +1,43 @@
+// This grammer is not 100% consistent with elegants parser:
+// - Elegants parser allows tokens to be split by the line continuation character "&".
+//   For example, it parses ANGLE=0.123&\n456 without an error.
+//   This is non-trivial to express with grammar rules and is therefore omitted.
+// - Elegants parser allows a trailing " in attribute definitions.
+//   This means L=1.23" is parsed without an error. Seems like a bug and is left out.
+// - Elegants parser allows unlimited trailing ",". Also seems like a bug.
+
+%ignore /!.*/            // ingore comments
+%ignore /[ \t\f]/+       // ingore whitespace
+%ignore /&[ \t\f]*\r?\n/ // line continuation
+%import common.ESCAPED_STRING
+
+INT         :  ["+" | "-"] DIGIT_PART
+FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
+EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
+POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
+DIGIT_PART  :  /\d+/
+FRACTION    :  "." DIGIT_PART
+EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
+
+int         : INT
+u_int       : DIGIT_PART
+float       : FLOAT
+string      : ESCAPED_STRING
+word        : /\w+/
+name        : /\w+/ | "\"" /[\w:]+/ "\""
+
+file        : _NEWLINE* (statement _NEWLINE+)*
+_NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
+?statement  : element | lattice | command | rpn_store
+
+element     : name ":" [name] ("," attribute)* ","?
+attribute   : word "=" (int | float | string | word)
+
+lattice     : name ":" "LINE"i "=" arrangement
+arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
+?object     : ref_name | arrangement
+ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
+
+command     : name ["," word]
+
+rpn_store   : "%" /.+sto.+/

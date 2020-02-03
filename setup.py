@@ -1,11 +1,11 @@
+from typing import Dict
+from pathlib import Path
 from setuptools import setup, find_packages
 
-with open("latticejson/__about__.py") as file:
-    about = {}
-    exec(file.read(), about)
-
-with open("README.md") as file:
-    readme = file.read()
+base_path = Path(__file__).resolve().parent
+about: Dict[str, str] = {}
+exec((base_path / "latticejson/__about__.py").read_text(), about)
+readme = (base_path / "README.md").read_text()
 
 setup(
     name=about["__title__"],
@@ -17,11 +17,11 @@ setup(
     author=about["__author__"],
     license=about["__license__"],
     packages=find_packages(),
-    install_requires=["fastjsonschema", "click"],
+    install_requires=["fastjsonschema", "click", "lark-parser"],
     test_requires=["pytest"],
     python_requires=">=3.6",
     include_package_data=True,
-    package_data={"latticejson": ["schema.json"],},
+    package_data={"latticejson": ["schema.json", "*.lark"],},
     entry_points={"console_scripts": ["latticejson=latticejson.cli:main"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
