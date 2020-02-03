@@ -22,10 +22,35 @@ LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
 }
 
 
-JSON_TO_ELEGANT = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
-ELEGANT_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
-ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
-ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
+JSON_TO_ELE = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
+ELE_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
+
+ELEGANT_ELEMENT_TEMPLATE = "{}: {}, {}".format
+ELEGANT_LATTICE_TEMPLATE = "{}: LINE=({})".format
+
+
+def latticejson_to_elegant(lattice_dict) -> str:
+    """Convert latticeJSON dict to elegant lattice file format.
+    :param dict: dict in latticeJSON format
+    :return: string with in elegant lattice file format
+    """
+    elements = lattice_dict["elements"]
+    sub_lattices = lattice_dict["sub_lattices"]
+    element_template = ELEGANT_ELEMENT_TEMPLATE
+    lattice_template = ELEGANT_LATTICE_TEMPLATE
+
+    strings = []
+    for name, (type_, attributes) in elements.items():
+        attrs_string = ", ".join(f"{JSON_TO_ELE[k]}={v}" for k, v in attributes.items())
+        strings.append(element_template(name, type_, attrs_string))
+
+    for name in order_lattices(sub_lattices):
+        strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
+
+    name = lattice_dict["name"]
+    strings.append(lattice_template(name, ", ".join(lattice_dict["lattice"])))
+    strings.append("\n")
+    return "\n".join(strings)
 
 
 def elegant_to_latticejson(string):
@@ -42,7 +67,7 @@ def elegant_to_latticejson(string):
 
     elements = {}
     for name, (elegant_type, elegant_attributes) in elegant_dict["elements"].items():
-        latticejson_type = ELEGANT_TO_JSON.get(elegant_type)
+        latticejson_type = ELE_TO_JSON.get(elegant_type)
         if latticejson_type is None:
             elements[name] = "Drift", {"length": elegant_attributes["L"]}
             warnings.warn(f"Element with type {elegant_type} gets replaced by Drift.")
@@ -51,7 +76,7 @@ def elegant_to_latticejson(string):
         attributes = {}
         elements[name] = latticejson_type, attributes
         for elegant_key, value in elegant_attributes.items():
-            latticejson_key = ELEGANT_TO_JSON.get(elegant_key)
+            latticejson_key = ELE_TO_JSON.get(elegant_key)
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
@@ -65,32 +90,6 @@ def elegant_to_latticejson(string):
         sub_lattices=lattices,
         elements=elements,
     )
-
-
-def latticejson_to_elegant(lattice_dict) -> str:
-    """Convert latticeJSON dict to elegant lattice file format.
-    :param dict: dict in latticeJSON format
-    :return: string with in elegant lattice file format
-    """
-    elements = lattice_dict["elements"]
-    sub_lattices = lattice_dict["sub_lattices"]
-
-    strings = []
-    for name, element in elements.items():
-        type_ = JSON_TO_ELEGANT[element.pop("type")]
-        attributes = ", ".join(f"{JSON_TO_ELEGANT[k]}={v}" for k, v in element.items())
-        string = ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes)
-        strings.append(string)
-
-    for name in order_lattices(sub_lattices):
-        objects = ", ".join(sub_lattices[name])
-        strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
-
-    name = lattice_dict["name"]
-    objects = ", ".join(lattice_dict["lattice"])
-    strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
-    strings.append("\n")
-    return "\n".join(strings)
 
 
 def order_lattices(cells_dict: Dict[str, List[str]]):
