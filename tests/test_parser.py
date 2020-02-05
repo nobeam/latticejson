@@ -1,6 +1,6 @@
 from pathlib import Path
 from pprint import pprint
-from latticejson.parser import parse_elegant, RPNCalculator
+from latticejson.parse import parse_elegant, RPNCalculator
 
 base = Path(__file__).resolve().parent / "data"
 path_list = [base / "fodo.lte", base / "scratch.lte"]

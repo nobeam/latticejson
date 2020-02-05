@@ -25,10 +25,7 @@
       "minimum": 0
     },
     "lattice": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "$ref": "#/definitions/Lattice"
     },
     "sub_lattices": {
       "type": "object",

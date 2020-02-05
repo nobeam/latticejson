@@ -15,7 +15,7 @@ def read(text, file_format) -> Dict:
     else:
         raise NotImplementedError(f"Unkown file file_format {file_format}.")
 
-    validate(latticejson)
+    # validate(latticejson)
     return latticejson
 
 
