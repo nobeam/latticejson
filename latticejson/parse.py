@@ -78,7 +78,7 @@ class ElegantTransformer(Transformer):
         )
 
     def element(self, name, type_, *attributes):
-        self.elements[name] = type_, dict(attributes)
+        self.elements[name.upper()] = type_, dict(attributes)
 
     def attribute(self, name, value):
         if isinstance(value, str):
@@ -86,10 +86,10 @@ class ElegantTransformer(Transformer):
                 value = self.rpn_calculator.execute(value)
             except:
                 pass
-        return name, value
+        return name.upper(), value
 
     def lattice(self, name, arangement):
-        self.lattices[name] = list(arangement)
+        self.lattices[name.upper()] = list(arangement)
 
     def arrangement(self, multiplier, is_reversed, *items):
         multiplier = int(multiplier) if multiplier is not None else 1

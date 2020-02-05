@@ -25,10 +25,7 @@
       "minimum": 0
     },
     "lattice": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "$ref": "#/definitions/Lattice"
     },
     "sub_lattices": {
       "type": "object",
@@ -72,42 +69,49 @@
       }
     },
     "Element": {
-      "type": "object",
-      "required": [
-        "type",
-        "length"
-      ],
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "Type of the element."
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
         },
-        "description": {
-          "type": "string",
-          "description": "Description of the element."
-        },
-        "length": {
-          "type": "number",
-          "minimum": 0,
-          "description": "The length of the element."
-        },
-        "dx": {
-          "type": "number",
-          "description": "Horizontal misalignment"
-        },
-        "dy": {
-          "type": "number",
-          "description": "Vertical misalignment"
-        },
-        "ds": {
-          "type": "number",
-          "description": "Longitudinal misalignment"
-        },
-        "tilt": {
-          "type": "number",
-          "description": "Rotation about the longitudinal axis"
+        {
+          "type": "object",
+          "required": [
+            "length"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type of the element."
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the element."
+            },
+            "length": {
+              "type": "number",
+              "minimum": 0,
+              "description": "The length of the element."
+            },
+            "dx": {
+              "type": "number",
+              "description": "Horizontal misalignment"
+            },
+            "dy": {
+              "type": "number",
+              "description": "Vertical misalignment"
+            },
+            "ds": {
+              "type": "number",
+              "description": "Longitudinal misalignment"
+            },
+            "tilt": {
+              "type": "number",
+              "description": "Rotation about the longitudinal axis"
+            }
+          }
         }
-      }
+      ]
     },
     "Drift": {
       "allOf": [
@@ -115,18 +119,23 @@
           "$ref": "#/definitions/Element"
         }
       ],
-      "additionalProperties": false,
-      "properties": {
-        "type": {
+      "items": [
+        {
           "const": "Drift"
         },
-        "description": {},
-        "length": {},
-        "dx": {},
-        "dy": {},
-        "ds": {},
-        "tilt": {}
-      }
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {}
+          }
+        }
+      ]
     },
     "Dipole": {
       "allOf": [
@@ -134,41 +143,46 @@
           "$ref": "#/definitions/Element"
         }
       ],
-      "additionalProperties": false,
-      "properties": {
-        "type": {
+      "items": [
+        {
           "const": "Dipole"
         },
-        "description": {},
-        "length": {},
-        "dx": {},
-        "dy": {},
-        "ds": {},
-        "tilt": {},
-        "angle": {
-          "type": "number",
-          "description": "Deflection angle"
-        },
-        "radius": {
-          "type": "number",
-          "description": "Radius of curvature"
-        },
-        "e1": {
-          "type": "number"
-        },
-        "e2": {
-          "type": "number"
-        },
-        "h1": {
-          "type": "number"
-        },
-        "h2": {
-          "type": "number"
-        },
-        "conversion_factor_ps_value": {
-          "type": "number"
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "angle": {
+              "type": "number",
+              "description": "Deflection angle"
+            },
+            "radius": {
+              "type": "number",
+              "description": "Radius of curvature"
+            },
+            "e1": {
+              "type": "number"
+            },
+            "e2": {
+              "type": "number"
+            },
+            "h1": {
+              "type": "number"
+            },
+            "h2": {
+              "type": "number"
+            },
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
         }
-      }
+      ]
     },
     "Quadrupole": {
       "allOf": [
@@ -176,25 +190,30 @@
           "$ref": "#/definitions/Element"
         }
       ],
-      "properties": {
-        "type": {
+      "items": [
+        {
           "const": "Quadrupole"
         },
-        "additionalProperties": false,
-        "description": {},
-        "length": {},
-        "dx": {},
-        "dy": {},
-        "ds": {},
-        "tilt": {},
-        "k1": {
-          "type": "number",
-          "description": "Geometric quadrupole strength"
-        },
-        "conversion_factor_ps_value": {
-          "type": "number"
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "k1": {
+              "type": "number",
+              "description": "Geometric quadrupole strength"
+            },
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
         }
-      }
+      ]
     },
     "Sextupole": {
       "allOf": [
@@ -202,25 +221,30 @@
           "$ref": "#/definitions/Element"
         }
       ],
-      "properties": {
-        "type": {
+      "items": [
+        {
           "const": "Sextupole"
         },
-        "additionalProperties": false,
-        "description": {},
-        "length": {},
-        "dx": {},
-        "dy": {},
-        "ds": {},
-        "tilt": {},
-        "k2": {
-          "type": "number",
-          "description": "Geometric sextupole strength"
-        },
-        "conversion_factor_ps_value": {
-          "type": "number"
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "k2": {
+              "type": "number",
+              "description": "Geometric sextupole strength"
+            },
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
         }
-      }
+      ]
     },
     "Octupole": {
       "allOf": [
@@ -228,25 +252,30 @@
           "$ref": "#/definitions/Element"
         }
       ],
-      "properties": {
-        "type": {
+      "items": [
+        {
           "const": "Octupole"
         },
-        "additionalProperties": false,
-        "description": {},
-        "length": {},
-        "dx": {},
-        "dy": {},
-        "ds": {},
-        "tilt": {},
-        "k3": {
-          "type": "number",
-          "description": "Geometric octupole strength"
-        },
-        "conversion_factor_ps_value": {
-          "type": "number"
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "k3": {
+              "type": "number",
+              "description": "Geometric octupole strength"
+            },
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
         }
-      }
+      ]
     }
   }
 }

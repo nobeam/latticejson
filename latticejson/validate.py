@@ -8,6 +8,15 @@ schema = json.loads(schema_path.read_text())
 validate_syntax = fastjsonschema.compile(schema)
 
 
+# TODO: maybe it is better to use jsonschema instead:
+# It is significantly slower but has more verbose error messages
+# Uncomment to validate with jsonschema instead
+# def validate_syntax(data):
+#     import jsonschema
+#
+#     return jsonschema.validate(data, schema, types={"array": (list, tuple)})
+
+
 def validate_file(path: str):
     data = json.loads(Path(path).read_text())
     validate(data)

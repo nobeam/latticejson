@@ -1,31 +1,52 @@
 from typing import List, Tuple, Dict
+from pathlib import Path
 import json
 import warnings
-from pathlib import Path
 
 from .validate import validate
-from .parser import parse_elegant
+from .parse import parse_elegant
 
 
-LATTICEJSON_ELEGANT_MAPPING: Dict[str, Tuple] = {
-    "Drift": ("DRIF", "DRIFT",),
-    "Dipole": ("CSBEND", "SBEND", "BEND",),
-    "Quadrupole": ("KQUAD", "QUAD",),
-    "Sextupole": ("KSEXT", "SEXT",),
-    "Lattice": ("LINE",),
-    "length": ("L",),
-    "angle": ("ANGLE",),
-    "e1": ("E1",),
-    "e2": ("E2",),
-    "k1": ("K1",),
-    "k2": ("K2",),
-}
+LATTICEJSON_ELEGANT_MAP: Tuple[Tuple[str, Tuple[str, ...]], ...] = (
+    ("Drift", ("DRIF", "DRIFT")),
+    ("Dipole", ("CSBEND", "SBEND", "BEND")),
+    ("Quadrupole", ("KQUAD", "QUAD", "QUADRUPOLE")),
+    ("Sextupole", ("KSEXT", "SEXT", "SEXTUPOLE")),
+    ("Lattice", ("LINE",)),
+    ("length", ("L",)),
+    ("angle", ("ANGLE",)),
+    ("e1", ("E1",)),
+    ("e2", ("E2",)),
+    ("k1", ("K1",)),
+    ("k2", ("K2",)),
+)
+JSON_TO_ELE: Dict[str, str] = {x: y[0] for x, y in LATTICEJSON_ELEGANT_MAP}
+ELE_TO_JSON: Dict[str, str] = {y: x for x, tup in LATTICEJSON_ELEGANT_MAP for y in tup}
 
 
-JSON_TO_ELEGANT = {k: v[0] for k, v in LATTICEJSON_ELEGANT_MAPPING.items()}
-ELEGANT_TO_JSON = {v: k for k, tup in LATTICEJSON_ELEGANT_MAPPING.items() for v in tup}
-ELEGANT_ELEMENT_TEMPLATE = "{name}: {type}, {attributes}".format
-ELEGANT_LATTICE_TEMPLATE = "{name}: LINE=({objects})".format
+def latticejson_to_elegant(lattice_dict) -> str:
+    """Convert latticeJSON dict to elegant lattice file format.
+    :param dict: dict in latticeJSON format
+    :return: string with in elegant lattice file format
+    """
+    elements = lattice_dict["elements"]
+    sub_lattices = lattice_dict["sub_lattices"]
+
+    strings = []
+    element_template = "{}: {}, {}".format
+    for name, (type_, attributes) in elements.items():
+        attrs = ", ".join(f"{JSON_TO_ELE[k]}={v}" for k, v in attributes.items())
+        elegant_type = JSON_TO_ELE[type_]
+        strings.append(element_template(name, elegant_type, attrs))
+
+    lattice_template = "{}: LINE=({})".format
+    for name in sort_lattices(sub_lattices):
+        strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
+
+    name = lattice_dict["name"]
+    strings.append(lattice_template(name, ", ".join(lattice_dict["lattice"])))
+    strings.append("\n")
+    return "\n".join(strings)
 
 
 def elegant_to_latticejson(string):
@@ -42,16 +63,16 @@ def elegant_to_latticejson(string):
 
     elements = {}
     for name, (elegant_type, elegant_attributes) in elegant_dict["elements"].items():
-        latticejson_type = ELEGANT_TO_JSON.get(elegant_type)
+        latticejson_type = ELE_TO_JSON.get(elegant_type)
         if latticejson_type is None:
-            elements[name] = "Drift", {"length": elegant_attributes["L"]}
-            warnings.warn(f"Element with type {elegant_type} gets replaced by Drift.")
+            elements[name] = ["Drift", {"length": elegant_attributes.get("L", 0)}]
+            warnings.warn(f"{name} with type {elegant_type} is replaced by Drift.")
             continue
 
         attributes = {}
-        elements[name] = latticejson_type, attributes
+        elements[name] = [latticejson_type, attributes]
         for elegant_key, value in elegant_attributes.items():
-            latticejson_key = ELEGANT_TO_JSON.get(elegant_key)
+            latticejson_key = ELE_TO_JSON.get(elegant_key)
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
@@ -67,47 +88,41 @@ def elegant_to_latticejson(string):
     )
 
 
-def latticejson_to_elegant(lattice_dict) -> str:
-    """Convert latticeJSON dict to elegant lattice file format.
-    :param dict: dict in latticeJSON format
-    :return: string with in elegant lattice file format
-    """
-    elements = lattice_dict["elements"]
-    sub_lattices = lattice_dict["sub_lattices"]
+def sort_lattices_old(lattices: Dict[str, List[str]]) -> List[str]:
+    """Returns a sorted list of lattice names for a given dict of lattices."""
 
-    strings = []
-    for name, element in elements.items():
-        type_ = JSON_TO_ELEGANT[element.pop("type")]
-        attributes = ", ".join(f"{JSON_TO_ELEGANT[k]}={v}" for k, v in element.items())
-        string = ELEGANT_ELEMENT_TEMPLATE(name=name, type=type_, attributes=attributes)
-        strings.append(string)
+    lattices_copy = lattices.copy()
+    lattice_names = []
 
-    for name in order_lattices(sub_lattices):
-        objects = ", ".join(sub_lattices[name])
-        strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
+    def _sort_lattices(name, arrangement: List[str]):
+        for child_name in arrangement:
+            if child_name in lattices_copy:
+                _sort_lattices(child_name, lattices_copy[child_name])
 
-    name = lattice_dict["name"]
-    objects = ", ".join(lattice_dict["lattice"])
-    strings.append(ELEGANT_LATTICE_TEMPLATE(name=name, objects=objects))
-    strings.append("\n")
-    return "\n".join(strings)
+        lattice_names.append(name)
+        lattices_copy.pop(name)
+
+    for name, arrangement in lattices.items():
+        _sort_lattices(name, arrangement)
+
+    return lattice_names
 
 
-def order_lattices(cells_dict: Dict[str, List[str]]):
-    """Order a dict of lattices."""
+def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:
+    """Returns a sorted list of lattice names for a given dict of lattices."""
 
-    cells_dict_copy = cells_dict.copy()
-    ordered_cells = []
+    lattices_set = set(lattices)
+    lattice_names = []
 
-    def _order_lattices(name, cell: List[str]):
-        for lattice_name in cell:
-            if lattice_name in cells_dict_copy:
-                _order_lattices(lattice_name, cells_dict_copy[lattice_name])
+    def _sort_lattices(name):
+        for child_name in lattices[name]:
+            if child_name in lattices_set:
+                lattices_set.remove(child_name)
+                _sort_lattices(child_name)
 
-        ordered_cells.append(name)
-        cells_dict_copy.pop(name)
+        lattice_names.append(name)
 
-    for name, cell in cells_dict.items():
-        _order_lattices(name, cell)
+    while len(lattices_set) > 0:
+        _sort_lattices(lattices_set.pop())
 
-    return ordered_cells
+    return lattice_names
