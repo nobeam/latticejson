@@ -126,4 +126,3 @@ def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:
         _sort_lattices(lattices_set.pop())
 
     return lattice_names
-
