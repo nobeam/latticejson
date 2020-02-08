@@ -5,6 +5,7 @@ from pathlib import Path
 from .validate import validate_file
 from .io import convert_file
 from .parse import parse_elegant as _parse_elegant
+from .migrate import migrate as _migrate
 
 
 @click.group()
@@ -14,32 +15,42 @@ def main():
 
 
 @main.command()
-@click.argument("output_format")
 @click.argument("file", type=click.Path(exists=True))
-def convert(**kwargs):
-    """Convert a latticeJSON or elegant file into another format."""
-    output_format = kwargs["output_format"].lower()
-    if output_format in ("latticejson", "lj", "json"):
-        output_format = "latticejson"
-    elif output_format in ("elegant", "ele", "lte"):
-        output_format = "elegant"
-    else:
-        raise Exception(f"Unknown format {output_format}")
-
-    res = convert_file(kwargs["file"], output_format)
-    print(res)
+@click.option(
+    "--to",
+    required=True,
+    type=click.Choice(["json", "lte"], case_sensitive=False),
+    help="Destination format.",
+)
+def convert(file, to):
+    """Convert a LatticeJSON or elegant file into another format."""
+    print(convert_file(file, to))
 
 
 @main.command()
 @click.argument("file", type=click.Path(exists=True))
-def validate(**kwargs):
-    """Validate a latticeJSON lattice file."""
-    validate_file(kwargs["file"])
+def validate(file):
+    """Validate a LatticeJSON lattice file."""
+    validate_file(file)
 
 
 @main.command()
 @click.argument("file", type=click.Path(exists=True))
-def parse_elegant(**kwargs):
-    """Parse elegant file but do not convert to latticeJSON."""
-    text = Path(kwargs["file"]).read_text()
+def parse_elegant(file):
+    """Parse elegant file but do not convert to LatticeJSON."""
+    text = Path(file).read_text()
     print(json.dumps(_parse_elegant(text), indent=4))
+
+
+@main.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--from", "from_", required=True)
+@click.option("--to", required=True)
+def migrate(file, from_, to):
+    """Migrate old LatticeJSON formats to newer versions."""
+    text = Path(file).read_text()
+    initial_version = from_.split(".")
+    final_version = to.split(".")
+    print(f"Migrating {file} from {initial_version} to {final_version}")
+    res = _migrate(json.loads(text), initial_version, final_version)
+    print(json.dumps(res, indent=4))
