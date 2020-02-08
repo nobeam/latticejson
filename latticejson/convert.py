@@ -25,8 +25,8 @@ ELE_TO_JSON: Dict[str, str] = {y: x for x, tup in LATTICEJSON_ELEGANT_MAP for y 
 
 
 def latticejson_to_elegant(lattice_dict) -> str:
-    """Convert latticeJSON dict to elegant lattice file format.
-    :param dict: dict in latticeJSON format
+    """Convert LatticeJSON dict to elegant lattice file format.
+    :param dict: dict in LatticeJSON format
     :return: string with in elegant lattice file format
     """
     elements = lattice_dict["elements"]
@@ -50,14 +50,14 @@ def latticejson_to_elegant(lattice_dict) -> str:
 
 
 def elegant_to_latticejson(string):
-    """Convert an elegant lattice file to a latticeJSON dict.
+    """Convert an elegant lattice file to a LatticeJSON dict.
 
     :param str string: input lattice file as string
     :param lattice_name: name of the lattice
     :type str, optional
     :param description: description of the lattice
     :type str, optional
-    :return: dict in latticeJSON format
+    :return: dict in LatticeJSON format
     """
     elegant_dict = parse_elegant(string)
 

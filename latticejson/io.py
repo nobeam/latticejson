@@ -6,7 +6,7 @@ from .validate import validate
 
 
 def read(text, file_format) -> Dict:
-    """Read/validate lattice file and return latticeJSON dict."""
+    """Read/validate lattice file and return LatticeJSON dict."""
 
     if file_format == ".json":
         latticejson = json.loads(text)
@@ -15,7 +15,7 @@ def read(text, file_format) -> Dict:
     else:
         raise NotImplementedError(f"Unkown file file_format {file_format}.")
 
-    # validate(latticejson)
+    validate(latticejson)
     return latticejson
 
 
@@ -23,7 +23,7 @@ def read_file(path) -> Dict:
     """Read lattice file from path
 
     :param path path-like: Path to lattice file
-    :return: latticeJSON compliant dict.
+    :return: LatticeJSON compliant dict.
     """
     path = Path(path)
     suffix = path.suffix
@@ -42,9 +42,9 @@ def convert(text, input_format, output_format) -> str:
     :rtype: str
     """
     lattice_json = read(text, input_format)
-    if output_format == "latticejson":
+    if output_format == "json":
         return json.dumps(lattice_json, indent=4)
-    elif output_format == "elegant":
+    elif output_format == "lte":
         return latticejson_to_elegant(lattice_json)
 
     raise NotImplementedError(f"Converting to {output_format} is not implemented!")

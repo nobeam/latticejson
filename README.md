@@ -9,6 +9,7 @@ This repository contains the
 [Specification of LatticeJSON](https://github.com/andreasfelix/latticejson/blob/master/latticejson/schema.json)
 in form of a [JSON Schema](https://json-schema.org).
 
+
 ## Example
 
 A LatticeJSON file for a FODO lattice:
@@ -36,40 +37,33 @@ A LatticeJSON file for a FODO lattice:
 [![PyPI](https://img.shields.io/pypi/v/latticejson.svg)](https://pypi.org/project/latticejson/)
 [![CI](https://github.com/andreasfelix/latticejson/workflows/CI/badge.svg)](https://github.com/andreasfelix/latticejson/actions?query=workflow%3ACI)
 
-This repository also contains a Python based commandline tool which is able validate and convert LatticeJSON
-files into other common lattice file formats.
+This repository also contains a Python based command-line tool which is able validate
+and convert LatticeJSON files into other common lattice file formats and vice versa.
 
 You can install and update it using pip or pipenv:
-
 ```sh
 pip install -U latticejson
 ```
-
 
 Validate a LatticeJSON file:
 ```sh
 latticejson validate /path/to/lattice.json
 ```
 
-Convert a LatticeJSON file into the elegant lattice format:
+Convert a elegant lattice format into the LatticeJSON format:
 ```sh
-latticejson convert elegant /path/to/lattice.json
+latticejson convert --to json /path/to/lattice.lte
 ```
 
 To activate Bash completion add
-
 ```
 eval "$(_LATTICEJSON_COMPLETE=source latticejson)"
 ```
 
 to your `.bashrc`. Or, create an activation script with:
-
-
 ```
 _LATTICEJSON_COMPLETE=source latticejson > latticejson-complete.sh
 ```
 
 ## License
 [GNU General Public License v3.0](https://github.com/andreasfelix/latticejson/blob/master/LICENSE)
-
-
