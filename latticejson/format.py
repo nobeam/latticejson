@@ -13,6 +13,7 @@ class CompactJSONEncoder(json.JSONEncoder):
                 f"{indent}{json.dumps(key)}: {self.encode(value, level=level+1)}"
                 for key, value in obj.items()
             )
-            return f"{{\n{items}\n{level * self.indent * ' '}}}"
+            newline = "\n" if level == 0 else ""
+            return f"{{\n{items}\n{level * self.indent * ' '}}}{newline}"
         else:
             return json.dumps(obj)
