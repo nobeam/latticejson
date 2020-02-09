@@ -1,31 +1,19 @@
-# from
-# from https://gist.github.com/jannismain/e96666ca4f059c3e5bc28abb711b5c92
-
 import json
 
 
 class CompactJSONEncoder(json.JSONEncoder):
-    """A JSON Encoder that puts small lists on single lines."""
+    """A JSON Encoder which only indents the first two level."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.indentation_level = 0
-
-    def encode(self, o):
-        """Encode JSON object *o* with respect to single line lists."""
-        if isinstance(o, (list, tuple)):
-            return "[" + ", ".join(json.dumps(el) for el in o) + "]"
-        elif isinstance(o, dict):
-            self.indentation_level += 1
-            output = [
-                self.indent_str + f"{json.dumps(k)}: {self.encode(v)}"
-                for k, v in o.items()
-            ]
-            self.indentation_level -= 1
-            return "{\n" + ",\n".join(output) + "\n" + self.indent_str + "}"
+    def encode(self, obj, level=0):
+        """Encode JSON object *obj*."""
+        if isinstance(obj, (list, tuple)):
+            return f"[{', '.join(json.dumps(el) for el in obj)}]"
+        elif isinstance(obj, dict) and level < 2:
+            indent = (level + 1) * self.indent * " "
+            items = ",\n".join(
+                f"{indent}{json.dumps(key)}: {self.encode(value, level=level+1)}"
+                for key, value in obj.items()
+            )
+            return f"{{\n{items}\n{level * self.indent * ' '}}}"
         else:
-            return json.dumps(o)
-
-    @property
-    def indent_str(self) -> str:
-        return " " * self.indentation_level * self.indent
+            return json.dumps(obj)

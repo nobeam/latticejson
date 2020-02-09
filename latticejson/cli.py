@@ -3,10 +3,14 @@ import json
 from pathlib import Path
 
 from .validate import validate_file
-from .io import convert_file
+from .io import convert as _convert
 from .parse import parse_elegant as _parse_elegant
 from .format import CompactJSONEncoder
 from .migrate import migrate as _migrate
+
+
+FORMATS = "json", "lte"
+print_latticejson = lambda obj: print(json.dumps(obj, cls=CompactJSONEncoder, indent=4))
 
 
 @click.group()
@@ -18,14 +22,24 @@ def main():
 @main.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option(
+    "--from",
+    "from_",
+    type=click.Choice(FORMATS, case_sensitive=False),
+    help="Source format [optional, default: use file extension]",
+)
+@click.option(
     "--to",
     required=True,
-    type=click.Choice(["json", "lte"], case_sensitive=False),
-    help="Destination format.",
+    type=click.Choice(FORMATS, case_sensitive=False),
+    help="Destination format",
 )
-def convert(file, to):
+def convert(file, from_, to):
     """Convert a LatticeJSON or elegant file into another format."""
-    print(convert_file(file, to))
+    path = Path(file)
+    if from_ is None:
+        from_ = path.suffix[1:]
+
+    print(_convert(path.read_text(), from_, to))
 
 
 @main.command()
@@ -40,7 +54,7 @@ def validate(file):
 def parse_elegant(file):
     """Parse elegant file but do not convert to LatticeJSON."""
     text = Path(file).read_text()
-    print(json.dumps(_parse_elegant(text), indent=4))
+    print(json.dumps(_parse_elegant(text), cls=CompactJSONEncoder, indent=4))
 
 
 @main.command()
@@ -60,6 +74,5 @@ def migrate(file, from_, to):
     text = Path(file).read_text()
     initial_version = from_.split(".")
     final_version = to.split(".")
-    print(f"Migrating {file} from {initial_version} to {final_version}")
     res = _migrate(json.loads(text), initial_version, final_version)
     print(json.dumps(res, cls=CompactJSONEncoder, indent=4))

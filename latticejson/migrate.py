@@ -15,9 +15,8 @@ def migrate(initial: dict, initial_version: tuple, final_version: tuple):
 
 def migrate_0_0_2_to_0_0_3(initial: dict):
     final = initial.copy()
-    elmentes_initial = final.pop("elements")
     elements_final = {}
-    for name, attributes in elmentes_initial.items():
+    for name, attributes in final["elements"].items():
         type_ = attributes.pop("type")
         elements_final[name] = type_, attributes
 
