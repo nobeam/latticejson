@@ -46,7 +46,7 @@ def parse_elegant(file):
 @main.command()
 @click.argument("file", type=click.Path(exists=True))
 def autoformat(file):
-    """Format a LatticeJson file."""
+    """Format a LatticeJSON file."""
     latticejson = json.loads(Path(file).read_text())
     print(json.dumps(latticejson, cls=CompactJSONEncoder, indent=4))
 
@@ -56,7 +56,7 @@ def autoformat(file):
 @click.option("--from", "from_", required=True, help="Initial version")
 @click.option("--to", required=True, help="Final version")
 def migrate(file, from_, to):
-    """Migrate old LatticeJSON formats to newer versions."""
+    """Migrate old LatticeJSON files to newer versions."""
     text = Path(file).read_text()
     initial_version = from_.split(".")
     final_version = to.split(".")
