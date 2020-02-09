@@ -1,6 +1,7 @@
 import click
 import json
 from pathlib import Path
+import itertools
 
 from .validate import validate_file
 from .io import convert as _convert
@@ -10,7 +11,7 @@ from .migrate import migrate as _migrate
 
 
 FORMATS = "json", "lte"
-print_latticejson = lambda obj: print(json.dumps(obj, cls=CompactJSONEncoder, indent=4))
+dump_latticejson = lambda obj: json.dumps(obj, cls=CompactJSONEncoder, indent=4)
 
 
 @click.group()
@@ -39,7 +40,7 @@ def convert(file, from_, to):
     if from_ is None:
         from_ = path.suffix[1:]
 
-    print(_convert(path.read_text(), from_, to))
+    click.echo(_convert(path.read_text(), from_, to))
 
 
 @main.command()
@@ -54,15 +55,29 @@ def validate(file):
 def parse_elegant(file):
     """Parse elegant file but do not convert to LatticeJSON."""
     text = Path(file).read_text()
-    print(json.dumps(_parse_elegant(text), cls=CompactJSONEncoder, indent=4))
+    click.echo(dump_latticejson(_parse_elegant(text)))
 
 
 @main.command()
-@click.argument("file", type=click.Path(exists=True))
-def autoformat(file):
+@click.argument("files", nargs=-1, type=click.Path(exists=True))
+@click.option(
+    "--dry-run",
+    "-d",
+    is_flag=True,
+    help="Don't write the files back, just output the formatted files on stdout",
+)
+def autoformat(files, dry_run):
     """Format a LatticeJSON file."""
-    latticejson = json.loads(Path(file).read_text())
-    print(json.dumps(latticejson, cls=CompactJSONEncoder, indent=4))
+    for path in itertools.chain.from_iterable(
+        path.rglob("*.json") if path.is_dir() else (path,) for path in map(Path, files)
+    ):
+        latticejson = json.loads(path.read_text())
+        formatted = dump_latticejson(latticejson)
+        click.secho(f"reformatted {path}", bold=True)
+        if dry_run:
+            click.echo(formatted)
+        else:
+            path.write_text(formatted)
 
 
 @main.command()
@@ -74,5 +89,5 @@ def migrate(file, from_, to):
     text = Path(file).read_text()
     initial_version = from_.split(".")
     final_version = to.split(".")
-    res = _migrate(json.loads(text), initial_version, final_version)
-    print(json.dumps(res, cls=CompactJSONEncoder, indent=4))
+    latticejson = _migrate(json.loads(text), initial_version, final_version)
+    click.echo(dump_latticejson(latticejson))
