@@ -19,11 +19,11 @@ def test_elegant_to_latticejson():
 
 
 ## Uncomment to test for elegant examples
-def test_all_elegant_examples():
-    elegant_examples = Path.home() / "Git/elegant/examples"
-    path_list = list(elegant_examples.rglob("*.lte"))
-    for path in path_list:
-        print(path)
-        latticejson = elegant_to_latticejson(path.read_text())
-        print(latticejson)
-        input()
+# def test_all_elegant_examples():
+#     elegant_examples = Path.home() / "Git/elegant/examples"
+#     path_list = list(elegant_examples.rglob("*.lte"))
+#     for path in path_list:
+#         print(path)
+#         latticejson = elegant_to_latticejson(path.read_text())
+#         print(latticejson)
+#         input()
