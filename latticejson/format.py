@@ -5,7 +5,6 @@ class CompactJSONEncoder(json.JSONEncoder):
     """A JSON Encoder which only indents the first two level."""
 
     def encode(self, obj, level=0):
-        """Encode JSON object *obj*."""
         if isinstance(obj, (list, tuple)):
             return f"[{', '.join(json.dumps(el) for el in obj)}]"
         elif isinstance(obj, dict) and level < 2:
