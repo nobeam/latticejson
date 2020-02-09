@@ -64,7 +64,7 @@ def parse_elegant(file):
     "--dry-run",
     "-d",
     is_flag=True,
-    help="Don't write the files back, just output the formatted files on stdout",
+    help="Don't write the files back, just output the formatted files.",
 )
 def autoformat(files, dry_run):
     """Format a LatticeJSON file."""
