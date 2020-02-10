@@ -69,6 +69,7 @@
       }
     },
     "Element": {
+      "description": "Abstract base for all elements",
       "type": "array",
       "items": [
         {
@@ -80,13 +81,9 @@
             "length"
           ],
           "properties": {
-            "type": {
-              "type": "string",
-              "description": "Type of the element."
-            },
             "description": {
               "type": "string",
-              "description": "Description of the element."
+              "description": "Optional description of the element."
             },
             "length": {
               "type": "number",

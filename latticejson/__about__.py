@@ -1,4 +1,4 @@
-__title__ = "latticeJSON"
+__title__ = "LatticeJSON"
 __description__ = "A JSON based lattice file format"
 __url__ = "https://github.com/andreasfelix/latticejson"
 __version__ = "0.0.2"

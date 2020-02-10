@@ -1,9 +1,15 @@
-%ignore /[ \t\f]/+       // ingore whitespace
+%ignore /[ \t\f]/+  // ingore whitespace
 
-int: /[+-]?\d+/
-float: /[+-]?\d+\.\d*([eE][+-]?\d+)?/ // needed to parse 1.
-     | /[+-]?\d*\.\d+([eE][+-]?\d+)?/ // needed to parse .1
-     | /[+-]?\d+[eE][+-]?\d+/         // needed to parse 1e1
+INT         :  ["+" | "-"] DIGIT_PART
+FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
+EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
+POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
+DIGIT_PART  :  /\d+/
+FRACTION    :  "." DIGIT_PART
+EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
+
+int         : INT
+float       : FLOAT
 ?number: int | float
 word: /\w+/
 
