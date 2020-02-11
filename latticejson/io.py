@@ -65,7 +65,7 @@ def _load_location(location, file_format=None) -> Tuple[str, str]:
     """
     parse_result = urlparse(str(location))
     path = Path(parse_result.path)
-    if file_format is None:
+    if file_format   is None:
         file_format = path.suffix[1:]
 
     is_path = parse_result.scheme == ""
