@@ -21,7 +21,8 @@ def main():
 
 
 @main.command()
-@click.argument("file", type=click.Path(exists=True))
+# @click.argument("file", type=click.Path(exists=True))
+@click.argument("file")
 @click.option(
     "--from",
     "from_",
@@ -35,12 +36,8 @@ def main():
     help="Destination format",
 )
 def convert(file, from_, to):
-    """Convert a LatticeJSON or elegant file into another format."""
-    path = Path(file)
-    if from_ is None:
-        from_ = path.suffix[1:]
-
-    click.echo(_convert(path.read_text(), from_, to))
+    """Convert FILE (path or url) to another lattice file format."""
+    click.echo(_convert(file, from_, to))
 
 
 @main.command()
