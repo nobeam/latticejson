@@ -88,6 +88,7 @@ def elegant_to_latticejson(string):
     )
 
 
+# TODO: revise logic!!
 def sort_lattices_old(lattices: Dict[str, List[str]]) -> List[str]:
     """Returns a sorted list of lattice names for a given dict of lattices."""
 
@@ -108,6 +109,7 @@ def sort_lattices_old(lattices: Dict[str, List[str]]) -> List[str]:
     return lattice_names
 
 
+# TODO: revise logic!!
 def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:
     """Returns a sorted list of lattice names for a given dict of lattices."""
 
