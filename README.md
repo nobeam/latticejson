@@ -50,9 +50,14 @@ Validate a LatticeJSON file:
 latticejson validate /path/to/lattice.json
 ```
 
-Convert a elegant lattice format into the LatticeJSON format:
+Convert an elegant lattice file to the LatticeJSON format:
 ```sh
 latticejson convert --to json /path/to/lattice.lte
+```
+
+Autoformat one or more LatticeJSON files:
+```sh
+latticejson autoformat /path/to/lattice.json ...
 ```
 
 To activate Bash completion add
