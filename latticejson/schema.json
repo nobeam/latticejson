@@ -181,6 +181,38 @@
         }
       ]
     },
+    "Bumper": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Element"
+        }
+      ],
+      "items": [
+        {
+          "const": "Bumper"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "angle": {
+              "type": "number",
+              "description": "Kick angle"
+            },
+            "b2": {
+              "type": "number",
+              "description": "Sextupole term"
+            }
+          }
+        }
+      ]
+    },
     "Quadrupole": {
       "allOf": [
         {
