@@ -38,7 +38,8 @@ A LatticeJSON file for a FODO lattice:
 [![CI](https://github.com/andreasfelix/latticejson/workflows/CI/badge.svg)](https://github.com/andreasfelix/latticejson/actions?query=workflow%3ACI)
 
 This repository also contains a Python based command-line tool which is able validate
-and convert LatticeJSON files into other common lattice file formats and vice versa.
+and convert LatticeJSON files to other common lattice file formats
+(e.g. elegant and MAD) and vice versa.
 
 You can install and update it using pip or pipenv:
 ```sh
