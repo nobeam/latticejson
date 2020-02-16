@@ -1,10 +1,10 @@
 <template>
   <div class="definition">
-    <h3 :id="name.toLowerCase()">
-      <a :href="'#'+name.toLowerCase()" class="header-anchor">#</a>
-      {{name}}
+    <h3 :id="type.toLowerCase()">
+      <a :href="'#'+type.toLowerCase()" class="header-anchor">#</a>
+      {{type}}
     </h3>
-    <p>{{definition.description}}</p>
+    <p>{{description}}</p>
     <table style="width:100%">
       <thead>
         <tr>
@@ -14,10 +14,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="value, name in definition">
+        <tr v-for="attribute, name in attributes">
           <td>{{name}}</td>
-          <td>{{value.type}}</td>
-          <td>{{value.description}}</td>
+          <td>{{attribute.type}}</td>
+          <td>{{attribute.description}}</td>
         </tr>
       </tbody>
     </table>
@@ -28,8 +28,9 @@
 export default {
   name: "Definition",
   props: {
-    name: String,
-    definition: Object
+    type: String,
+    attributes: Object,
+    description: String
   }
 };
 </script>
