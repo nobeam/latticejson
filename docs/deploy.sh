@@ -3,6 +3,10 @@
 # abort on errors
 set -e
 
+# change directory to script location
+initial_dir="$(pwd)"
+cd "$(dirname "$0")"
+
 # build
 npm run build
 
@@ -20,7 +24,6 @@ git commit -m 'deploy'
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-# git push -f git@github.com:nobeam/latticejson.git master:gh-pages
 git push -f git@github.com:nobeam/latticejson.git master:gh-pages
 
-cd -
+cd initial_dir
