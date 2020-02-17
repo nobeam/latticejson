@@ -28,7 +28,6 @@ A LatticeJSON file for a FODO lattice:
   },
   "lattice": ["FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO", "FODO"]
 }
-
 ```
 
 

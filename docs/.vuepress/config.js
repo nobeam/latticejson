@@ -14,6 +14,7 @@ module.exports = {
       { text: 'GitHub', link: "https://github.com/nobeam/latticejson" },
       { text: 'PyPI', link: "https://pypi.org/project/LatticeJSON/" },
       { text: 'Specification', link: "https://github.com/NoBeam/latticejson/blob/master/latticejson/schema.json" }
-    ]
+    ],
+    sidebar: 'auto'
   }
 };
