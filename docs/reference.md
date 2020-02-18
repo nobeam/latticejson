@@ -9,11 +9,12 @@ sidebar: auto
 <schema/>
 
 ## Lattice
-```json
+
+``` json
 "lattice": [<object>, <object>,...]
 ```
 
-```json
+``` json
 "sublattices": {
   <name>: [<object>, <object>,...],
   <name>: [<object>, <object>,...],
@@ -22,12 +23,16 @@ sidebar: auto
 ```
 
 ## Elements
+
 Elements is a dictionary with element names as keys and their definition as value.
-```json
+
+``` json
 "elements": {
   <name>: [<type>, <attributes>],
   <name>: [<type>, <attributes>],
   ...
 }
 ```
+
 <definition-list/>
+
