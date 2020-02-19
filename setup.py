@@ -17,7 +17,7 @@ setup(
     author=about["__author__"],
     license=about["__license__"],
     packages=find_packages(),
-    install_requires=["fastjsonschema", "click", "lark-parser"],
+    install_requires=["fastjsonschema", "click>=7.0", "lark-parser"],
     test_requires=["pytest"],
     python_requires=">=3.6",
     include_package_data=True,
