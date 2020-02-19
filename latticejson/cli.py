@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import itertools
 
+from . import __version__
 from .validate import validate_file
 from .io import convert as _convert
 from .parse import parse_elegant as _parse_elegant
@@ -15,12 +16,12 @@ dump_latticejson = lambda obj: json.dumps(obj, cls=CompactJSONEncoder, indent=4)
 
 
 @click.group()
-@click.version_option()
-def main():
+@click.version_option(__version__)
+def cli():
     pass
 
 
-@main.command()
+@cli.command()
 # @click.argument("file", type=click.Path(exists=True))
 @click.argument("file")
 @click.option(
@@ -40,14 +41,14 @@ def convert(file, from_, to):
     click.echo(_convert(file, from_, to))
 
 
-@main.command()
+@cli.command()
 @click.argument("file", type=click.Path(exists=True))
 def validate(file):
     """Validate a LatticeJSON lattice file."""
     validate_file(file)
 
 
-@main.command()
+@cli.command()
 @click.argument("file", type=click.Path(exists=True))
 def parse_elegant(file):
     """Parse elegant file but do not convert to LatticeJSON."""
@@ -55,7 +56,7 @@ def parse_elegant(file):
     click.echo(dump_latticejson(_parse_elegant(text)))
 
 
-@main.command()
+@cli.command()
 @click.argument("files", nargs=-1, type=click.Path(exists=True))
 @click.option(
     "--dry-run",
@@ -77,7 +78,7 @@ def autoformat(files, dry_run):
             path.write_text(formatted)
 
 
-@main.command()
+@cli.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--from", "from_", required=True, help="Initial version")
 @click.option("--to", required=True, help="Final version")
