@@ -1,3 +1,4 @@
+from .__about__ import __version__
 from .io import load, convert
 from .validate import validate
 from .convert import elegant_to_latticejson, latticejson_to_elegant
