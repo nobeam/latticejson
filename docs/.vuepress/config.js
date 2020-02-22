@@ -2,7 +2,7 @@ module.exports = {
   title: 'LatticeJSON',
   description: 'A modern lattice file format',
   head: [
-    ['link', { rel: "shortcut icon", href: "assets/favicon.ico" }]
+    ['link', { rel: "shortcut icon", href: "/favicon.ico" }]
   ],
   temp: ".temp",
   ServiceWorker: true,
