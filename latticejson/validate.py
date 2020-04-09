@@ -8,7 +8,7 @@ schema = json.loads(schema_path.read_text())
 validate_syntax = fastjsonschema.compile(schema)
 
 
-# TODO: maybe it is better to use jsonschema instead:
+# TODO: use this if validation fails... maybe it is better to use jsonschema instead:
 # It is significantly slower but has more verbose error messages
 # Uncomment to validate with jsonschema instead
 # def validate_syntax(data):
