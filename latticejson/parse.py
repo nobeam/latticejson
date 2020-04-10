@@ -8,17 +8,6 @@ import itertools
 from .exceptions import UndefinedRPNVariableError
 
 
-DIR_NAME = Path(__file__).resolve().parent
-ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
-RPN_GRAMMAR = (DIR_NAME / "rpn.lark").read_text()
-
-ELEGANT_PARSER = Lark(
-    ELEGANT_GRAMMAR, parser="lalr", start="file", maybe_placeholders=True
-)
-RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr", start="start")
-RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
-
-
 @v_args(inline=True)
 class RPNTransformer(Transformer):
     int = int
@@ -125,6 +114,29 @@ class ElegantTransformer(Transformer):
         self.commands.append(items)
 
 
+@v_args(inline=True)
+class MADXTransformer(Transformer):
+    pass
+
+
+DIR_NAME = Path(__file__).resolve().parent
+
+ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
+ELEGANT_PARSER = Lark(ELEGANT_GRAMMAR, parser="lalr", maybe_placeholders=True)
+RPN_GRAMMAR = (DIR_NAME / "rpn.lark").read_text()
+RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr")
+RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
+
+MADX_GRAMMAR = (DIR_NAME / "madx.lark").read_text()
+MADX_PARSER = Lark(MADX_GRAMMAR, parser="lalr", maybe_placeholders=True)
+
+
 def parse_elegant(string: str):
     tree = ELEGANT_PARSER.parse(string + "\n")  # TODO: remove "\n" when lark has EOF
     return ElegantTransformer().transform(tree)
+
+
+def parse_madx(string: str):
+    tree = MADX_PARSER.parse(string)
+    print(tree.pretty())
+    return MADXTransformer().transform(tree)

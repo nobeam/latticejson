@@ -1,0 +1,31 @@
+// work in progress ...
+
+%ignore /[ \s]+/  // ingore whitespace
+%ignore /(!|\/\/).*/  // ingore comments
+%import common.ESCAPED_STRING
+
+INT         :  ["+" | "-"] DIGIT_PART
+FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
+EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
+POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
+DIGIT_PART  :  /\d+/
+FRACTION    :  "." DIGIT_PART
+EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
+
+int         : INT
+float       : FLOAT
+string      : ESCAPED_STRING
+word        : /[\w\.]+/
+
+start       : _statement*
+_statement  : (element | lattice | command) ";"
+
+element     : word ":" [word] ("," attribute)* ","?
+attribute   : word "=" (int | float | string | word)
+
+lattice     : word ":" "LINE"i "=" arrangement
+arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
+?object     : ref_name | arrangement
+ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
+
+command     : word ("," (word | string | attribute))*

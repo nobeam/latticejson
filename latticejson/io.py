@@ -1,7 +1,7 @@
 from typing import Tuple, Dict, Union, AnyStr
 from pathlib import Path
 import json
-from .convert import elegant_to_latticejson, latticejson_to_elegant
+from . import convert as _convert
 from .validate import validate
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -24,7 +24,9 @@ def load_string(text: str, file_format: str) -> Dict:
     if file_format == "json":
         latticejson = json.loads(text)
     elif file_format == "lte":
-        latticejson = elegant_to_latticejson(text)
+        latticejson = _convert.elegant_to_latticejson(text)
+    elif file_format == "madx":
+        latticejson = _convert.madx_to_latticejson(text)
     else:
         raise NotImplementedError(f"Unkown file file_format {file_format}.")
 
@@ -50,7 +52,9 @@ def convert_string(text, input_format, output_format) -> str:
     if output_format == "json":
         return json.dumps(lattice_json, indent=4)
     elif output_format == "lte":
-        return latticejson_to_elegant(lattice_json)
+        return _convert.latticejson_to_elegant(lattice_json)
+    elif output_format == "madx":
+        return _convert.latticejson_to_madx(lattice_json)
     raise NotImplementedError(f"Converting to {output_format} is not implemented!")
 
 

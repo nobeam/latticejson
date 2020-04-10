@@ -1,6 +1,6 @@
 from pathlib import Path
 from pprint import pprint
-from latticejson.parse import parse_elegant, RPNCalculator
+from latticejson.parse import parse_elegant, RPNCalculator, parse_madx
 
 base = Path(__file__).resolve().parent / "data"
 path_list = [base / "fodo.lte", base / "scratch.lte"]
@@ -30,3 +30,10 @@ def test_rpn_parser():
 
     for string in "1", "1.0", "1.", ".1", "-12e34":
         assert float(string) == rpn_calculator.execute(string)
+
+
+def test_parse_madx():
+    res = parse_madx((base / "fodo.madx").read_text())
+    print("\nresult:")
+    pprint(res)
+    print("\n")

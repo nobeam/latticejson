@@ -20,13 +20,12 @@ FRACTION    :  "." DIGIT_PART
 EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
 
 int         : INT
-u_int       : DIGIT_PART
 float       : FLOAT
 string      : ESCAPED_STRING
 word        : /\w+/
 name        : /\w+/ | "\"" /[\w:]+/ "\""
 
-file        : _NEWLINE* (statement _NEWLINE+)*
+start        : _NEWLINE* (statement _NEWLINE+)*
 _NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
 ?statement  : element | lattice | command | rpn_store
 

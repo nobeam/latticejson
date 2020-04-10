@@ -1,6 +1,11 @@
 import json
 
 
+def format_json(obj):
+    """Compact version of json.dumps."""
+    return json.dumps(obj, cls=CompactJSONEncoder, indent=4)
+
+
 class CompactJSONEncoder(json.JSONEncoder):
     """A JSON Encoder which only indents the first two levels."""
 
