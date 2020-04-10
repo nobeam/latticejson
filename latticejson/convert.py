@@ -66,7 +66,9 @@ def elegant_to_latticejson(string):
         latticejson_type = ELE_TO_JSON.get(elegant_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": elegant_attributes.get("L", 0)}]
-            warnings.warn(f"{name} with type {elegant_type} is replaced by Drift.")
+            warnings.warn(
+                f"Replacing element {name} ({elegant_type}) with Drift.", stacklevel=2
+            )
             continue
 
         attributes = {}
@@ -76,7 +78,9 @@ def elegant_to_latticejson(string):
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
-                warnings.warn(f"Ignoring attribute {elegant_key} of element {name}.")
+                warnings.warn(
+                    f"Ignoring attribute {elegant_key} of {name}.", stacklevel=2
+                )
 
     lattices = elegant_dict["lattices"]
     lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
