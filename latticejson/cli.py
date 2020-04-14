@@ -5,7 +5,7 @@ import itertools
 
 from . import __version__
 from .validate import validate_file
-from .io import convert as _convert
+from . import io
 from .format import format_json
 from .migrate import migrate as _migrate
 from . import parse
@@ -37,7 +37,7 @@ def cli():
 )
 def convert(file, from_, to):
     """Convert FILE (path or url) to another lattice file format."""
-    click.echo(_convert(file, from_, to))
+    click.echo(io.save_string(io.load(file, from_), to))
 
 
 @cli.command()

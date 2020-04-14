@@ -1,7 +1,7 @@
 ! The messy formatting is intentional to test the converter
 D1: DRIFT, L=55e-2   !! This is a comment with two !!
 Q1 :KQUAD, L="2 10 /", K1=1.2
- Q2:KQUAD, L=.4, K1=-1.2
+ Q2:KQUAD, l=.4, k1=-1.2
 
 ! Another comment
 
@@ -9,6 +9,6 @@ Q1 :KQUAD, L="2 10 /", K1=1.2
 % 1 atan 4 * sto custom_pi
 
 B1      : CSBEND, L=.15e+1, ANGLE="angle", &
-          E1="pi 16 /", E2="custom_pi 16 /"
+          E1="pi 16 /", e2="custom_pi 16 /"
 FODO    : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1)
 RING    : LINE = (2*(-2*-(2*FODO)))
