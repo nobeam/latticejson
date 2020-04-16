@@ -1,24 +1,15 @@
-// work in progress ...
-
+// MADX Grammar - work in progress ...
 %ignore /[ \s]+/  // ingore whitespace
 %ignore /(!|\/\/).*/  // ingore comments
-%import common.ESCAPED_STRING
+%import common (SIGNED_INT, SIGNED_FLOAT, ESCAPED_STRING, CNAME)
 
-INT         :  ["+" | "-"] DIGIT_PART
-FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
-EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
-POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
-DIGIT_PART  :  /\d+/
-FRACTION    :  "." DIGIT_PART
-EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
-
-int         : INT
-float       : FLOAT
+int         : SIGNED_INT
+float       : SIGNED_FLOAT
 string      : ESCAPED_STRING
 word        : /[\w\.]+/
 
-start       : _statement*
-_statement  : (element | lattice | command) ";"
+start       : (_statement ";")*
+_statement  : element | lattice | command | assignment
 
 element     : word ":" [word] ("," attribute)* ","?
 attribute   : word "=" (int | float | string | word)
@@ -29,3 +20,16 @@ arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
 ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
 
 command     : word ("," (word | string | attribute))*
+
+assignment  : word ("=" | ":=") arith_expr
+variable    : CNAME
+?arith_expr : term (_add_op term)*
+?term       : factor (_mul_op factor)*
+?factor     : _factor_op factor | power
+?power      : atom_expr ("^" factor)?
+?atom_expr  : atom | func_expr
+?atom       : (int | float | variable)
+func_expr   : word "(" arith_expr ")"
+!_factor_op : "+" | "-"
+!_add_op    : "+" | "-"
+!_mul_op    : "*" | "/"

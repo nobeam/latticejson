@@ -2,11 +2,12 @@
 TITLE, "A FODO LATTICE TEST FILE";
 
 ! this is also a comment
+QuadLength := 0.4;
 
 D1: DRIFT, L=0.55; !! comment with two !!
-!     Q1: QUADRUPOLE, L=0.2, K1=1.2; //// comment with two //
-!         Q2:QUADRUPOLE, L=0.4, // comment before terminating ;
-!         K1=-1.2;
+    Q1: QUADRUPOLE, L=0.2, K1=1.2; //// comment with two //
+        Q2:QUADRUPOLE, L=0.4, // comment before terminating ;
+        K1=-1.2;
 
 ! /* This is a
 !    multiline comment */

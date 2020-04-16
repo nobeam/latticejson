@@ -116,7 +116,14 @@ class ElegantTransformer(Transformer):
 
 @v_args(inline=True)
 class MADXTransformer(Transformer):
-    pass
+    int = int
+    float = float
+    word = str
+    name = lambda self, item: item.value.upper()
+    string = lambda self, item: item[1:-1]
+
+    def start(self, *children):
+        breakpoint()
 
 
 DIR_NAME = Path(__file__).resolve().parent
@@ -128,7 +135,7 @@ RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr")
 RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
 
 MADX_GRAMMAR = (DIR_NAME / "madx.lark").read_text()
-MADX_PARSER = Lark(MADX_GRAMMAR, parser="lalr", maybe_placeholders=True)
+MADX_PARSER = Lark(MADX_GRAMMAR, parser="lalr", maybe_placeholders=True, debug=True)
 
 
 def parse_elegant(string: str):
@@ -138,5 +145,4 @@ def parse_elegant(string: str):
 
 def parse_madx(string: str):
     tree = MADX_PARSER.parse(string)
-    print(tree.pretty())
     return MADXTransformer().transform(tree)

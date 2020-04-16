@@ -9,9 +9,9 @@ from .validate import validate
 
 
 def load(location: str, file_format=None) -> dict:
-    """Deserialize a lattice file at `location` to LatticeJSON-compliant dictionary.
+    """Deserialize a lattice file to LatticeJSON-compliant dictionary.
 
-    :param location: path-like or url-like string which locates the lattice file
+    :param location: path-like or url-like
     :type location: Union[AnyStr, Path]
     :param file_format str: File format of the lattice file
     :type file_format: str, optional
@@ -42,7 +42,7 @@ def load_string(string: str, input_format: str) -> dict:
 
 
 def _load_file(location, file_format=None) -> Tuple[str, str]:
-    """Return the content of the file at `location` as string.
+    """Return the content of the file at a given path or URL.
 
     :param location: path-like or url-like
     :type location: Union[AnyStr, Path]

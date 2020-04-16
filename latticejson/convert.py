@@ -1,7 +1,8 @@
 from typing import List, Tuple, Dict
 from pathlib import Path
 import json
-import warnings
+from warnings import warn
+
 from .parse import parse_elegant, parse_madx
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
@@ -45,9 +46,7 @@ def _map_names(lattice_data: dict, name_map: dict):
         latticejson_type = name_map.get(other_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
-            warnings.warn(
-                f"Replacing element {name} ({other_type}) with Drift.", stacklevel=2
-            )
+            warn(f"Replacing element {name} ({other_type}) with Drift.", stacklevel=2)
             continue
 
         attributes = {}
@@ -57,9 +56,7 @@ def _map_names(lattice_data: dict, name_map: dict):
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
-                warnings.warn(
-                    f"Ignoring attribute {other_key} of {name}.", stacklevel=2
-                )
+                warn(f"Ignoring attribute {other_key} of {name}.", stacklevel=2)
 
     lattices = lattice_data["lattices"]
     lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
@@ -71,8 +68,8 @@ def _map_names(lattice_data: dict, name_map: dict):
     )
 
 
-def to_elegant(latticejson) -> str:
-    """Convert LatticeJSON dict to elegant lattice file format.
+def to_elegant(latticejson: dict) -> str:
+    """Convert a LatticeJSON dict to the elegant lattice file format.
 
     :param lattice_dict dict: dict in LatticeJSON format
     :return: string with in elegant lattice file format
@@ -97,7 +94,28 @@ def to_elegant(latticejson) -> str:
 
 
 def to_madx(latticejson: dict) -> str:
-    return ""
+    """Convert a LatticeJSON dict to the MADX lattice file format.
+
+    :param lattice_dict dict: dict in LatticeJSON format
+    :return: string with in elegant lattice file format
+    """
+    elements = latticejson["elements"]
+    sub_lattices = latticejson["sub_lattices"]
+
+    strings = [f"TITLE, \"{latticejson['name']}\""]
+    element_template = "{}: {}, {};".format
+    for name, (type_, attributes) in elements.items():
+        attrs = ", ".join(f"{JSON_TO_MADX[k]}={v}" for k, v in attributes.items())
+        elegant_type = JSON_TO_MADX[type_]
+        strings.append(element_template(name, elegant_type, attrs))
+
+    lattice_template = "{}: LINE=({});".format
+    for name in sort_lattices(sub_lattices):
+        strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
+
+    strings.append(lattice_template("__MAIN__", ", ".join(latticejson["lattice"])))
+    strings.append("USE, __MAIN__;\n")
+    return "\n".join(strings)
 
 
 def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:

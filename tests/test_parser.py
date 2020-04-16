@@ -33,7 +33,12 @@ def test_rpn_parser():
 
 
 def test_parse_madx():
-    res = parse_madx((base / "fodo.madx").read_text())
-    print("\nresult:")
-    pprint(res)
-    print("\n")
+    from latticejson.parse import MADX_PARSER, MADXTransformer
+
+    tree = MADX_PARSER.parse((base / "fodo.madx").read_text())
+    # tree = MADX_PARSER.parse(
+    #     Path("/home/felix/Downloads/BESSYII_StandardUser.madx").read_text()
+    # )
+    print(tree)
+    print(tree.pretty())
+    print(MADXTransformer().transform(tree))
