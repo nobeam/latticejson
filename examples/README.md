@@ -17,14 +17,14 @@ install it with:
 
 ## JavaScript / NodeJS
 
-example.js: This example uses NodeJS. Run it with:
+[example.js](examle.js): This example uses NodeJS. Run it with:
 
     node example.js
 
 
 ## C
 
-There are several C libraries which are able to parse JSON files. For example you could
+[example.c](examle.c): There are several C libraries which are able to parse JSON files. For example you could
 use json-c. To compile the example.c file use:
 
     cc example.c -ljson-c
