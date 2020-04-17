@@ -1,7 +1,7 @@
 # How to use LatticeJSON from different programming languages
 
-This directory contains some super basix examples, which could help you to get started
-open LatticeJSON files in the programming language of your choice.
+This directory contains some super basic examples, which could help you to get started
+working with LatticeJSON files in the programming language of your choice.
 
 ## Python
 
