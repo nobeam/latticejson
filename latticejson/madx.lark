@@ -1,7 +1,8 @@
 // MADX Grammar - work in progress ...
-%ignore /[ \s]+/  // ingore whitespace
+%ignore /\s+/  // ingore whitespace
 %ignore /(!|\/\/).*/  // ingore comments
 %import common (SIGNED_INT, SIGNED_FLOAT, ESCAPED_STRING, CNAME)
+// %import .arithmetic.arith_expr
 
 int         : SIGNED_INT
 float       : SIGNED_FLOAT
@@ -12,24 +13,25 @@ start       : (_statement ";")*
 _statement  : element | lattice | command | assignment
 
 element     : word ":" [word] ("," attribute)* ","?
-attribute   : word "=" (int | float | string | word)
+attribute   : word "=" (int | float | string | word | arith_expr)
 
 lattice     : word ":" "LINE"i "=" arrangement
-arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
+arrangement : [int "*"] [/-/] "(" object ("," object)* ")"
 ?object     : ref_name | arrangement
-ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
+ref_name    : [int "*"] [/-/] word
 
 command     : word ("," (word | string | attribute))*
 
 assignment  : word ("=" | ":=") arith_expr
-variable    : CNAME
-?arith_expr : term (_add_op term)*
-?term       : factor (_mul_op factor)*
-?factor     : _factor_op factor | power
-?power      : atom_expr ("^" factor)?
-?atom_expr  : atom | func_expr
-?atom       : (int | float | variable)
-func_expr   : word "(" arith_expr ")"
-!_factor_op : "+" | "-"
-!_add_op    : "+" | "-"
-!_mul_op    : "*" | "/"
+arith_expr  : "todo use import!"
+// variable    : CNAME
+// ?arith_expr : term (_add_op term)*
+// ?term       : factor (_mul_op factor)*
+// ?factor     : _factor_op factor | power
+// ?power      : atom_expr ("^" factor)?
+// ?atom_expr  : atom | func_expr
+// ?atom       : (int | float | variable)
+// func_expr   : word "(" arith_expr ")"
+// !_factor_op : "+" | "-"
+// !_add_op    : "+" | "-"
+// !_mul_op    : "*" | "/"

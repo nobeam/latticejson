@@ -17,9 +17,9 @@ D1: DRIFT, L=0.55; !! comment with two !!
 !  * multiline comment
 !  */
 
-! B1   : SBEND, L=1.5, ANGLE=TWOPI/16, // MAD supports inline evaluation
-!               E1=0.1963505 * 2 / 2, E2=PI/16;
-! FODO : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1);
-! RING : LINE = (FODO, FODO, FODO, FODO, FODO, FODO, FODO, FODO);
-! USE, RING
+B1   : SBEND, L=1.5, ANGLE=TWOPI/16, // MAD supports inline evaluation
+              E1=0.1963505 * 2 / 2, E2=PI/16;
+FODO : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1);
+RING : LINE = (FODO, FODO, FODO, FODO, FODO, FODO, FODO, FODO);
+USE, RING
 TWISS, file = twiss_prefit.dat, CHROM;

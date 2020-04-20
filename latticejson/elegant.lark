@@ -9,25 +9,17 @@
 %ignore /!.*/            // ingore comments
 %ignore /[ \t\f]/+       // ingore whitespace
 %ignore /&[ \t\f]*\r?\n/ // line continuation
-%import common.ESCAPED_STRING
+%import common (SIGNED_INT, SIGNED_FLOAT, ESCAPED_STRING, CNAME)
 
-INT         :  ["+" | "-"] DIGIT_PART
-FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
-EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
-POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
-DIGIT_PART  :  /\d+/
-FRACTION    :  "." DIGIT_PART
-EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
-
-int         : INT
-float       : FLOAT
+int         : SIGNED_INT
+float       : SIGNED_FLOAT
 string      : ESCAPED_STRING
 word        : /\w+/
 name        : /\w+/ | "\"" /[\w:]+/ "\""
 
 start        : _NEWLINE* (statement _NEWLINE+)*
 _NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
-?statement  : element | lattice | command | rpn_store
+?statement  : element | lattice | command | assignment
 
 element     : name ":" [name] ("," attribute)* ","?
 attribute   : word "=" (int | float | string | word)
@@ -39,4 +31,4 @@ ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
 
 command     : name ["," word]
 
-rpn_store   : "%" /.+sto.+/
+assignment  : "%" /.+sto.+/

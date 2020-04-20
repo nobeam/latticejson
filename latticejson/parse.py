@@ -1,48 +1,50 @@
-from typing import List, Tuple, Dict
 from pathlib import Path
-import operator as op
 import math
 from lark import Lark, Transformer, v_args
-from lark.exceptions import VisitError
-import itertools
 from .exceptions import UndefinedRPNVariableError
 
 
 @v_args(inline=True)
-class RPNTransformer(Transformer):
-    int = int
-    float = float
-    word = str
+class ArithmeticTransformer(Transformer):
+    from operator import add, sub, mul, truediv as div, neg, pow
 
-    def transform(self, tree, variables):
-        self.variables = variables
+    identity = lambda self, object: object
+    number = float
+
+    def transform(self, tree, calculator):
+        self.calculator = calculator
         return super().transform(tree)
 
-    def rpn_store(self, result, name) -> Tuple:
-        self.variables[name] = result
-        return result
+    def assignment(self, name, value):
+        if self.calculator.rpn:
+            name, value = value, name
+        self.calculator.variables[name.lower()] = value
+        return value
 
-    def rpn_unary(self, operand, operator):
-        return getattr(math, operator)(operand)
+    def function(self, function, operand):
+        if self.calculator.rpn:
+            operand, function = function, operand
+        return getattr(math, function.lower())(operand)
 
-    def rpn_binary(self, operand_1, operand_2, operator):
-        return RPN_OPERATORS[operator](operand_1, operand_2)
-
-    def rpn_variable(self, name):
+    def variable(self, name):
         try:
-            return self.variables[name]
+            return self.calculator.variables[name.lower()]
         except KeyError:
             raise UndefinedRPNVariableError(name)
 
 
-class RPNCalculator:
-    def __init__(self):
-        self.rpn_transformer = RPNTransformer()
+class Calculator:
+    def __init__(self, rpn=False):
+        self.rpn = rpn
         self.variables = {"pi": math.pi, "e": math.e}
+        self.parser = RPN_PARSER if rpn else ARITHMETIC_PARSER
+        self.transformer = ARITHMETIC_TRANSFORMER
 
-    def execute(self, string):
-        tree = RPN_PARSER.parse(string)
-        return self.rpn_transformer.transform(tree, self.variables)
+    def evaluate(self, string):
+        tree = self.parser.parse(string)
+        print()  # TODO: remove!
+        print(tree.pretty())
+        return self.transformer.transform(tree, self)
 
 
 @v_args(inline=True)
@@ -54,7 +56,7 @@ class ElegantTransformer(Transformer):
     string = lambda self, item: item[1:-1]
 
     def transform(self, tree):
-        self.rpn_calculator = RPNCalculator()
+        self.rpn_calculator = Calculator(rpn=True)
         self.elements = {}
         self.lattices = {}
         self.commands = []
@@ -72,7 +74,7 @@ class ElegantTransformer(Transformer):
     def attribute(self, name, value):
         if isinstance(value, str):
             try:
-                value = self.rpn_calculator.execute(value)
+                value = self.rpn_calculator.evaluate(value)
             except:
                 pass
         return name.upper(), value
@@ -107,8 +109,8 @@ class ElegantTransformer(Transformer):
 
         return abs(multiplier) * (name,)
 
-    def rpn_store(self, rpn_string):
-        return self.rpn_calculator.execute(rpn_string)
+    def assignment(self, rpn_string):
+        return self.rpn_calculator.evaluate(rpn_string)
 
     def command(self, *items):
         self.commands.append(items)
@@ -123,7 +125,7 @@ class MADXTransformer(Transformer):
     string = lambda self, item: item[1:-1]
 
     def start(self, *children):
-        breakpoint()
+        pass
 
 
 DIR_NAME = Path(__file__).resolve().parent
@@ -132,7 +134,10 @@ ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
 ELEGANT_PARSER = Lark(ELEGANT_GRAMMAR, parser="lalr", maybe_placeholders=True)
 RPN_GRAMMAR = (DIR_NAME / "rpn.lark").read_text()
 RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr")
-RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
+
+ARITHMETIC_GRAMMER = (DIR_NAME / "arithmetic.lark").read_text()
+ARITHMETIC_PARSER = Lark(ARITHMETIC_GRAMMER, parser="lalr")
+ARITHMETIC_TRANSFORMER = ArithmeticTransformer()
 
 MADX_GRAMMAR = (DIR_NAME / "madx.lark").read_text()
 MADX_PARSER = Lark(MADX_GRAMMAR, parser="lalr", maybe_placeholders=True, debug=True)
@@ -144,5 +149,6 @@ def parse_elegant(string: str):
 
 
 def parse_madx(string: str):
+    raise NotImplementedError
     tree = MADX_PARSER.parse(string)
     return MADXTransformer().transform(tree)

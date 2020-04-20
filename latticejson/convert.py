@@ -1,8 +1,7 @@
-from typing import List, Tuple, Dict
+from typing import List, Dict
 from pathlib import Path
 import json
 from warnings import warn
-
 from .parse import parse_elegant, parse_madx
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]

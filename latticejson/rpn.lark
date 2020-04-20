@@ -1,21 +1,14 @@
-%ignore /[ \t\f]/+  // ingore whitespace
+%ignore /\s+/
+%import common (NUMBER, CNAME)
 
-INT         :  ["+" | "-"] DIGIT_PART
-FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
-EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
-POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
-DIGIT_PART  :  /\d+/
-FRACTION    :  "." DIGIT_PART
-EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
-
-int         : INT
-float       : FLOAT
-?number: int | float
-word: /\w+/
-
-?start: rpn_store | rpn_expr
-rpn_store: rpn_expr "sto" word
-?rpn_expr: number | rpn_variable | rpn_unary | rpn_binary
-!rpn_variable: /\w+/
-!rpn_unary: rpn_expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
-!rpn_binary: rpn_expr rpn_expr ("+" | "-" | "*" | "/")
+?start     : assignment | expr
+assignment : expr "sto" CNAME
+?expr      : NUMBER        -> number
+           | CNAME         -> variable
+           | function
+           | binary
+!function  : expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
+?binary    : expr expr "+" -> add
+           | expr expr "-" -> sub
+           | expr expr "*" -> mul
+           | expr expr "/" -> div

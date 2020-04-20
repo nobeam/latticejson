@@ -1,14 +1,13 @@
-from typing import Tuple, Dict, Union, AnyStr
+from typing import Tuple, Union, AnyStr
 from pathlib import Path
 import json
 from urllib.parse import urlparse
 from urllib.request import urlopen
-
 from . import convert
 from .validate import validate
 
 
-def load(location: str, file_format=None) -> dict:
+def load(location: Union[AnyStr, Path], file_format=None) -> dict:
     """Deserialize a lattice file to LatticeJSON-compliant dictionary.
 
     :param location: path-like or url-like
@@ -41,7 +40,7 @@ def load_string(string: str, input_format: str) -> dict:
     return latticejson
 
 
-def _load_file(location, file_format=None) -> Tuple[str, str]:
+def _load_file(location: Union[AnyStr, Path], file_format=None) -> Tuple[str, str]:
     """Return the content of the file at a given path or URL.
 
     :param location: path-like or url-like

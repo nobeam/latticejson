@@ -18,7 +18,7 @@ def test_from_elegant():
     print(latticejson)
 
 
-## Uncomment to test for elegant examples
+# Uncomment to test for elegant examples
 # def test_all_elegant_examples():
 #     elegant_examples = Path.home() / "Git/elegant/examples"
 #     path_list = list(elegant_examples.rglob("*.lte"))

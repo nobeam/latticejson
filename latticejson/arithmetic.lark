@@ -1,0 +1,20 @@
+%ignore /\s+/
+%import common (NUMBER, CNAME)
+
+?start     : expr
+           | CNAME ("=" | ":=") expr  -> assignment
+?expr      : term
+           | expr "+" expr            -> add
+           | expr "-" expr            -> sub
+?term      : factor
+           | term "*" term            -> mul
+           | term "/" term            -> div
+?factor    : power
+           | "+" factor               -> identity
+           | "-" factor               -> neg
+?power     : atom
+           | power ("^" | "**") power -> pow
+?atom      : NUMBER                   -> number
+           | CNAME                    -> variable
+           | CNAME "(" expr ")"       -> function
+           | "(" expr ")"
