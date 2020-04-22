@@ -108,7 +108,7 @@ def to_madx(latticejson: dict) -> str:
     elements = latticejson["elements"]
     sub_lattices = latticejson["sub_lattices"]
 
-    strings = [f"TITLE, \"{latticejson['name']}\""]
+    strings = [f"TITLE, \"{latticejson['name']}\";"]
     element_template = "{}: {}, {};".format
     for name, (type_, attributes) in elements.items():
         attrs = ", ".join(f"{JSON_TO_MADX[k]}={v}" for k, v in attributes.items())
