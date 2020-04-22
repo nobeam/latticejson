@@ -53,7 +53,7 @@ def test_arithmetic_parser():
         "4 ** 3 ** 2 + 1",  # serial exponentiation
         "4 ** (3 ** 2 + 1)",  # parenthesis
         "-+-4 / (-2 + -3)",  # multiple unary operations
-        "-.02e+2 / -4e1 ** 2.2e-1",  # scientific notation
+        "-.02e+2 / +4e1 ** 2.2e-1",  # scientific notation
         "variable + sin(pi)",  # use variable and math function
     )
 

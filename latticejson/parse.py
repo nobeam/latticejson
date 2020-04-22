@@ -86,7 +86,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
     string = lambda self, item: item[1:-1]
 
     def element(self, name, type_, *attributes):
-        self.elements[name.upper()] = type_, dict(attributes)
+        self.elements[name.upper()] = type_.upper(), dict(attributes)
 
     def attribute(self, name, value):
         return name.upper(), value

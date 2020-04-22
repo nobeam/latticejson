@@ -5,10 +5,9 @@
 %ignore "&" // backwards compatiable line continuation
 %ignore /(!|\/\/).*/  // single line comments
 %ignore /\/\*(\*(?!\/)|[^*])*\*\//  // multiline commetn
-%import common (SIGNED_INT, SIGNED_FLOAT, SIGNED_NUMBER, ESCAPED_STRING)
+%import common (SIGNED_INT, NUMBER, ESCAPED_STRING)
 
 int         : SIGNED_INT
-float       : SIGNED_FLOAT
 string      : ESCAPED_STRING
 word        : /[\w\.]+/
 
@@ -16,7 +15,7 @@ start       : (_statement ";")*
 _statement  : element | lattice | command | assignment
 
 element     : word ":" [word] ("," attribute)* ","?
-attribute   : word ("=" | ":=") (int | float | string | expr)
+attribute   : word ("=" | ":=") (expr | string)
 
 
 lattice     : word ":" "LINE"i "=" arrangement
@@ -46,7 +45,7 @@ assignment  : word ("=" | ":=") expr        -> assignment
             | "-" factor                    -> neg
 ?power      : atom
             | power ("^" | "**") power      -> pow
-?atom       : SIGNED_NUMBER                 -> number
+?atom       : NUMBER                        -> number
             | word                          -> variable // see 1.
             | word "(" expr ")"             -> function
             | "(" expr ")"
