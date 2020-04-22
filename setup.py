@@ -21,7 +21,7 @@ setup(
     test_requires=["pytest"],
     python_requires=">=3.6",
     include_package_data=True,
-    package_data={"latticejson": ["schema.json", "*.lark"]},
+    package_data={"latticejson": ["schema.json", "map.json", "*.lark"]},
     entry_points={"console_scripts": ["latticejson=latticejson.cli:cli"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
