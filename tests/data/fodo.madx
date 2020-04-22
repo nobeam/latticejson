@@ -6,7 +6,7 @@ QuadLength := 0.4;
 
 D1: DRIFT, L=0.55; !! comment with two !!
     Q1: QUADRUPOLE, L=QuadLength / 2, K1=1.2; //// comment with two //
-        Q2:QUADRUPOLE, L=QuadLength, // comment before terminating ;
+        Q2:QUADRUPOLE, L=1 * QuadLength, // comment before terminating ;
         K1=-1.2,
         UNKNOWN_ATTR=should_be_parsed_as_string; // should raise warning in _map_names
 

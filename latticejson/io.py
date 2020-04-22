@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 from . import convert
 from .validate import validate
+from .format import format_json
 
 
 def load(location: Union[AnyStr, Path], file_format=None) -> dict:
@@ -87,7 +88,7 @@ def save_string(latticejson: dict, output_format: str) -> str:
     :rtype: str
     """
     if output_format == "json":
-        return json.dumps(latticejson, indent=4)
+        return format_json(latticejson)
     elif output_format == "lte":
         return convert.to_elegant(latticejson)
     elif output_format == "madx":
