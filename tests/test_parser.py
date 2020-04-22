@@ -1,13 +1,15 @@
 from pathlib import Path
 from pprint import pprint
+import pytest
 
-base = Path(__file__).resolve().parent / "data"
+data_path = Path(__file__).resolve().parent / "data"
 
 
 def test_elegant_parser():
     from latticejson.parse import ELEGANT_PARSER, ElegantTransformer
+    from latticejson.convert import _map_names_from_elegant
 
-    path_list = [base / "fodo.lte", base / "scratch.lte"]
+    path_list = [data_path / "fodo.lte", data_path / "scratch.lte"]
 
     """Uncomment to test all elegant examples"""
     # elegant_examples = Path.home() / "Git/elegant/examples"
@@ -16,9 +18,10 @@ def test_elegant_parser():
     for path in path_list:
         print(path)
         tree = ELEGANT_PARSER.parse(Path(path).read_text())
-        res = ElegantTransformer().transform(tree)
-        pprint(res)
-        print("\n")
+        elegant_dict = ElegantTransformer().transform(tree)
+        # pprint(elegant_dict)
+        # pprint(_map_names_from_elegant(elegant_dict))
+        # print("\n")
     print(f"Tested {len(path_list)} lattices!")
 
 
@@ -26,45 +29,50 @@ def test_rpn_parser():
     from latticejson.parse import Calculator
 
     rpn_calculator = Calculator(rpn=True)
-    assert 5 == rpn_calculator.evaluate("15 7 1 1 + - / 3 * 2 1 1 + + -")
+    assert 5 == rpn_calculator("15 7 1 1 + - / 3 * 2 1 1 + + -")
 
-    rpn_calculator.evaluate("5 sto x")
-    assert 5 == rpn_calculator.evaluate("x")
-    assert 10 == rpn_calculator.evaluate("x 2 *")
+    rpn_calculator("5 sto x")
+    assert 5 == rpn_calculator("x")
+    assert 10 == rpn_calculator("x 2 *")
 
     for string in "1", "1.0", "1.", ".1", "1e-10":
-        assert float(string) == rpn_calculator.evaluate(string)
+        assert float(string) == rpn_calculator(string)
 
 
-def test_arithmetic():
+def test_arithmetic_parser():
     import math
     from latticejson.parse import Calculator
 
     calculator = Calculator()
-    variables = calculator.variables
+    variables = calculator.transformer.variables
     math_dict = math.__dict__
     expressions = (
-        "1 + 1 - 1",
-        "-+-4 / (-2 + -3)",
-        "3 ** 3 ** 3",
-        "3 ** (3 ** 3)",
-        "-1 * -4 ** 2.2",
-        "variable + sin(pi)",
+        "1 + 2 * 3",  # precendence of operators
+        "1 - 1 - 1",  # left-to-right subtraction
+        "1 / 2 / 3",  # left-to-right division
+        "4 ** 3 ** 2 + 1",  # serial exponentiation
+        "4 ** (3 ** 2 + 1)",  # parenthesis
+        "-+-4 / (-2 + -3)",  # multiple unary operations
+        "-.02e+2 / -4e1 ** 2.2e-1",  # scientific notation
+        "variable + sin(pi)",  # use variable and math function
     )
 
-    calculator.evaluate("variable := 1.2 / tanh(.11)")  # python eval has no assignment
+    calculator("variable := 1.2 / tanh(.11)")  # python eval has no assignment
     for expression in expressions:
-        print(expression, "=", calculator.evaluate(expression))
-        assert eval(expression, variables, math_dict) == calculator.evaluate(expression)
+        print(expression, "=", calculator(expression))
+        assert eval(expression, variables, math_dict) == calculator(expression)
 
 
-def test_parse_madx():
+def test_madx_parser():
     from latticejson.parse import MADX_PARSER, MADXTransformer
+    from latticejson.convert import _map_names_from_madx
+    from latticejson.exceptions import UnknownAttributeWarning
 
-    tree = MADX_PARSER.parse((base / "fodo.madx").read_text())
-    # tree = MADX_PARSER.parse(
-    #     Path("/home/felix/Downloads/BESSYII_StandardUser.madx").read_text()
-    # )
-    print(tree)
-    print(tree.pretty())
-    print(MADXTransformer().transform(tree))
+    tree = MADX_PARSER.parse((data_path / "fodo.madx").read_text())
+    madx_dict = MADXTransformer().transform(tree)
+    with pytest.warns(UnknownAttributeWarning):
+        latticejson = _map_names_from_madx(madx_dict)
+    # print()
+    # print(tree.pretty())
+    # pprint(madx_dict)
+    # pprint(latticejson)

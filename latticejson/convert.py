@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 from warnings import warn
 from .parse import parse_elegant, parse_madx
+from .exceptions import UnknownElementWarning, UnknownAttributeWarning
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
 JSON_TO_ELE = {x: y[0][0] for x, *y in NAME_MAP}
@@ -21,8 +22,7 @@ def from_elegant(string):
     :type str, optional
     :return: dict in LatticeJSON format
     """
-    elegant_dict = parse_elegant(string)
-    return _map_names(elegant_dict, ELE_TO_JSON)
+    return _map_names_from_elegant(parse_elegant(string))
 
 
 def from_madx(string):
@@ -35,8 +35,15 @@ def from_madx(string):
     :type str, optional
     :return: dict in LatticeJSON format
     """
-    madx_dict = parse_madx(string)
+    return _map_names_from_madx(parse_madx(string))
+
+
+def _map_names_from_madx(madx_dict: dict):
     return _map_names(madx_dict, MADX_TO_JSON)
+
+
+def _map_names_from_elegant(elegant_dict: dict):
+    return _map_names(elegant_dict, ELE_TO_JSON)
 
 
 def _map_names(lattice_data: dict, name_map: dict):
@@ -45,7 +52,7 @@ def _map_names(lattice_data: dict, name_map: dict):
         latticejson_type = name_map.get(other_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
-            warn(f"Replacing element {name} ({other_type}) with Drift.", stacklevel=2)
+            warn(UnknownElementWarning(name, other_type), stacklevel=2)
             continue
 
         attributes = {}
@@ -55,7 +62,7 @@ def _map_names(lattice_data: dict, name_map: dict):
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
-                warn(f"Ignoring attribute {other_key} of {name}.", stacklevel=2)
+                warn(UnknownAttributeWarning(other_key, name), stacklevel=2)
 
     lattices = lattice_data["lattices"]
     lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
