@@ -1,0 +1,52 @@
+// MADX Grammar
+// a restricted subset of MADX which should be sufficient to describe lattice files
+
+%ignore /\s+/  // whitespace
+%ignore "&" // backwards compatiable line continuation
+%ignore /(!|\/\/).*/  // single line comments
+%ignore /\/\*(\*(?!\/)|[^*])*\*\//  // multiline commetn
+%import common (SIGNED_INT, NUMBER, ESCAPED_STRING)
+
+int         : SIGNED_INT
+string      : ESCAPED_STRING
+word        : /[\w\.]+/
+
+start       : (_statement ";")*
+_statement  : element | lattice | command | assignment
+
+element     : word ":" [word] ("," attribute)* ","?
+attribute   : word ("=" | ":=") (expr | string)
+
+
+lattice     : word ":" "LINE"i "=" arrangement
+arrangement : [int "*"] [/-/] "(" object ("," object)* ")"
+?object     : ref_name | arrangement
+ref_name    : [int "*"] [/-/] word
+
+command     : word ("," (word | string | attribute))*
+
+// Arithmeitc Expressions
+// 1. As there is no syntactic distinction between a non-escaped word and a variable,
+// we must parse words as variables and test afterwards if it is a variable or not.
+// 2. It may be better to move the arith. expr. to a separate file, but then all rules
+// which are not explicitly imported get prefixed. How to avoid this??
+
+assignment  : word ("=" | ":=") expr        -> assignment
+?expr       : item
+            | "{" expr ("," expr)* ","? "}" -> array
+?item       : term
+            | expr "+" term                 -> add
+            | expr "-" term                 -> sub
+?term       : factor
+            | term "*" factor               -> mul
+            | term "/" factor               -> div
+?factor     : power
+            | "+" factor                    -> identity
+            | "-" factor                    -> neg
+?power      : atom
+            | power ("^" | "**") power      -> pow
+?atom       : NUMBER                        -> number
+            | word                          -> variable // see 1.
+            | word "(" expr ")"             -> function
+            | "(" expr ")"
+?start_artih : assignment | expr  // used to tested the arithmetic parser

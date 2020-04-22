@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 from latticejson.validate import validate_file
-from latticejson import UndefinedObjectError
+from latticejson.exceptions import UndefinedObjectError
 
 base_dir = Path(__file__).resolve().parent / "data"
 
