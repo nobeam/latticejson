@@ -77,7 +77,6 @@ def _map_names(lattice_data: dict, name_map: dict):
 def to_elegant(latticejson: dict) -> str:
     """Convert a LatticeJSON dict to the elegant lattice file format.
 
-
     :param lattice_dict dict: dict in LatticeJSON format
     :return: string with in elegant lattice file format
     """
