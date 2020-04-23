@@ -12,8 +12,24 @@ class UndefinedObjectError(Exception):
         )
 
 
-class UndefinedRPNVariableError(Exception):
+class UnknownElementWarning(UserWarning):
+    """Raised if there is no equivalent LatticeJSON element."""
+
+    def __init__(self, name, type_, *args, **kwargs):
+        message = f"Replacing element {name} ({type_}) with Drift."
+        super().__init__(message, *args, **kwargs)
+
+
+class UnknownAttributeWarning(UserWarning):
+    """Raised if there is no equivalent LatticeJSON attribute."""
+
+    def __init__(self, attribute, element, *args, **kwargs):
+        message = f"Ignoring attribute {attribute} of {element}."
+        super().__init__(message, *args, **kwargs)
+
+
+class UndefinedVariableError(Exception):
     """Raised if a rpn variable is not defined."""
 
     def __init__(self, name, *args, **kwargs):
-        super().__init__(f"RPN variable {name} is not defined!", *args, **kwargs)
+        super().__init__(f"The variable '{name}' is not defined!", *args, **kwargs)

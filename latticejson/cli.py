@@ -3,24 +3,24 @@ import json
 from pathlib import Path
 import itertools
 
+from . import __version__
 from .validate import validate_file
-from .io import convert as _convert
-from .parse import parse_elegant as _parse_elegant
-from .format import CompactJSONEncoder
+from . import io
+from .format import format_json
 from .migrate import migrate as _migrate
+from . import parse
 
 
-FORMATS = "json", "lte"
-dump_latticejson = lambda obj: json.dumps(obj, cls=CompactJSONEncoder, indent=4)
+FORMATS = "json", "lte", "madx"
 
 
 @click.group()
-@click.version_option()
-def main():
+@click.version_option(__version__)
+def cli():
     pass
 
 
-@main.command()
+@cli.command()
 # @click.argument("file", type=click.Path(exists=True))
 @click.argument("file")
 @click.option(
@@ -37,25 +37,17 @@ def main():
 )
 def convert(file, from_, to):
     """Convert FILE (path or url) to another lattice file format."""
-    click.echo(_convert(file, from_, to))
+    click.echo(io.save_string(io.load(file, from_), to))
 
 
-@main.command()
+@cli.command()
 @click.argument("file", type=click.Path(exists=True))
 def validate(file):
     """Validate a LatticeJSON lattice file."""
     validate_file(file)
 
 
-@main.command()
-@click.argument("file", type=click.Path(exists=True))
-def parse_elegant(file):
-    """Parse elegant file but do not convert to LatticeJSON."""
-    text = Path(file).read_text()
-    click.echo(dump_latticejson(_parse_elegant(text)))
-
-
-@main.command()
+@cli.command()
 @click.argument("files", nargs=-1, type=click.Path(exists=True))
 @click.option(
     "--dry-run",
@@ -69,7 +61,7 @@ def autoformat(files, dry_run):
         path.rglob("*.json") if path.is_dir() else (path,) for path in map(Path, files)
     ):
         latticejson = json.loads(path.read_text())
-        formatted = dump_latticejson(latticejson)
+        formatted = format_json(latticejson)
         click.secho(f"reformatted {path}", bold=True)
         if dry_run:
             click.echo(formatted)
@@ -77,7 +69,7 @@ def autoformat(files, dry_run):
             path.write_text(formatted)
 
 
-@main.command()
+@cli.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--from", "from_", required=True, help="Initial version")
 @click.option("--to", required=True, help="Final version")
@@ -87,4 +79,34 @@ def migrate(file, from_, to):
     initial_version = from_.split(".")
     final_version = to.split(".")
     latticejson = _migrate(json.loads(text), initial_version, final_version)
-    click.echo(dump_latticejson(latticejson))
+    click.echo(format_json(latticejson))
+
+
+@cli.group()
+def debug():
+    """Some useful commands for debugging/development."""
+    pass
+
+
+@debug.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--transform", "-t", is_flag=True, help="Print transformed tree.")
+def parse_elegant(file, transform):
+    """Print parse tree of elegant lattice file."""
+    text = Path(file).read_text()
+    if transform:
+        click.echo(format_json(parse.parse_elegant(text)))
+    else:
+        click.echo(parse.ELEGANT_PARSER.parse(text).pretty())
+
+
+@debug.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--transform", "-t", is_flag=True, help="Print transformed tree.")
+def parse_madx(file, transform):
+    """Print parse tree of madx lattice file."""
+    text = Path(file).read_text()
+    if transform:
+        click.echo(format_json(parse.parse_madx(text)))
+    else:
+        click.echo(parse.MADX_PARSER.parse(text).pretty())
