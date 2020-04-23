@@ -1,71 +1,73 @@
-from typing import List, Tuple, Dict
 from pathlib import Path
-import operator as op
 import math
+from abc import ABC, abstractproperty
 from lark import Lark, Transformer, v_args
-from lark.exceptions import VisitError
-import itertools
-from .exceptions import UndefinedRPNVariableError
+from lark.exceptions import LarkError
+from .exceptions import UndefinedVariableError
 
+BASE_DIR = Path(__file__).resolve().parent
 
-DIR_NAME = Path(__file__).resolve().parent
-ELEGANT_GRAMMAR = (DIR_NAME / "elegant.lark").read_text()
-RPN_GRAMMAR = (DIR_NAME / "rpn.lark").read_text()
+with (BASE_DIR / "elegant.lark").open() as file:
+    ELEGANT_PARSER = Lark(file, parser="lalr", maybe_placeholders=True)
+    file.seek(0)
+    RPN_PARSER = Lark(file, parser="lalr", start="start_rpn")
 
-ELEGANT_PARSER = Lark(
-    ELEGANT_GRAMMAR, parser="lalr", start="file", maybe_placeholders=True
-)
-RPN_PARSER = Lark(RPN_GRAMMAR, parser="lalr", start="start")
-RPN_OPERATORS = {"+": op.add, "-": op.sub, "*": op.mul, "/": op.truediv, "%": op.mod}
+with (BASE_DIR / "madx.lark").open() as file:
+    MADX_PARSER = Lark(file, parser="lalr", maybe_placeholders=True)
+    file.seek(0)
+    ARITHMETIC_PARSER = Lark(file, parser="lalr", start="start_artih")
 
 
 @v_args(inline=True)
-class RPNTransformer(Transformer):
-    int = int
-    float = float
+class ArithmeticTransformer(Transformer):
+    def __init__(self, variables=None):
+        if variables is None:
+            self._variables = {"pi": math.pi, "twopi": 2 * math.pi, "e": math.e}
+        else:
+            self._variables = variables
+
+    @property
+    def variables(self):
+        return self._variables
+
+    identity = lambda self, object: object
+    number = float
     word = str
+    from operator import add, sub, mul, truediv as div, neg, pow
 
-    def transform(self, tree, variables):
-        self.variables = variables
-        return super().transform(tree)
+    def assignment(self, name, value):
+        self.variables[name.lower()] = value
+        return value
 
-    def rpn_store(self, result, name) -> Tuple:
-        self.variables[name] = result
-        return result
+    def function(self, function, operand):
+        return getattr(math, function.lower())(operand)
 
-    def rpn_unary(self, operand, operator):
-        return getattr(math, operator)(operand)
-
-    def rpn_binary(self, operand_1, operand_2, operator):
-        return RPN_OPERATORS[operator](operand_1, operand_2)
-
-    def rpn_variable(self, name):
+    def variable(self, name):
         try:
-            return self.variables[name]
+            return self.variables[name.lower()]
         except KeyError:
-            raise UndefinedRPNVariableError(name)
-
-
-class RPNCalculator:
-    def __init__(self):
-        self.rpn_transformer = RPNTransformer()
-        self.variables = {"pi": math.pi, "e": math.e}
-
-    def execute(self, string):
-        tree = RPN_PARSER.parse(string)
-        return self.rpn_transformer.transform(tree, self.variables)
+            # There is no syntactic distinction between a variable and a string.
+            # The best thing we can do is to test if it is a variable or not.
+            return name
+            # raise UndefinedVariableError(name)
 
 
 @v_args(inline=True)
-class ElegantTransformer(Transformer):
-    int = int
-    float = float
-    word = str
-    name = lambda self, item: item.value.upper()
-    string = lambda self, item: item[1:-1]
+class RPNTransformer(ArithmeticTransformer):
+    def assignment(self, value, name):
+        return super().assignment(name, value)
+
+    def function(self, operand, function):
+        return super().function(function, operand)
+
+
+@v_args(inline=True)
+class AbstractLatticeFileTransformer(ABC, Transformer):
+    @abstractproperty
+    def variables(self):
+        pass
 
     def transform(self, tree):
-        self.rpn_calculator = RPNCalculator()
         self.elements = {}
         self.lattices = {}
         self.commands = []
@@ -74,18 +76,19 @@ class ElegantTransformer(Transformer):
             elements=self.elements,
             lattices=self.lattices,
             commands=self.commands,
-            variables=self.rpn_calculator.variables.copy(),
+            variables=self.variables,
         )
 
+    int = int
+    float = float
+    word = str
+    name = lambda self, item: item.value.upper()
+    string = lambda self, item: item[1:-1]
+
     def element(self, name, type_, *attributes):
-        self.elements[name.upper()] = type_, dict(attributes)
+        self.elements[name.upper()] = type_.upper(), dict(attributes)
 
     def attribute(self, name, value):
-        if isinstance(value, str):
-            try:
-                value = self.rpn_calculator.execute(value)
-            except:
-                pass
         return name.upper(), value
 
     def lattice(self, name, arangement):
@@ -118,13 +121,46 @@ class ElegantTransformer(Transformer):
 
         return abs(multiplier) * (name,)
 
-    def rpn_store(self, rpn_string):
-        return self.rpn_calculator.execute(rpn_string)
-
     def command(self, *items):
         self.commands.append(items)
+
+
+@v_args(inline=True)
+class MADXTransformer(ArithmeticTransformer, AbstractLatticeFileTransformer):
+    pass
+
+
+@v_args(inline=True)
+class ElegantTransformer(RPNTransformer, AbstractLatticeFileTransformer):
+    def __init__(self):
+        super().__init__()
+        self.calc = Calculator(rpn=True)
+        self.calc.transformer._variables = self._variables
+
+    def string(self, item):
+        s = item[1:-1]
+        try:  # There is no syntactic distinction between a string and a variable.
+            return self.calc(s)
+        except LarkError:  # Just a string
+            return s
+
+
+class Calculator:
+    """Can evaluate simple arithmetic expressions. Used to test ArithmeticParser."""
+
+    def __init__(self, rpn=False):
+        self.parser = RPN_PARSER if rpn else ARITHMETIC_PARSER
+        self.transformer = RPNTransformer() if rpn else ArithmeticTransformer()
+
+    def __call__(self, expression):
+        return self.transformer.transform(self.parser.parse(expression))
 
 
 def parse_elegant(string: str):
     tree = ELEGANT_PARSER.parse(string + "\n")  # TODO: remove "\n" when lark has EOF
     return ElegantTransformer().transform(tree)
+
+
+def parse_madx(string: str):
+    tree = MADX_PARSER.parse(string)
+    return MADXTransformer().transform(tree)
