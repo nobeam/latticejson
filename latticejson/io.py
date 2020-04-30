@@ -4,28 +4,33 @@ import json
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from . import convert
-from .validate import validate
+from .validate import validate as _validate
 from .format import format_json
 
 
-def load(location: Union[AnyStr, Path], file_format=None) -> dict:
+def load(location: Union[AnyStr, Path], file_format=None, validate=True) -> dict:
     """Deserialize a lattice file to LatticeJSON-compliant dictionary.
 
     :param location: path-like or url-like
     :type location: Union[AnyStr, Path]
-    :param file_format str: File format of the lattice file
+    :param file_format: File format of the lattice file
     :type file_format: str, optional
+    :param validate: Whether to validate the input file.
+    :type validate: bool
     :return dict: Deserialized lattice file
     """
-    return load_string(*_load_file(location, file_format))
+    return load_string(*_load_file(location, file_format), validate)
 
 
-def load_string(string: str, input_format: str) -> dict:
+def load_string(string: str, input_format: str, validate: bool = True) -> dict:
     """Deserialize a string to a LatticeJSON-compliant dictionary.
 
     :param string str: Content of the input lattice file.
-    :param input_format str: Input format of the input lattice file.
+    :param input_format: Input format of the input lattice file.
     :type input_format: str, optional
+    :param input_format str: Input format of the input lattice file.
+    :param validate: Whether to validate the input file.
+    :type validate: bool
     :return dict: Returns deserialized lattice file as dict.
     """
     if input_format == "json":
@@ -37,7 +42,8 @@ def load_string(string: str, input_format: str) -> dict:
     else:
         raise NotImplementedError(f"Unknown lattice file format: {input_format}.")
 
-    validate(latticejson)
+    if validate:
+        _validate(latticejson)
     return latticejson
 
 

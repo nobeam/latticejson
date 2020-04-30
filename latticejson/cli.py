@@ -14,7 +14,7 @@ from . import parse
 FORMATS = "json", "lte", "madx"
 
 
-@click.group()
+@click.group(context_settings=dict(max_content_width=120))
 @click.version_option(__version__)
 def cli():
     pass
@@ -35,9 +35,12 @@ def cli():
     type=click.Choice(FORMATS, case_sensitive=False),
     help="Destination format",
 )
-def convert(file, from_, to):
+@click.option(
+    "--validate/--no-validate", default=True, help="Whether to validate the input file."
+)
+def convert(file, from_, to, validate):
     """Convert FILE (path or url) to another lattice file format."""
-    click.echo(io.save_string(io.load(file, from_), to))
+    click.echo(io.save_string(io.load(file, from_, validate), to))
 
 
 @cli.command()
