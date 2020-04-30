@@ -10,7 +10,7 @@
 %ignore /!.*/            // ingore comments
 %ignore /[ \t\f]/+       // ingore whitespace
 %ignore /&[ \t\f]*\r?\n/ // line continuation
-%import common (SIGNED_INT, SIGNED_FLOAT, NUMBER, ESCAPED_STRING, CNAME)
+%import common (SIGNED_INT, SIGNED_FLOAT, SIGNED_NUMBER, ESCAPED_STRING, CNAME)
 
 int         : SIGNED_INT
 float       : SIGNED_FLOAT
@@ -38,7 +38,7 @@ command     : name ["," word]
 // identified as string.
 
 assignment  : expr "sto" CNAME
-?expr       : NUMBER        -> number
+?expr       : SIGNED_NUMBER -> number
             | CNAME         -> variable
             | function
             | binary
