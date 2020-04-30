@@ -7,7 +7,7 @@ data_path = Path(__file__).resolve().parent / "data"
 
 def test_elegant_parser():
     from latticejson.parse import ELEGANT_PARSER, ElegantTransformer
-    from latticejson.convert import _map_names_from_elegant
+    from latticejson.convert import _map_names, FROM_ELEGANT
 
     path_list = [data_path / "fodo.lte", data_path / "scratch.lte"]
 
@@ -20,7 +20,7 @@ def test_elegant_parser():
         tree = ELEGANT_PARSER.parse(Path(path).read_text())
         elegant_dict = ElegantTransformer().transform(tree)
         # pprint(elegant_dict)
-        # pprint(_map_names_from_elegant(elegant_dict))
+        # pprint(_map_namest(elegant_dict, FROM_ELEGANT))
         # print("\n")
     print(f"Tested {len(path_list)} lattices!")
 
@@ -65,13 +65,13 @@ def test_arithmetic_parser():
 
 def test_madx_parser():
     from latticejson.parse import MADX_PARSER, MADXTransformer
-    from latticejson.convert import _map_names_from_madx
+    from latticejson.convert import _map_names, FROM_MADX
     from latticejson.exceptions import UnknownAttributeWarning
 
     tree = MADX_PARSER.parse((data_path / "fodo.madx").read_text())
     madx_dict = MADXTransformer().transform(tree)
     with pytest.warns(UnknownAttributeWarning):
-        latticejson = _map_names_from_madx(madx_dict)
+        latticejson = _map_names(madx_dict, FROM_MADX)
     # print()
     # print(tree.pretty())
     # pprint(madx_dict)
