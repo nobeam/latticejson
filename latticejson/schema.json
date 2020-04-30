@@ -1,5 +1,5 @@
 {
-  "$id": "https://github.com/andreasfelix/latticejson/blob/master/latticejson/schema.json",
+  "$id": "https://github.com/nobeam/latticejson/blob/master/latticejson/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "JSON lattice file format",
   "description": "Defines the magnetic lattice format",
