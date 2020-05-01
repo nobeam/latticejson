@@ -86,6 +86,18 @@ def migrate(file, from_, to):
 
 
 @cli.group()
+def utils():
+    """Some useful utilities."""
+    pass
+
+
+@utils.command()
+@click.argument("file")
+def print_tree(file, lattice):
+    from .utils import print_tree
+
+
+@cli.group()
 def debug():
     """Some useful commands for debugging/development."""
     pass
