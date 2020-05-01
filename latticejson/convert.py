@@ -1,9 +1,10 @@
-from typing import List, Dict
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Dict, List
 from warnings import warn
+
+from .exceptions import UnknownAttributeWarning, UnknownElementWarning
 from .parse import parse_elegant, parse_madx
-from .exceptions import UnknownElementWarning, UnknownAttributeWarning
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
 TO_ELEGANT = {x: y[0][0] for x, *y in NAME_MAP}

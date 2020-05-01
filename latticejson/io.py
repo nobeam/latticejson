@@ -1,11 +1,12 @@
-from typing import Tuple, Union, AnyStr
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import AnyStr, Tuple, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
+
 from . import convert
-from .validate import validate as _validate
 from .format import format_json
+from .validate import validate as _validate
 
 
 def load(location: Union[AnyStr, Path], file_format=None, validate=True) -> dict:
