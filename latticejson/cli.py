@@ -1,15 +1,13 @@
-import click
+import itertools
 import json
 from pathlib import Path
-import itertools
 
-from . import __version__
-from .validate import validate_file
-from . import io
+import click
+
+from . import __version__, io, parse
 from .format import format_json
 from .migrate import migrate as _migrate
-from . import parse
-
+from .validate import validate_file
 
 FORMATS = "json", "lte", "madx"
 

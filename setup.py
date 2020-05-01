@@ -1,6 +1,7 @@
-from typing import Dict
 from pathlib import Path
-from setuptools import setup, find_packages
+from typing import Dict
+
+from setuptools import find_packages, setup
 
 base_path = Path(__file__).resolve().parent
 about: Dict[str, str] = {}
