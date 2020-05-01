@@ -1,3 +1,4 @@
+// Elegant Grammar
 // This grammer is not 100% consistent with elegants parser:
 // - Elegants parser allows tokens to be split by the line continuation character "&".
 //   For example, it parses ANGLE=0.123&\n456 without an error.
@@ -9,26 +10,17 @@
 %ignore /!.*/            // ingore comments
 %ignore /[ \t\f]/+       // ingore whitespace
 %ignore /&[ \t\f]*\r?\n/ // line continuation
-%import common.ESCAPED_STRING
+%import common (SIGNED_INT, SIGNED_FLOAT, SIGNED_NUMBER, ESCAPED_STRING, CNAME)
 
-INT         :  ["+" | "-"] DIGIT_PART
-FLOAT       :  ["+" | "-"] (EXP_FLOAT | POINT_FLOAT)
-EXP_FLOAT   :  (DIGIT_PART | POINT_FLOAT) EXPONENT
-POINT_FLOAT :  [DIGIT_PART] FRACTION | DIGIT_PART "."
-DIGIT_PART  :  /\d+/
-FRACTION    :  "." DIGIT_PART
-EXPONENT    :  ("e" | "E") ["+" | "-"] DIGIT_PART
-
-int         : INT
-u_int       : DIGIT_PART
-float       : FLOAT
+int         : SIGNED_INT
+float       : SIGNED_FLOAT
 string      : ESCAPED_STRING
 word        : /\w+/
 name        : /\w+/ | "\"" /[\w:]+/ "\""
 
-file        : _NEWLINE* (statement _NEWLINE+)*
+start        : _NEWLINE* (statement _NEWLINE+)*
 _NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
-?statement  : element | lattice | command | rpn_store
+?statement  : element | lattice | command | "%" assignment
 
 element     : name ":" [name] ("," attribute)* ","?
 attribute   : word "=" (int | float | string | word)
@@ -40,4 +32,19 @@ ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
 
 command     : name ["," word]
 
-rpn_store   : "%" /.+sto.+/
+// RPN Expression
+// 1. As there is no syntactic distinction between an escaped string and a variable,
+// it is possible that a collison can happen. In this case a variable is wrongly
+// identified as string.
+
+assignment  : expr "sto" CNAME
+?expr       : SIGNED_NUMBER -> number
+            | CNAME         -> variable
+            | function
+            | binary
+!function   : expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
+?binary     : expr expr "+" -> add
+            | expr expr "-" -> sub
+            | expr expr "*" -> mul
+            | expr expr "/" -> div
+?start_rpn   : assignment | expr // used to tested the rpn parser

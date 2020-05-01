@@ -1,6 +1,8 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 import fastjsonschema
+
 from .exceptions import UndefinedObjectError
 
 schema_path = Path(__file__).resolve().parent / "schema.json"
