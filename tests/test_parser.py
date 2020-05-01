@@ -1,5 +1,6 @@
 from pathlib import Path
 from pprint import pprint
+
 import pytest
 
 data_path = Path(__file__).resolve().parent / "data"
