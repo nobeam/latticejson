@@ -1,8 +1,10 @@
-from pathlib import Path
 import math
 from abc import ABC, abstractproperty
+from pathlib import Path
+
 from lark import Lark, Transformer, v_args
 from lark.exceptions import LarkError
+
 from .exceptions import UndefinedVariableError
 
 BASE_DIR = Path(__file__).resolve().parent
