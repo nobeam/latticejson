@@ -5,6 +5,7 @@ from warnings import warn
 
 from .exceptions import UnknownAttributeWarning, UnknownElementWarning
 from .parse import parse_elegant, parse_madx
+from .validate import schema_version
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
 TO_ELEGANT = {x: y[0][0] for x, *y in NAME_MAP}
@@ -60,7 +61,13 @@ def _map_names(lattice_data: dict, name_map: dict):
     lattices = lattice_data["lattices"]
     root = lattice_data.get("root", tuple(lattices.keys())[-1])
     title = lattice_data.get("title", "")
-    return dict(title=title, root=root, elements=elements, lattices=lattices)
+    return dict(
+        version=str(schema_version),
+        title=title,
+        root=root,
+        elements=elements,
+        lattices=lattices,
+    )
 
 
 def to_elegant(latticejson: dict) -> str:

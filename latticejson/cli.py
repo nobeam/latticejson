@@ -7,13 +7,15 @@ import click
 from . import __version__, io, parse
 from .format import format_json
 from .migrate import migrate as _migrate
-from .validate import validate_file
+from .validate import schema, validate_file
 
 FORMATS = "json", "lte", "madx"
 
 
 @click.group(context_settings=dict(max_content_width=120))
-@click.version_option(__version__)
+@click.version_option(
+    message=(f"LatticeJSON CLI, version {__version__}\n{schema['title']}")
+)
 def cli():
     pass
 
@@ -72,14 +74,12 @@ def autoformat(files, dry_run):
 
 @cli.command()
 @click.argument("file", type=click.Path(exists=True))
-@click.option("--from", "from_", required=True, help="Initial version")
-@click.option("--to", required=True, help="Final version")
-def migrate(file, from_, to):
+@click.option("--initial", type=(int, int, int), required=True, help="Initial version")
+@click.option("--final", type=(int, int, int), help="Final version (default: latest)")
+def migrate(file, initial, final):
     """Migrate old LatticeJSON files to newer versions."""
     text = Path(file).read_text()
-    initial_version = from_.split(".")
-    final_version = to.split(".")
-    latticejson = _migrate(json.loads(text), initial_version, final_version)
+    latticejson = _migrate(json.loads(text), initial.split("."), final.split("."))
     click.echo(format_json(latticejson))
 
 

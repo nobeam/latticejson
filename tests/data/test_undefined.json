@@ -1,4 +1,5 @@
 {
+  "version": "2.0",
   "title": "Faulty Fodo Cell",
   "info": "This is faulty lattice file. Where elements are referenced but no definiton exists.",
   "root": "MAIN",

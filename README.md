@@ -16,6 +16,7 @@ A LatticeJSON file for a FODO lattice:
 
 ```json
 {
+  "version": "2.0",
   "title": "FODO Lattice",
   "info": "This is the simplest possible strong focusing lattice.",
   "root": "RING",
