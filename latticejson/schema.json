@@ -23,7 +23,7 @@
     },
     "info": {
       "type": "string",
-      "description": "Additional information of the lattice"
+      "description": "Additional information about the lattice"
     },
     "energy": {
       "type": "number",
@@ -92,7 +92,7 @@
           "properties": {
             "info": {
               "type": "string",
-              "description": "Additional information on the element."
+              "description": "Additional information about the element."
             },
             "length": {
               "type": "number",
