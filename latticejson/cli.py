@@ -6,14 +6,16 @@ import click
 
 from . import __version__, io, parse
 from .format import format_json
-from .migrate import migrate as _migrate
-from .validate import validate_file
+from .migrate import migrate as _migrate, MAX_VERSION
+from .validate import schema, validate_file, parse_version
 
 FORMATS = "json", "lte", "madx"
 
 
 @click.group(context_settings=dict(max_content_width=120))
-@click.version_option(__version__)
+@click.version_option(
+    message=(f"LatticeJSON CLI, version {__version__}\n{schema['title']}")
+)
 def cli():
     pass
 
@@ -71,16 +73,30 @@ def autoformat(files, dry_run):
 
 
 @cli.command()
-@click.argument("file", type=click.Path(exists=True))
-@click.option("--from", "from_", required=True, help="Initial version")
-@click.option("--to", required=True, help="Final version")
-def migrate(file, from_, to):
+@click.argument("files", nargs=-1, type=click.Path(exists=True))
+@click.option(
+    "--final", type=int, default=MAX_VERSION, show_default=True, help="Final version."
+)
+@click.option(
+    "--dry-run",
+    "-d",
+    is_flag=True,
+    help="Don't write the files back, just output the formatted files.",
+)
+def migrate(files, final, dry_run):
     """Migrate old LatticeJSON files to newer versions."""
-    text = Path(file).read_text()
-    initial_version = from_.split(".")
-    final_version = to.split(".")
-    latticejson = _migrate(json.loads(text), initial_version, final_version)
-    click.echo(format_json(latticejson))
+    for path in itertools.chain.from_iterable(
+        path.rglob("*.json") if path.is_dir() else (path,) for path in map(Path, files)
+    ):
+        data = json.loads(path.read_text())
+        initial = parse_version(data["version"]).major
+        latticejson = _migrate(data, initial, final)
+        formatted = format_json(latticejson)
+        click.secho(f"Migrated {path} from version {initial} to {final}", bold=True)
+        if dry_run:
+            click.echo(formatted)
+        else:
+            path.write_text(formatted)
 
 
 @cli.group()
