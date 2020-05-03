@@ -7,6 +7,7 @@ def migrate(data: dict, initial: int, final: int) -> dict:
 
 
 def _0_to_1(data: dict):
+    data["version"] = "1.0"
     elements = data["elements"]
     for name, attributes in elements.items():
         elements[name] = attributes.pop("type"), attributes
