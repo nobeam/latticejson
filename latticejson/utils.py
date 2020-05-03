@@ -1,19 +1,30 @@
+def tree(latticejson, name=None):
+    lattices = latticejson["lattices"]
 
-
-
-def print_tree(latticejson, name=None):
-    sub_lattices = latticejson["sub_lattices"]
-    lattice = latticejson["lattice"] if name is None else sub_lattices[name]
-
-    def _tree_as_string(name, prefix=""):
-        string = name + "\n"
-        sub_lattice = sub_lattices.get(name)
-        if sub_lattice is not None:
-            for obj in sub_lattice[:-1]:
-                string += f"{prefix}├─── "
-                string += _tree_as_string(obj, prefix + "│   ")
-
-            string += f"{prefix}└─── "
-            string += _tree_as_string(sub_lattice[-1], prefix + "    ")
+    def _tree(name, prefix=""):
+        string = f"{name}\n"
+        if name in lattices:
+            *other, last = lattices[name]
+            for child in other:
+                string += f"{prefix}├─── {self._print_tree(child, prefix + '│   ')}"
+            string += f"{prefix}└─── {self._print_tree(last, prefix + '    ')}"
         return string
 
+    return _tree(latticejson["root"] if name is None else name)
+
+
+def sort_lattices(lattices, start_lattice):
+    lattice_names = []
+    lattices_set = set(lattices)
+
+    def _sort_lattices(name):
+        for child in lattices[name]:
+            if child in lattices_set:
+                _sort_lattices(child)
+                lattices_set.remove(name)
+        lattice_names.append(name)
+
+    _sort_lattices(start_lattice)
+    for lattice in lattices_set:
+        warn(f"{lattice} is unused and is discarded.", stacklevel=2)
+    return lattice_names
