@@ -30,10 +30,9 @@ def validate(data):
 
     # validate lattice file contains all referenced elements and sublattices
     elements = data["elements"]
-    sub_lattices = data.get("sub_lattices", {})
-    all_lattices = {data["name"]: data["lattice"], **sub_lattices}
+    lattices = data["lattices"]
 
-    for lattice_name, lattice_tree in all_lattices.items():
+    for lattice_name, lattice_tree in lattices.items():
         for object_name in lattice_tree:
-            if object_name not in elements and object_name not in sub_lattices:
+            if object_name not in elements and object_name not in lattices:
                 raise UndefinedObjectError(object_name, lattice_name)

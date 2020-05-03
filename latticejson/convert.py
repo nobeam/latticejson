@@ -58,13 +58,9 @@ def _map_names(lattice_data: dict, name_map: dict):
                 warn(UnknownAttributeWarning(other_key, name), stacklevel=2)
 
     lattices = lattice_data["lattices"]
-    lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
-    return dict(
-        name=lattice_name,
-        lattice=main_lattice,
-        sub_lattices=lattices,
-        elements=elements,
-    )
+    root = lattice_data.get("root", tuple(lattices.keys())[-1])
+    title = lattice_data.get("title", "")
+    return dict(title=title, root=root, elements=elements, lattices=lattices)
 
 
 def to_elegant(latticejson: dict) -> str:
@@ -74,9 +70,9 @@ def to_elegant(latticejson: dict) -> str:
     :return: string with in elegant lattice file format
     """
     elements = latticejson["elements"]
-    sub_lattices = latticejson["sub_lattices"]
+    lattices = latticejson["lattices"]
 
-    strings = [f"! TITLE: {latticejson['name']}"]
+    strings = [f"! TITLE: {latticejson['title']}"]
     element_template = "{}: {}, {}".format
     for name, (type_, attributes) in elements.items():
         attrs = ", ".join(f"{TO_ELEGANT[k]}={v}" for k, v in attributes.items())
@@ -84,11 +80,10 @@ def to_elegant(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({})".format
-    for name in sort_lattices(sub_lattices):
-        strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
+    for name in sort_lattices(lattices):
+        strings.append(lattice_template(name, ", ".join(lattices[name])))
 
-    strings.append(lattice_template("__MAIN__", ", ".join(latticejson["lattice"])))
-    strings.append("USE, __MAIN__\n")
+    strings.append(f"USE, {latticejson['root']}\n")
     return "\n".join(strings)
 
 
@@ -99,9 +94,9 @@ def to_madx(latticejson: dict) -> str:
     :return: string with in elegant lattice file format
     """
     elements = latticejson["elements"]
-    sub_lattices = latticejson["sub_lattices"]
+    lattices = latticejson["lattices"]
 
-    strings = [f"TITLE, \"{latticejson['name']}\";"]
+    strings = [f"TITLE, \"{latticejson['title']}\";"]
     element_template = "{}: {}, {};".format
     for name, (type_, attributes) in elements.items():
         attrs = ", ".join(f"{TO_MADX[k]}={v}" for k, v in attributes.items())
@@ -109,11 +104,10 @@ def to_madx(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({});".format
-    for name in sort_lattices(sub_lattices):
-        strings.append(lattice_template(name, ", ".join(sub_lattices[name])))
+    for name in sort_lattices(lattices):
+        strings.append(lattice_template(name, ", ".join(lattices[name])))
 
-    strings.append(lattice_template("__MAIN__", ", ".join(latticejson["lattice"])))
-    strings.append("USE, __MAIN__;\n")
+    strings.append(f"USE, {latticejson['root']};\n")
     return "\n".join(strings)
 
 

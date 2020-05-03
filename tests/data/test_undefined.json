@@ -1,16 +1,9 @@
 {
-  "name": "Faulty Fodo Cell",
-  "description": "This is faulty lattice file. Where elements are referenced but no definiton exists.",
+  "title": "Faulty Fodo Cell",
+  "info": "This is faulty lattice file. Where elements are referenced but no definiton exists.",
+  "root": "MAIN",
   "elements": {},
-  "lattice": [
-    "Q1",
-    "D1",
-    "B1",
-    "D1",
-    "Q2",
-    "D1",
-    "B1",
-    "D1",
-    "Q1"
-  ]
+  "lattices": {
+    "MAIN": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"]
+  }
 }

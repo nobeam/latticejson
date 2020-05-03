@@ -1,34 +1,36 @@
 {
-  "$id": "https://github.com/nobeam/latticejson/blob/master/latticejson/schema.json",
+  "$id": "https://raw.githubusercontent.com/nobeam/latticejson/master/latticejson/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "JSON lattice file format",
   "description": "Defines the magnetic lattice format",
   "additionalProperties": false,
   "required": [
-    "name",
-    "lattice",
+    "root",
+    "lattices",
     "elements"
   ],
   "type": "object",
   "properties": {
-    "name": {
+    "title": {
       "type": "string",
-      "description": "The name of the lattice"
+      "description": "The title of the lattice"
     },
-    "description": {
+    "info": {
       "type": "string",
-      "description": "A brief description of the lattice"
+      "description": "Additional information of the lattice"
     },
     "energy": {
       "type": "number",
       "description": "Energy of the particle beam in GeV",
       "minimum": 0
     },
-    "lattice": {
-      "$ref": "#/definitions/Lattice"
+    "root": {
+      "type": "string",
+      "description": "The root lattice"
     },
-    "sub_lattices": {
+    "lattices": {
       "type": "object",
+      "description": "Definition of the lattice and sub-lattices",
       "patternProperties": {
         "^.*$": {
           "$ref": "#/definitions/Lattice"
@@ -38,6 +40,7 @@
     },
     "elements": {
       "type": "object",
+      "description": "Definition of the elements",
       "patternProperties": {
         "^.*$": {
           "oneOf": [
@@ -81,9 +84,9 @@
             "length"
           ],
           "properties": {
-            "description": {
+            "info": {
               "type": "string",
-              "description": "Optional description of the element."
+              "description": "Additional information on the element."
             },
             "length": {
               "type": "number",
@@ -124,7 +127,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "description": {},
+            "info": {},
             "length": {},
             "dx": {},
             "dy": {},
@@ -148,7 +151,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "description": {},
+            "info": {},
             "length": {},
             "dx": {},
             "dy": {},
@@ -195,7 +198,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "description": {},
+            "info": {},
             "length": {},
             "dx": {},
             "dy": {},
@@ -226,7 +229,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "description": {},
+            "info": {},
             "length": {},
             "dx": {},
             "dy": {},
@@ -257,7 +260,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "description": {},
+            "info": {},
             "length": {},
             "dx": {},
             "dy": {},
