@@ -1,15 +1,16 @@
-from typing import List, Dict
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Dict, List
 from warnings import warn
+
+from .exceptions import UnknownAttributeWarning, UnknownElementTypeWarning
 from .parse import parse_elegant, parse_madx
-from .exceptions import UnknownElementWarning, UnknownAttributeWarning
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
-JSON_TO_ELE = {x: y[0][0] for x, *y in NAME_MAP}
-ELE_TO_JSON = {y: x for x, *tup in NAME_MAP for y in tup[0]}
-JSON_TO_MADX = {x: y[1][0] for x, *y in NAME_MAP}
-MADX_TO_JSON = {y: x for x, *tup in NAME_MAP for y in tup[1]}
+TO_ELEGANT = {x: y[0][0] for x, *y in NAME_MAP}
+FROM_ELEGANT = {y: x for x, *tup in NAME_MAP for y in tup[0]}
+TO_MADX = {x: y[1][0] for x, *y in NAME_MAP}
+FROM_MADX = {y: x for x, *tup in NAME_MAP for y in tup[1]}
 
 
 def from_elegant(string):
@@ -22,7 +23,7 @@ def from_elegant(string):
     :type str, optional
     :return: dict in LatticeJSON format
     """
-    return _map_names_from_elegant(parse_elegant(string))
+    return _map_names(parse_elegant(string), FROM_ELEGANT)
 
 
 def from_madx(string):
@@ -35,15 +36,7 @@ def from_madx(string):
     :type str, optional
     :return: dict in LatticeJSON format
     """
-    return _map_names_from_madx(parse_madx(string))
-
-
-def _map_names_from_madx(madx_dict: dict):
-    return _map_names(madx_dict, MADX_TO_JSON)
-
-
-def _map_names_from_elegant(elegant_dict: dict):
-    return _map_names(elegant_dict, ELE_TO_JSON)
+    return _map_names(parse_madx(string), FROM_MADX)
 
 
 def _map_names(lattice_data: dict, name_map: dict):
@@ -52,7 +45,7 @@ def _map_names(lattice_data: dict, name_map: dict):
         latticejson_type = name_map.get(other_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
-            warn(UnknownElementWarning(name, other_type), stacklevel=2)
+            warn(UnknownElementTypeWarning(name, other_type))
             continue
 
         attributes = {}
@@ -62,7 +55,7 @@ def _map_names(lattice_data: dict, name_map: dict):
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
-                warn(UnknownAttributeWarning(other_key, name), stacklevel=2)
+                warn(UnknownAttributeWarning(other_key, name))
 
     lattices = lattice_data["lattices"]
     lattice_name, main_lattice = lattices.popitem()  # use last lattice as main_lattice
@@ -86,8 +79,8 @@ def to_elegant(latticejson: dict) -> str:
     strings = [f"! TITLE: {latticejson['name']}"]
     element_template = "{}: {}, {}".format
     for name, (type_, attributes) in elements.items():
-        attrs = ", ".join(f"{JSON_TO_ELE[k]}={v}" for k, v in attributes.items())
-        elegant_type = JSON_TO_ELE[type_]
+        attrs = ", ".join(f"{TO_ELEGANT[k]}={v}" for k, v in attributes.items())
+        elegant_type = TO_ELEGANT[type_]
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({})".format
@@ -111,8 +104,8 @@ def to_madx(latticejson: dict) -> str:
     strings = [f"TITLE, \"{latticejson['name']}\";"]
     element_template = "{}: {}, {};".format
     for name, (type_, attributes) in elements.items():
-        attrs = ", ".join(f"{JSON_TO_MADX[k]}={v}" for k, v in attributes.items())
-        elegant_type = JSON_TO_MADX[type_]
+        attrs = ", ".join(f"{TO_MADX[k]}={v}" for k, v in attributes.items())
+        elegant_type = TO_MADX[type_]
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({});".format
