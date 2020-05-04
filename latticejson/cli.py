@@ -123,6 +123,18 @@ def tree(file, lattice, format_):
     click.echo(tree(data, lattice))
 
 
+@utils.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="New root lattice [Default: current]")
+@click.option("--warn-unused", "-w", is_flag=True, help="Log removed lattices.")
+def remove_unused(file, lattice, warn_unused):
+    """Remove unused objects from a LatticeJSON file."""
+    from .utils import remove_unused
+
+    data = remove_unused(io.load(file), lattice, warn_unused)
+    click.echo(format_json(data))
+
+
 @cli.group()
 def debug():
     """Some useful commands for debugging/development."""

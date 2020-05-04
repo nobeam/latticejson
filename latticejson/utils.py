@@ -1,4 +1,5 @@
 from warnings import warn
+from itertools import chain
 
 
 def tree(latticejson, name=None):
@@ -39,17 +40,42 @@ def sort_lattices(latticejson, root=None, keep_unused=False):
     return lattices_sorted
 
 
-# TODO: Work in progress!
-def remove_unused(latticejson, root=None):
+def remove_unused(latticejson, root=None, warn_unused=False):
+    """Remove unused objects starting from the `root` lattice. Also sorts lattices."""
+    if root is None:
+        root = latticejson["root"]
     elements = latticejson["elements"]
     lattices = latticejson["lattices"]
+    elements_set = set(elements)
+    lattices_set = set(lattices)
     elements_new = {}
     lattices_new = {}
 
     def _remove_unused(name):
-        element = elements.get(name)
-        if name in elements:
+        try:
+            elements_set.remove(name)
+        except KeyError:
+            pass
+        else:
             elements_new[name] = elements[name]
-        ...
+            return
 
-    _remove_unused(root if root is not None else latticejson["root"])
+        try:
+            lattices_set.remove(name)
+        except KeyError:
+            pass
+        else:
+            lattice = lattices[name]
+            for child in lattice:
+                _remove_unused(child)
+            lattices_new[name] = lattices[name]
+
+    _remove_unused(root)
+    latticejson_new = latticejson.copy()
+    latticejson_new["root"] = root
+    latticejson_new["elements"] = elements_new
+    latticejson_new["lattices"] = lattices_new
+    if warn_unused:
+        for obj in chain(elements_set, lattices_set):
+            warn(f"Discard unused object '{obj}'.")
+    return latticejson_new
