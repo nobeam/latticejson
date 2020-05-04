@@ -22,6 +22,13 @@ class UndefinedObjectError(Exception):
         )
 
 
+class IncompatibleVersionError(Exception):
+    """Raised if installed LatticeJSON library is out of date"""
+
+    def __init__(self, message):
+        super().__init__(f"Incompatible LatticeJSON version: {message}")
+
+
 class UnknownElementTypeWarning(UserWarning):
     """Raised if there is no equivalent LatticeJSON element."""
 

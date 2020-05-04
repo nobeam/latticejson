@@ -6,8 +6,9 @@ import click
 
 from . import __version__, io, parse
 from .format import format_json
-from .migrate import migrate as _migrate, MAX_VERSION
-from .validate import schema, validate_file, parse_version
+from .migrate import MAX_VERSION
+from .migrate import migrate as _migrate
+from .validate import parse_version, schema, validate_file
 
 FORMATS = "json", "lte", "madx"
 

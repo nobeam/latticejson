@@ -4,7 +4,7 @@ from pathlib import Path
 import fastjsonschema
 from packaging import version as _version
 
-from .exceptions import UndefinedObjectError
+from .exceptions import IncompatibleVersionError, UndefinedObjectError
 
 parse_version = _version.parse
 schema_path = Path(__file__).resolve().parent / "schema.json"
@@ -23,10 +23,10 @@ def validate(data):
 
     version = parse_version(data["version"])
     if version > schema_version:
-        raise Exception("Old version: Use pip install -U latticejson to update.")
+        raise IncompatibleVersionError("Use 'pip install -U latticejson' to update.")
 
     if version.major < schema_version.major:
-        raise Exception('Old version: Use "latticejson migrate" to update file.')
+        raise IncompatibleVersionError("Use 'latticejson migrate' to update file.")
 
     validate_syntax(data)
     validate_defined_objects(data)
