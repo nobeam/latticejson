@@ -106,9 +106,20 @@ def utils():
 
 
 @utils.command()
-@click.argument("file")
-def print_tree(file, lattice):
-    from .utils import print_tree
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="Root lattice of tree.")
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(FORMATS, case_sensitive=False),
+    help="Source format [optional, default: use file extension]",
+)
+def tree(file, lattice, format_):
+    """Print tree of elements for a given LatticeJSON file."""
+    from .utils import tree
+
+    data = io.load(file, format_, validate)
+    click.echo(tree(data, lattice))
 
 
 @cli.group()

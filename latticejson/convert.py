@@ -5,6 +5,7 @@ from warnings import warn
 
 from .exceptions import UnknownAttributeWarning, UnknownElementWarning
 from .parse import parse_elegant, parse_madx
+from .utils import sort_lattices
 from .validate import schema_version
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
@@ -87,8 +88,8 @@ def to_elegant(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({})".format
-    for name in sort_lattices(lattices):
-        strings.append(lattice_template(name, ", ".join(lattices[name])))
+    for name, children in sort_lattices(latticejson).items():
+        strings.append(lattice_template(name, ", ".join(children)))
 
     strings.append(f"USE, {latticejson['root']}\n")
     return "\n".join(strings)
@@ -111,28 +112,9 @@ def to_madx(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({});".format
-    for name in sort_lattices(lattices):
-        strings.append(lattice_template(name, ", ".join(lattices[name])))
+    for name, children in sort_lattices(latticejson).items():
+        strings.append(lattice_template(name, ", ".join(children)))
 
     strings.append(f"USE, {latticejson['root']};\n")
     return "\n".join(strings)
 
-
-def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:
-    """Returns a sorted list of lattice names for a given dict of lattices."""
-
-    lattices_set = set(lattices)
-    lattice_names = []
-
-    def _sort_lattices(name):
-        for child_name in lattices[name]:
-            if child_name in lattices_set:
-                lattices_set.remove(child_name)
-                _sort_lattices(child_name)
-
-        lattice_names.append(name)
-
-    while len(lattices_set) > 0:
-        _sort_lattices(lattices_set.pop())
-
-    return lattice_names
