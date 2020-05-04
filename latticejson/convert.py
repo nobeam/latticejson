@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, List
 from warnings import warn
 
-from .exceptions import UnknownAttributeWarning, UnknownElementWarning
+from .exceptions import UnknownAttributeWarning, UnknownElementTypeWarning
 from .parse import parse_elegant, parse_madx
 from .validate import schema_version
 
@@ -46,7 +46,7 @@ def _map_names(lattice_data: dict, name_map: dict):
         latticejson_type = name_map.get(other_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
-            warn(UnknownElementWarning(name, other_type), stacklevel=2)
+            warn(UnknownElementTypeWarning(name, other_type))
             continue
 
         attributes = {}
@@ -56,7 +56,7 @@ def _map_names(lattice_data: dict, name_map: dict):
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
-                warn(UnknownAttributeWarning(other_key, name), stacklevel=2)
+                warn(UnknownAttributeWarning(other_key, name))
 
     lattices = lattice_data["lattices"]
     root = lattice_data.get("root", tuple(lattices.keys())[-1])
