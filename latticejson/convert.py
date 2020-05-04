@@ -117,6 +117,7 @@ def to_madx(latticejson: dict) -> str:
     return "\n".join(strings)
 
 
+# TODO: revise logic!!
 def sort_lattices(lattices: Dict[str, List[str]]) -> List[str]:
     """Returns a sorted list of lattice names for a given dict of lattices."""
 
