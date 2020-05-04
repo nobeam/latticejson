@@ -127,11 +127,14 @@ def tree(file, lattice, format_):
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--lattice", "-l", type=str, help="New root lattice [Default: current]")
 @click.option("--warn-unused", "-w", is_flag=True, help="Log removed lattices.")
-def remove_unused(file, lattice, warn_unused):
+@click.option(
+    "--validate/--no-validate", default=True, help="Whether to validate the input file."
+)
+def remove_unused(file, lattice, warn_unused, validate):
     """Remove unused objects from a LatticeJSON file."""
     from .utils import remove_unused
 
-    data = remove_unused(io.load(file), lattice, warn_unused)
+    data = remove_unused(io.load(file, validate=validate), lattice, warn_unused)
     click.echo(format_json(data))
 
 
