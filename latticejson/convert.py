@@ -117,4 +117,3 @@ def to_madx(latticejson: dict) -> str:
 
     strings.append(f"USE, {latticejson['root']};\n")
     return "\n".join(strings)
-
