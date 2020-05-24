@@ -101,6 +101,44 @@ def migrate(files, final, dry_run):
 
 
 @cli.group()
+def utils():
+    """Some useful utilities."""
+    pass
+
+
+@utils.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="Root lattice of tree.")
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(FORMATS, case_sensitive=False),
+    help="Source format [optional, default: use file extension]",
+)
+def tree(file, lattice, format_):
+    """Print tree of elements for a given LatticeJSON file."""
+    from .utils import tree
+
+    data = io.load(file, format_, validate)
+    click.echo(tree(data, lattice))
+
+
+@utils.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="New root lattice [Default: current]")
+@click.option("--warn-unused", "-w", is_flag=True, help="Log removed lattices.")
+@click.option(
+    "--validate/--no-validate", default=True, help="Whether to validate the input file."
+)
+def remove_unused(file, lattice, warn_unused, validate):
+    """Remove unused objects from a LatticeJSON file."""
+    from .utils import remove_unused
+
+    data = remove_unused(io.load(file, validate=validate), lattice, warn_unused)
+    click.echo(format_json(data))
+
+
+@cli.group()
 def debug():
     """Some useful commands for debugging/development."""
     pass
