@@ -88,13 +88,8 @@ def to_elegant(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({})".format
-<<<<<<< HEAD
     for name, children in sort_lattices(latticejson).items():
         strings.append(lattice_template(name, ", ".join(children)))
-=======
-    for name in sort_lattices(lattices):
-        strings.append(lattice_template(name, ", ".join(lattices[name])))
->>>>>>> master
 
     strings.append(f"USE, {latticejson['root']}\n")
     return "\n".join(strings)
@@ -117,13 +112,8 @@ def to_madx(latticejson: dict) -> str:
         strings.append(element_template(name, elegant_type, attrs))
 
     lattice_template = "{}: LINE=({});".format
-<<<<<<< HEAD
     for name, children in sort_lattices(latticejson).items():
         strings.append(lattice_template(name, ", ".join(children)))
-=======
-    for name in sort_lattices(lattices):
-        strings.append(lattice_template(name, ", ".join(lattices[name])))
->>>>>>> master
 
     strings.append(f"USE, {latticejson['root']};\n")
     return "\n".join(strings)
