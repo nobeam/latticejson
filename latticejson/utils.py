@@ -1,5 +1,5 @@
-from warnings import warn
 from itertools import chain
+from warnings import warn
 
 
 def tree(latticejson, name=None):
