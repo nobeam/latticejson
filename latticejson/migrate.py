@@ -1,24 +1,33 @@
-import sys
+def migrate(data: dict, initial: int, final: int) -> dict:
+    data = data.copy()
+    for from_, to, func in _VERSION_MAPS:
+        if from_ >= initial and (final is None or to <= final):
+            func(data)
+    return data
 
 
-def migrate(initial: dict, initial_version: tuple, final_version: tuple):
-    function = getattr(
-        sys.modules[__name__],
-        f"migrate_{'_'.join(initial_version)}_to_{'_'.join(final_version)}",
-        None,
-    )
-    if function is None:
-        raise NotImplementedError(f"Unkown versions {initial_version}, {final_version}")
-
-    return function(initial)
+def _0_to_1(data: dict):
+    data["version"] = "1.0"
+    elements = data["elements"]
+    for name, attributes in elements.items():
+        elements[name] = attributes.pop("type"), attributes
 
 
-def migrate_0_0_2_to_0_0_3(initial: dict):
-    final = initial.copy()
-    elements_final = {}
-    for name, attributes in final["elements"].items():
-        type_ = attributes.pop("type")
-        elements_final[name] = type_, attributes
+def _1_to_2(data: dict):
+    data["version"] = "2.0"
+    data["title"] = data.pop("name")
+    data["lattices"] = data.pop("sub_lattices")
+    data["lattices"]["__MAIN__"] = data.pop("lattice")
+    data["root"] = "__MAIN__"
+    info = data.pop("description", False)
+    if info:
+        data["info"] = info
 
-    final["elements"] = elements_final
-    return final
+    for _, attributes in data["elements"].values():
+        info = attributes.pop("description", False)
+        if info:
+            attributes["info"] = info
+
+
+_VERSION_MAPS = (0, 1, _0_to_1), (1, 2, _1_to_2)
+MAX_VERSION = _VERSION_MAPS[-1][1]
