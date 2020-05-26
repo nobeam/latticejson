@@ -51,6 +51,9 @@
         "^.*$": {
           "oneOf": [
             {
+              "$ref": "#/definitions/Marker"
+            },
+            {
               "$ref": "#/definitions/Drift"
             },
             {
@@ -115,6 +118,25 @@
               "type": "number",
               "description": "Rotation about the longitudinal axis"
             }
+          }
+        }
+      ]
+    },
+    "Marker": {
+      "items": [
+        {
+          "const": "Marker"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {}
           }
         }
       ]

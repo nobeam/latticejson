@@ -8,7 +8,8 @@ Q1 :KQUAD, L="2 10 /", K1=1.2
 % pi 8 / sto angle
 % 1 atan 4 * sto custom_pi
 
+M1      : MARK
 B1      : CSBEND, L=.15e+1, ANGLE="angle", &
           E1="pi 16 /", e2="custom_pi 16 /"
-FODO    : LINE = (Q1, D1, B1, D1, Q2, D1, B1, D1, Q1)
-RING    : LINE = (2*(-2*-(2*FODO)))
+CELL    : LINE = (M1, Q1, D1, B1, D1, Q2, D1, B1, D1, Q1)
+RING    : LINE = (2*(-2*-(2*CELL)))

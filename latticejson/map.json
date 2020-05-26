@@ -1,6 +1,7 @@
 {
     "description": "LatticeJSON, elegant, MADX",
     "map": [
+        ["Marker", ["MARK"], ["MARKER"]],
         ["Drift", ["DRIF", "DRIFT"], ["DRIFT"], ["DRIFT"]],
         ["Dipole", ["CSBEND", "SBEND", "BEND"], ["SBEND", "RBEND"]],
         ["Quadrupole", ["KQUAD", "QUAD", "QUADRUPOLE"], ["QUADRUPOLE"]],
