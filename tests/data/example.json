@@ -5,11 +5,11 @@
   "root": "MAIN",
   "elements": {
     "Drift": ["Drift", {"length": 1.0}],
-    "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 0.1, "e2": 0.1}],
-    "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 1.0}],
-    "Sextupole": ["Sextupole", {"length": 1.0, "k2": 1.0}],
-    "Octupole": ["Octupole", {"length": 1.0, "k3": 1.0}],
-    "Cavity": ["Cavity", {"length": 1.0, "voltage": 1.0, "frequency": 1.0, "phase": 1.0}]
+    "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 2.0, "e2": 3.0}],
+    "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 2.0}],
+    "Sextupole": ["Sextupole", {"length": 1.0, "k2": 2.0}],
+    "Octupole": ["Octupole", {"length": 1.0, "k3": 2.0}],
+    "Cavity": ["Cavity", {"length": 1.0, "voltage": 2.0, "frequency": 3.0, "phase": 4.0}]
   },
   "lattices": {
     "MAIN": ["Drift", "Dipole", "Quadrupole", "Sextupole", "Cavity"]

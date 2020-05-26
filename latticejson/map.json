@@ -6,7 +6,7 @@
         ["Quadrupole", ["KQUAD", "QUAD", "QUADRUPOLE"], ["QUADRUPOLE"]],
         ["Sextupole", ["KSEXT", "SEXT", "SEXTUPOLE"], ["SEXTUPOLE"]],
         ["Octupole", ["KOCT", "OCTU"], ["OCTUPOLE"]],
-        ["Cavity", [null], ["RFCAVITY"]],
+        ["Cavity", ["RFCA"], ["RFCAVITY"]],
         ["Lattice", ["LINE"], ["LINE"]],
         ["length", ["L"], ["L"]],
         ["angle", ["ANGLE"], ["ANGLE"]],
@@ -15,8 +15,8 @@
         ["k1", ["K1"], ["K1"]],
         ["k2", ["K2"], ["K2"]],
         ["k3", ["K3"], ["K3"]],
-        ["voltage", [null], ["VOLT"]],
-        ["frequency", [null], ["FREQ"]],
-        ["phase", [null], ["LAG"]]
+        ["voltage", ["VOLT"], ["VOLT"]],
+        ["frequency", ["FREQ"], ["FREQ"]],
+        ["phase", ["PHASE"], ["LAG"]]
     ]
 }
