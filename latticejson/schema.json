@@ -25,6 +25,22 @@
       "type": "string",
       "description": "Additional information about the lattice"
     },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata",
+      "additionalProperties": false,
+      "properties": {
+        "creator": {
+          "$ref": "#/definitions/Person"
+        },
+        "editors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Person"
+          }
+        }
+      }
+    },
     "energy": {
       "type": "number",
       "description": "Energy of the particle beam in GeV",
@@ -71,6 +87,23 @@
     }
   },
   "definitions": {
+    "Person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The person's name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The person's email."
+        }
+      }
+    },
     "Lattice": {
       "type": "array",
       "items": {
