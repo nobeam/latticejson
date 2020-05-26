@@ -1,7 +1,8 @@
+import json
 from pathlib import Path
 from pprint import pprint as print
-import json
-from latticejson.convert import to_elegant, from_elegant
+
+from latticejson.convert import from_elegant, to_elegant
 
 base_dir = Path(__file__).resolve().parent / "data"
 fodo_lte = (base_dir / "fodo.lte").read_text()
