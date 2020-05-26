@@ -1,0 +1,50 @@
+// Elegant Grammar
+// This grammer is not 100% consistent with elegants parser:
+// - Elegants parser allows tokens to be split by the line continuation character "&".
+//   For example, it parses ANGLE=0.123&\n456 without an error.
+//   This is non-trivial to express with grammar rules and is therefore omitted.
+// - Elegants parser allows a trailing " in attribute definitions.
+//   This means L=1.23" is parsed without an error. Seems like a bug and is left out.
+// - Elegants parser allows unlimited trailing ",". Also seems like a bug.
+
+%ignore /!.*/            // ingore comments
+%ignore /[ \t\f]/+       // ingore whitespace
+%ignore /&[ \t\f]*\r?\n/ // line continuation
+%import common (SIGNED_INT, SIGNED_FLOAT, SIGNED_NUMBER, ESCAPED_STRING, CNAME)
+
+int         : SIGNED_INT
+float       : SIGNED_FLOAT
+string      : ESCAPED_STRING
+word        : /\w+/
+name        : /\w+/ | "\"" /[\w:]+/ "\""
+
+start        : _NEWLINE* (statement _NEWLINE+)*
+_NEWLINE    : /[ \t\f]*\r?\n[ \t\f]*/
+?statement  : element | lattice | command | "%" assignment
+
+element     : name ":" [name] ("," attribute)* ","?
+attribute   : word "=" (int | float | string | word)
+
+lattice     : name ":" "LINE"i "=" arrangement
+arrangement : [int "*"] [/-/] "(" object (","+ object)* ")"
+?object     : ref_name | arrangement
+ref_name    : [int "*"] [/-/] ["\""] /[\w:]+/ ["\""]
+
+command     : name ["," word]
+
+// RPN Expression
+// 1. As there is no syntactic distinction between an escaped string and a variable,
+// it is possible that a collison can happen. In this case a variable is wrongly
+// identified as string.
+
+assignment  : expr "sto" CNAME
+?expr       : SIGNED_NUMBER -> number
+            | CNAME         -> variable
+            | function
+            | binary
+!function   : expr ("exp" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan")
+?binary     : expr expr "+" -> add
+            | expr expr "-" -> sub
+            | expr expr "*" -> mul
+            | expr expr "/" -> div
+?start_rpn   : assignment | expr // used to tested the rpn parser

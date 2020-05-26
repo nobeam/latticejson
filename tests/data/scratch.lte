@@ -1,0 +1,9 @@
+% 1 atan 4 * sto custom_pi
+% 4 sto angle
+D1: DRIFT, L="angle 2 /"
+D2: DRIFT, L="angle"
+D3: DRIFT, L="this_is_a_string"
+B: BEND, L=1.e-0, ANGLE="custom_pi"
+L: LINE=(-2*(D1, D2))
+L2: LINE=(2*-L)
+L3: LINE=(-2*-L2)

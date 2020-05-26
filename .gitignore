@@ -2,11 +2,14 @@
 .DS_Store
 .idea
 .vscode
+.devcontainer
 
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files / Cache
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
 
 # Distribution / packaging
 .Python
