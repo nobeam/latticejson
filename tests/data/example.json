@@ -1,0 +1,17 @@
+{
+  "version": "2.1",
+  "title": "Example file",
+  "info": "This is a example file used for test purpose only",
+  "root": "MAIN",
+  "elements": {
+    "Drift": ["Drift", {"length": 1.0}],
+    "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 0.1, "e2": 0.1}],
+    "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 1.0}],
+    "Sextupole": ["Sextupole", {"length": 1.0, "k2": 1.0}],
+    "Octupole": ["Octupole", {"length": 1.0, "k3": 1.0}],
+    "Cavity": ["Cavity", {"length": 1.0, "voltage": 1.0, "frequency": 1.0, "phase": 1.0}]
+  },
+  "lattices": {
+    "MAIN": ["Drift", "Dipole", "Quadrupole", "Sextupole", "Cavity"]
+  }
+}

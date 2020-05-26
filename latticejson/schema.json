@@ -304,9 +304,12 @@
             "frequency"
           ],
           "properties": {
-            "type": {
-              "const": "Cavity"
-            },
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
             "voltage": {
               "type": "number"
             },
