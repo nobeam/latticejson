@@ -1,7 +1,7 @@
 {
   "$id": "https://raw.githubusercontent.com/nobeam/latticejson/master/latticejson/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "LatticeJSON Schema, version 2.0",
+  "title": "LatticeJSON Schema, version 2.1",
   "description": "A JSON based lattice file format",
   "additionalProperties": false,
   "required": [
@@ -14,7 +14,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "pattern": "^2.[0-0]$",
+      "pattern": "^2.[0-1]$",
       "description": "LatticeJSON version"
     },
     "title": {
@@ -67,6 +67,9 @@
             },
             {
               "$ref": "#/definitions/Octupole"
+            },
+            {
+              "$ref": "#/definitions/Cavity"
             }
           ]
         }
@@ -299,6 +302,52 @@
               "description": "Geometric octupole strength"
             },
             "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "Cavity": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Element"
+        }
+      ],
+      "items": [
+        {
+          "const": "Cavity"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "voltage",
+            "frequency"
+          ],
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "voltage": {
+              "type": "number"
+            },
+            "frequency": {
+              "type": "number"
+            },
+            "phase": {
+              "type": "number"
+            },
+            "fiducial": {
+              "type": "string"
+            },
+            "end1_focus": {
+              "type": "number"
+            },
+            "end2_foucs": {
               "type": "number"
             }
           }
