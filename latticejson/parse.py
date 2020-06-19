@@ -131,8 +131,11 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
 @v_args(inline=True)
 class MADXTransformer(ArithmeticTransformer, AbstractLatticeFileTransformer):
     def sequence(self, name, *items):
-        *_, arangement = items
-        self.lattices[name.upper()] = arangement.children
+        *attributes, elements = items
+        self.lattices[name.upper()] = elements
+
+    def seq_elements(self, *elements):
+        return list(elements)
 
 
 @v_args(inline=True)

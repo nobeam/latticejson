@@ -22,8 +22,8 @@ arrangement : [int "*"] [/-/] "(" object ("," object)* ")"
 ?object     : ref_name | arrangement
 ref_name    : [int "*"] [/-/] word
 
-sequence    : word ":" "SEQUENCE"i ("," attribute)* ";" content "ENDSEQUENCE"i
-content     : (element ";")*
+sequence    : word ":" "SEQUENCE"i ("," attribute)* ";" seq_elements "ENDSEQUENCE"i
+seq_elements: (element ";")*
 
 command     : word ("," (word | string | attribute))*
 
