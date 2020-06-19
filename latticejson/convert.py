@@ -82,6 +82,7 @@ def to_elegant(latticejson: dict) -> str:
 
     strings = [f"! TITLE: {latticejson['title']}"]
     element_template = "{}: {}, {}".format
+    # TODO: check if equivalent type exists in elegant
     for name, (type_, attributes) in elements.items():
         attrs = ", ".join(f"{TO_ELEGANT[k]}={v}" for k, v in attributes.items())
         elegant_type = TO_ELEGANT[type_]
@@ -106,6 +107,7 @@ def to_madx(latticejson: dict) -> str:
 
     strings = [f"TITLE, \"{latticejson['title']}\";"]
     element_template = "{}: {}, {};".format
+    # TODO: check if equivalent type exists in madx
     for name, (type_, attributes) in elements.items():
         attrs = ", ".join(f"{TO_MADX[k]}={v}" for k, v in attributes.items())
         elegant_type = TO_MADX[type_]
