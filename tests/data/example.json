@@ -4,6 +4,7 @@
   "info": "This is a example file used for test purpose only",
   "root": "MAIN",
   "elements": {
+    "Marker": ["Marker", {}],
     "Drift": ["Drift", {"length": 1.0}],
     "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 2.0, "e2": 3.0}],
     "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 2.0}],
@@ -12,6 +13,6 @@
     "Cavity": ["Cavity", {"length": 1.0, "voltage": 2.0, "frequency": 3.0, "phase": 4.0}]
   },
   "lattices": {
-    "MAIN": ["Drift", "Dipole", "Quadrupole", "Sextupole", "Cavity"]
+    "MAIN": ["Marker", "Drift", "Dipole", "Quadrupole", "Sextupole", "Cavity"]
   }
 }
