@@ -216,7 +216,7 @@
     "Vcor": {
       "items": [
         {
-          "const": "Hcor"
+          "const": "Vcor"
         },
         {
           "type": "object",
