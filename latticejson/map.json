@@ -3,6 +3,8 @@
     "map": [
         ["Monitor", ["MONI"], ["MONITOR"]],
         ["Marker", ["MARK"], ["MARKER"]],
+        ["Hcor", ["HKICK"], ["HKICKER"]],
+        ["Vcor", ["VKICK"], ["VKICKER"]],
         ["Drift", ["DRIF", "DRIFT"], ["DRIFT"], ["DRIFT"]],
         ["Dipole", ["CSBEND", "SBEND", "BEND"], ["SBEND", "RBEND"]],
         ["Quadrupole", ["KQUAD", "QUAD", "QUADRUPOLE"], ["QUADRUPOLE"]],

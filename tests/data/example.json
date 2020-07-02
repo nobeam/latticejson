@@ -6,6 +6,8 @@
   "elements": {
     "Marker": ["Marker", {}],
     "Monitor": ["Monitor", {}],
+    "Hcor": ["Hcor", {"length": 1.0, "kick": 2.0}],
+    "Vcor": ["Vcor", {"length": 1.0, "kick": 2.0}],
     "Drift": ["Drift", {"length": 1.0}],
     "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 2.0, "e2": 3.0}],
     "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 2.0}],
@@ -14,6 +16,6 @@
     "Cavity": ["Cavity", {"length": 1.0, "voltage": 2.0, "frequency": 3.0, "phase": 4.0}]
   },
   "lattices": {
-    "MAIN": ["Monitor", "Marker", "Drift", "Dipole", "Quadrupole", "Sextupole", "Cavity"]
+    "MAIN": ["Monitor", "Marker", "Drift", "Hcor", "Vcor", "Dipole", "Quadrupole", "Sextupole", "Cavity"]
   }
 }

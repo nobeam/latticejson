@@ -60,6 +60,12 @@
               "$ref": "#/definitions/Drift"
             },
             {
+              "$ref": "#/definitions/Hcor"
+            },
+            {
+              "$ref": "#/definitions/Vcor"
+            },
+            {
               "$ref": "#/definitions/Dipole"
             },
             {
@@ -185,6 +191,40 @@
             "dx": {},
             "dy": {},
             "ds": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Hcor": {
+      "items": [
+        {
+          "const": "Hcor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "Kick": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Vcor": {
+      "items": [
+        {
+          "const": "Hcor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "Kick": {},
             "tilt": {}
           }
         }
