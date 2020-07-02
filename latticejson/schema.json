@@ -51,6 +51,9 @@
         "^.*$": {
           "oneOf": [
             {
+              "$ref": "#/definitions/Monitor"
+            },
+            {
               "$ref": "#/definitions/Marker"
             },
             {
@@ -121,6 +124,25 @@
               "type": "number",
               "description": "Rotation about the longitudinal axis"
             }
+          }
+        }
+      ]
+    },
+    "Monitor":{
+      "items": [
+        {
+          "const": "Monitor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties":{
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {}
           }
         }
       ]
