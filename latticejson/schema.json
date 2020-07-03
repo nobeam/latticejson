@@ -275,6 +275,9 @@
               "type": "number",
               "description": "Deflection angle"
             },
+            "k1": {
+              "type": "number"
+            },
             "radius": {
               "type": "number",
               "description": "Radius of curvature"

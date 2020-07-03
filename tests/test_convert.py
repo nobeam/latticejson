@@ -17,7 +17,7 @@ def test_to_elegant():
         "Q1: KQUAD, L=0.2, K1=1.2\n"
         "Q2: KQUAD, L=0.4, K1=-1.2\n"
         "B1: CSBEND, L=1.5, ANGLE=0.39269908169872414, E1=0.19634954084936207, "
-        "E2=0.19634954084936207\n"
+        "E2=0.19634954084936207, K1=-1.0\n"
         "CELL: LINE=(M1, Q1, D1, B1, D1, Q2, D1, B1, D1, Q1)\n"
         "RING: LINE=(CELL, CELL, CELL, CELL, CELL, CELL, CELL, CELL)\n"
         "USE, RING\n"
