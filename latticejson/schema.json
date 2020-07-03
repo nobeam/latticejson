@@ -81,6 +81,9 @@
               "$ref": "#/definitions/Octupole"
             },
             {
+              "$ref": "#/definitions/Multipole"
+            },
+            {
               "$ref": "#/definitions/Cavity"
             }
           ]
@@ -387,6 +390,30 @@
               "type": "number",
               "description": "Geometric octupole strength"
             },
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "Multipole": {
+      "items": [
+        {
+          "const": "Multipole"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "knl": {},
+            "order": {},
             "conversion_factor_ps_value": {
               "type": "number"
             }

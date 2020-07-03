@@ -15,7 +15,7 @@ start       : (_statement ";")*
 _statement  : element | lattice | command | assignment
 
 element     : word ":" [word] ("," attribute)* ","?
-attribute   : word ("=" | ":=") (expr | string)
+attribute   : word ("=" | ":=") (expr | string )
 
 
 lattice     : word ":" "LINE"i "=" arrangement
@@ -34,6 +34,8 @@ command     : word ("," (word | string | attribute))*
 assignment  : word ("=" | ":=") expr        -> assignment
 ?expr       : item
             | "{" expr ("," expr)* ","? "}" -> array
+            | function
+!function   : expr("atan")
 ?item       : term
             | expr "+" term                 -> add
             | expr "-" term                 -> sub

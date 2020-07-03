@@ -14,6 +14,7 @@
     "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 2.0}],
     "Sextupole": ["Sextupole", {"length": 1.0, "k2": 2.0}],
     "Octupole": ["Octupole", {"length": 1.0, "k3": 2.0}],
+    "Multipole": ["Multipole", {"length": 1.0, "knl": 2.0, "order":3}],
     "Cavity": ["Cavity", {"length": 1.0, "voltage": 2.0, "frequency": 3.0, "phase": 4.0}]
   },
   "lattices": {

@@ -8,6 +8,8 @@ from .parse import parse_elegant, parse_madx
 from .utils import sort_lattices
 from .validate import schema_version
 
+from termcolor import colored
+
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
 TO_ELEGANT = {x: y[0][0] for x, *y in NAME_MAP}
 FROM_ELEGANT = {y: x for x, *tup in NAME_MAP for y in tup[0]}
@@ -44,7 +46,14 @@ def from_madx(string):
 def _map_names(lattice_data: dict, name_map: dict):
     elements = {}
     for name, (other_type, other_attributes) in lattice_data["elements"].items():
+
+        # print(colored(other_type,"red"))
+        # print(colored(other_attributes,"red"))
+        # print(colored(name_map,"blue"))
+
         latticejson_type = name_map.get(other_type)
+
+        # print(latticejson_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
             warn(UnknownElementTypeWarning(name, other_type))
@@ -52,8 +61,11 @@ def _map_names(lattice_data: dict, name_map: dict):
 
         attributes = {}
         elements[name] = [latticejson_type, attributes]
+
         for other_key, value in other_attributes.items():
+            # print(other_key, value)
             latticejson_key = name_map.get(other_key)
+            # print(latticejson_key)
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
