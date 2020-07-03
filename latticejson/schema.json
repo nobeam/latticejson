@@ -392,12 +392,7 @@
       ]
     },
     "Cavity": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/Element"
-        }
-      ],
-      "items": [
+     "items": [
         {
           "const": "Cavity"
         },
