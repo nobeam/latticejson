@@ -8,6 +8,7 @@
     "Monitor": ["Monitor", {}],
     "Hcor": ["Hcor", {"length": 1.0, "kick": 2.0}],
     "Vcor": ["Vcor", {"length": 1.0, "kick": 2.0}],
+    "Kicker": ["Kicker", {"length": 1.0, "hkick": 2.0, "vkick": 3.0}],
     "Drift": ["Drift", {"length": 1.0}],
     "Dipole": ["Dipole", {"length": 1.0, "angle": 1, "e1": 2.0, "e2": 3.0}],
     "Quadrupole": ["Quadrupole", {"length": 1.0, "k1": 2.0}],

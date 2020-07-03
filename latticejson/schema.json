@@ -66,6 +66,9 @@
               "$ref": "#/definitions/Vcor"
             },
             {
+              "$ref": "#/definitions/Kicker"
+            },
+            {
               "$ref": "#/definitions/Dipole"
             },
             {
@@ -225,6 +228,24 @@
             "info": {},
             "length": {},
             "kick": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Kicker": {
+      "items": [
+        {
+          "const": "Kicker"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "hkick": {},
+            "vkick": {},
             "tilt": {}
           }
         }

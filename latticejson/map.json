@@ -5,6 +5,7 @@
         ["Marker", ["MARK"], ["MARKER"]],
         ["Hcor", ["HKICK"], ["HKICKER"]],
         ["Vcor", ["VKICK"], ["VKICKER"]],
+        ["Kicker", ["KICKER"], ["KICKER"]],
         ["Drift", ["DRIF", "DRIFT"], ["DRIFT"], ["DRIFT"]],
         ["Dipole", ["CSBEND", "SBEND", "BEND"], ["SBEND", "RBEND"]],
         ["Quadrupole", ["KQUAD", "QUAD", "QUADRUPOLE"], ["QUADRUPOLE"]],
