@@ -86,7 +86,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
     word = str
     name = lambda self, item: item.value.upper()
     string = lambda self, item: item[1:-1]
-    array = lambda self, *items: list(items)
+    # array = lambda self, *items: list(items)
 
 
     def element(self, name, type_, *attributes):
@@ -131,7 +131,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
 
 @v_args(inline=True)
 class MADXTransformer(ArithmeticTransformer, AbstractLatticeFileTransformer):
-    pass
+    array = lambda self, *items: list(items)
 
 
 @v_args(inline=True)
