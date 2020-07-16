@@ -139,7 +139,7 @@
         }
       ]
     },
-    "Monitor":{
+    "Monitor": {
       "items": [
         {
           "const": "Monitor"
@@ -147,7 +147,7 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "properties":{
+          "properties": {
             "info": {},
             "length": {},
             "dx": {},
@@ -296,6 +296,14 @@
             "h2": {
               "type": "number"
             },
+            "fint": {
+              "type": "number"
+            },
+            "hgap": {
+              "type": "number"
+            },
+            "h": {},
+            "harmon": {},
             "conversion_factor_ps_value": {
               "type": "number"
             }
@@ -324,6 +332,10 @@
             "ds": {},
             "tilt": {},
             "k1": {
+              "type": "number",
+              "description": "Geometric quadrupole strength"
+            },
+            "k1s": {
               "type": "number",
               "description": "Geometric quadrupole strength"
             },
@@ -421,7 +433,7 @@
       ]
     },
     "Cavity": {
-     "items": [
+      "items": [
         {
           "const": "Cavity"
         },
@@ -455,7 +467,9 @@
             },
             "end2_foucs": {
               "type": "number"
-            }
+            },
+            "harmon": {},
+            "no_cavity_totalpath": {}
           }
         }
       ]

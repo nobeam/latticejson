@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Dict, List
 from warnings import warn
 
+from termcolor import colored
+
 from .exceptions import UnknownAttributeWarning, UnknownElementTypeWarning
 from .parse import parse_elegant, parse_madx
 from .utils import sort_lattices
 from .validate import schema_version
-
-from termcolor import colored
 
 NAME_MAP = json.loads((Path(__file__).parent / "map.json").read_text())["map"]
 TO_ELEGANT = {x: y[0][0] for x, *y in NAME_MAP}
@@ -47,9 +47,9 @@ def _map_names(lattice_data: dict, name_map: dict):
     elements = {}
     for name, (other_type, other_attributes) in lattice_data["elements"].items():
 
-        # print(colored(other_type,"red"))
-        # print(colored(other_attributes,"red"))
-        # print(colored(name_map,"blue"))
+        # print(colored(other_type, "red"))
+        # print(colored(other_attributes, "red"))
+        # print(colored(name_map, "green"))
 
         latticejson_type = name_map.get(other_type)
 
@@ -75,11 +75,7 @@ def _map_names(lattice_data: dict, name_map: dict):
     root = lattice_data.get("root", tuple(lattices.keys())[-1])
     title = lattice_data.get("title", "")
     return dict(
-        version=str(schema_version),
-        title=title,
-        root=root,
-        elements=elements,
-        lattices=lattices,
+        version=str(schema_version), title=title, root=root, elements=elements, lattices=lattices,
     )
 
 
@@ -120,7 +116,9 @@ def to_madx(latticejson: dict) -> str:
     strings = [f"TITLE, \"{latticejson['title']}\";"]
     element_template = "{}: {}, {};".format
     # TODO: check if equivalent type exists in madx
+
     for name, (type_, attributes) in elements.items():
+        print(name, "boeeee")
         attrs = ", ".join(f"{TO_MADX[k]}={v}" for k, v in attributes.items())
         elegant_type = TO_MADX[type_]
         strings.append(element_template(name, elegant_type, attrs))
