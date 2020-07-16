@@ -75,7 +75,11 @@ def _map_names(lattice_data: dict, name_map: dict):
     root = lattice_data.get("root", tuple(lattices.keys())[-1])
     title = lattice_data.get("title", "")
     return dict(
-        version=str(schema_version), title=title, root=root, elements=elements, lattices=lattices,
+        version=str(schema_version),
+        title=title,
+        root=root,
+        elements=elements,
+        lattices=lattices,
     )
 
 
