@@ -115,5 +115,5 @@ def to_madx(latticejson: dict) -> str:
     for name, children in sort_lattices(latticejson).items():
         strings.append(lattice_template(name, ", ".join(children)))
 
-    strings.append(f"USE, {latticejson['root']};\n")
+    strings.append(f"USE, SEQUENCE={latticejson['root']};\n")
     return "\n".join(strings)
