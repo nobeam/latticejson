@@ -1,21 +1,22 @@
-import click
+import itertools
 import json
 from pathlib import Path
-import itertools
 
-from . import __version__
-from .validate import validate_file
-from . import io
+import click
+
+from . import __version__, io, parse
 from .format import format_json
+from .migrate import MAX_VERSION
 from .migrate import migrate as _migrate
-from . import parse
-
+from .validate import parse_version, schema, validate_file
 
 FORMATS = "json", "lte", "madx"
 
 
-@click.group()
-@click.version_option(__version__)
+@click.group(context_settings=dict(max_content_width=120))
+@click.version_option(
+    message=(f"LatticeJSON CLI, version {__version__}\n{schema['title']}")
+)
 def cli():
     pass
 
@@ -35,9 +36,12 @@ def cli():
     type=click.Choice(FORMATS, case_sensitive=False),
     help="Destination format",
 )
-def convert(file, from_, to):
+@click.option(
+    "--validate/--no-validate", default=True, help="Whether to validate the input file."
+)
+def convert(file, from_, to, validate):
     """Convert FILE (path or url) to another lattice file format."""
-    click.echo(io.save_string(io.load(file, from_), to))
+    click.echo(io.save_string(io.load(file, from_, validate), to))
 
 
 @cli.command()
@@ -70,16 +74,68 @@ def autoformat(files, dry_run):
 
 
 @cli.command()
-@click.argument("file", type=click.Path(exists=True))
-@click.option("--from", "from_", required=True, help="Initial version")
-@click.option("--to", required=True, help="Final version")
-def migrate(file, from_, to):
+@click.argument("files", nargs=-1, type=click.Path(exists=True))
+@click.option(
+    "--final", type=int, default=MAX_VERSION, show_default=True, help="Final version."
+)
+@click.option(
+    "--dry-run",
+    "-d",
+    is_flag=True,
+    help="Don't write the files back, just output the formatted files.",
+)
+def migrate(files, final, dry_run):
     """Migrate old LatticeJSON files to newer versions."""
-    text = Path(file).read_text()
-    initial_version = from_.split(".")
-    final_version = to.split(".")
-    latticejson = _migrate(json.loads(text), initial_version, final_version)
-    click.echo(format_json(latticejson))
+    for path in itertools.chain.from_iterable(
+        path.rglob("*.json") if path.is_dir() else (path,) for path in map(Path, files)
+    ):
+        data = json.loads(path.read_text())
+        initial = parse_version(data["version"]).major
+        latticejson = _migrate(data, initial, final)
+        formatted = format_json(latticejson)
+        click.secho(f"Migrated {path} from version {initial} to {final}", bold=True)
+        if dry_run:
+            click.echo(formatted)
+        else:
+            path.write_text(formatted)
+
+
+@cli.group()
+def utils():
+    """Some useful utilities."""
+    pass
+
+
+@utils.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="Root lattice of tree.")
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(FORMATS, case_sensitive=False),
+    help="Source format [optional, default: use file extension]",
+)
+def tree(file, lattice, format_):
+    """Print tree of elements for a given LatticeJSON file."""
+    from .utils import tree
+
+    data = io.load(file, format_, validate)
+    click.echo(tree(data, lattice))
+
+
+@utils.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option("--lattice", "-l", type=str, help="New root lattice [Default: current]")
+@click.option("--warn-unused", "-w", is_flag=True, help="Log removed lattices.")
+@click.option(
+    "--validate/--no-validate", default=True, help="Whether to validate the input file."
+)
+def remove_unused(file, lattice, warn_unused, validate):
+    """Remove unused objects from a LatticeJSON file."""
+    from .utils import remove_unused
+
+    data = remove_unused(io.load(file, validate=validate), lattice, warn_unused)
+    click.echo(format_json(data))
 
 
 @cli.group()

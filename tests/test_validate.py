@@ -1,14 +1,16 @@
 from pathlib import Path
+
 import pytest
-from latticejson.validate import validate_file
+
 from latticejson.exceptions import UndefinedObjectError
+from latticejson.validate import validate_file
 
 base_dir = Path(__file__).resolve().parent / "data"
 
 
 def test_validate():
-    file_path = base_dir / "fodo.json"
-    validate_file(file_path)
+    for file in "example.json", "fodo.json":
+        validate_file(base_dir / file)
 
     file_path = base_dir / "test_undefined.json"
     with pytest.raises(UndefinedObjectError):
