@@ -1,16 +1,17 @@
 {
-  "version": "2.0",
+  "version": "2.1",
   "title": "FODO Lattice",
   "info": "This is the simplest possible strong focusing lattice.",
   "root": "RING",
   "elements": {
+    "M1": ["Marker", {}],
     "D1": ["Drift", {"length": 0.55}],
     "Q1": ["Quadrupole", {"length": 0.2, "k1": 1.2}],
     "Q2": ["Quadrupole", {"length": 0.4, "k1": -1.2}],
-    "B1": ["Dipole", {"length": 1.5, "angle": 0.392701, "e1": 0.1963505, "e2": 0.1963505}]
+    "B1": ["Dipole", {"length": 1.5, "angle": 0.39269908169872414 , "e1": 0.19634954084936207 ,"e2": 0.19634954084936207, "k1": -1.0}]
   },
   "lattices": {
-    "CELL": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"],
+    "CELL": ["M1", "Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"],
     "RING": ["CELL", "CELL", "CELL", "CELL", "CELL", "CELL", "CELL", "CELL"]
   }
 }

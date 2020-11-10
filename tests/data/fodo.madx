@@ -20,9 +20,10 @@ D1: DRIFT, L=0.55; !! comment with two !!
 !  * multiline comment
 !  */
 
+M1   : MARKER;
 B1   : SBEND, L=1.5, ANGLE=TWOPI/16, // MAD supports inline evaluation
               E1=0.1963505 * 2 / 2, E2=PI/16;
-SUB  : LINE = (Q1, D1, B1, D1);
+SUB  : LINE = (M1, Q1, D1, B1, D1);
 FODO : LINE = (SUB, Q2, -SUB);
 RING : LINE = 2 * (FODO, FODO, FODO, FODO);
 USE, RING;

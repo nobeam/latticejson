@@ -25,7 +25,8 @@ def validate(data):
     if version > schema_version:
         raise IncompatibleVersionError("Use 'pip install -U latticejson' to update.")
 
-    if version.major < schema_version.major:
+    # print(version, schema_version)
+    if version < schema_version:
         raise IncompatibleVersionError("Use 'latticejson migrate' to update file.")
 
     validate_syntax(data)

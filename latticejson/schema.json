@@ -51,7 +51,22 @@
         "^.*$": {
           "oneOf": [
             {
+              "$ref": "#/definitions/Monitor"
+            },
+            {
+              "$ref": "#/definitions/Marker"
+            },
+            {
               "$ref": "#/definitions/Drift"
+            },
+            {
+              "$ref": "#/definitions/Hcor"
+            },
+            {
+              "$ref": "#/definitions/Vcor"
+            },
+            {
+              "$ref": "#/definitions/Kicker"
             },
             {
               "$ref": "#/definitions/Dipole"
@@ -64,6 +79,9 @@
             },
             {
               "$ref": "#/definitions/Octupole"
+            },
+            {
+              "$ref": "#/definitions/Multipole"
             },
             {
               "$ref": "#/definitions/Cavity"
@@ -99,7 +117,6 @@
             },
             "length": {
               "type": "number",
-              "minimum": 0,
               "description": "The length of the element."
             },
             "dx": {
@@ -118,6 +135,44 @@
               "type": "number",
               "description": "Rotation about the longitudinal axis"
             }
+          }
+        }
+      ]
+    },
+    "Monitor": {
+      "items": [
+        {
+          "const": "Monitor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Marker": {
+      "items": [
+        {
+          "const": "Marker"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {}
           }
         }
       ]
@@ -141,6 +196,58 @@
             "dx": {},
             "dy": {},
             "ds": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Hcor": {
+      "items": [
+        {
+          "const": "Hcor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "kick": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Vcor": {
+      "items": [
+        {
+          "const": "Vcor"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "kick": {},
+            "tilt": {}
+          }
+        }
+      ]
+    },
+    "Kicker": {
+      "items": [
+        {
+          "const": "Kicker"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "hkick": {},
+            "vkick": {},
             "tilt": {}
           }
         }
@@ -170,6 +277,9 @@
               "type": "number",
               "description": "Deflection angle"
             },
+            "k1": {
+              "type": "number"
+            },
             "radius": {
               "type": "number",
               "description": "Radius of curvature"
@@ -186,6 +296,14 @@
             "h2": {
               "type": "number"
             },
+            "fint": {
+              "type": "number"
+            },
+            "hgap": {
+              "type": "number"
+            },
+            "h": {},
+            "harmon": {},
             "conversion_factor_ps_value": {
               "type": "number"
             }
@@ -214,6 +332,10 @@
             "ds": {},
             "tilt": {},
             "k1": {
+              "type": "number",
+              "description": "Geometric quadrupole strength"
+            },
+            "k1s": {
               "type": "number",
               "description": "Geometric quadrupole strength"
             },
@@ -286,12 +408,31 @@
         }
       ]
     },
-    "Cavity": {
-      "allOf": [
+    "Multipole": {
+      "items": [
         {
-          "$ref": "#/definitions/Element"
+          "const": "Multipole"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "info": {},
+            "length": {},
+            "dx": {},
+            "dy": {},
+            "ds": {},
+            "tilt": {},
+            "knl": {},
+            "order": {},
+            "conversion_factor_ps_value": {
+              "type": "number"
+            }
+          }
         }
-      ],
+      ]
+    },
+    "Cavity": {
       "items": [
         {
           "const": "Cavity"
@@ -300,7 +441,6 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "voltage",
             "frequency"
           ],
           "properties": {
@@ -327,7 +467,9 @@
             },
             "end2_foucs": {
               "type": "number"
-            }
+            },
+            "harmon": {},
+            "no_cavity_totalpath": {}
           }
         }
       ]

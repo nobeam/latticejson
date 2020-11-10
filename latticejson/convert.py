@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Dict, List
 from warnings import warn
 
+from termcolor import colored
+
 from .exceptions import UnknownAttributeWarning, UnknownElementTypeWarning
 from .parse import parse_elegant, parse_madx
 from .utils import sort_lattices
@@ -44,7 +46,14 @@ def from_madx(string):
 def _map_names(lattice_data: dict, name_map: dict):
     elements = {}
     for name, (other_type, other_attributes) in lattice_data["elements"].items():
+
+        # print(colored(other_type, "red"))
+        # print(colored(other_attributes, "red"))
+        # print(colored(name_map, "green"))
+
         latticejson_type = name_map.get(other_type)
+
+        # print(latticejson_type)
         if latticejson_type is None:
             elements[name] = ["Drift", {"length": other_attributes.get("L", 0)}]
             warn(UnknownElementTypeWarning(name, other_type))
@@ -52,8 +61,11 @@ def _map_names(lattice_data: dict, name_map: dict):
 
         attributes = {}
         elements[name] = [latticejson_type, attributes]
+
         for other_key, value in other_attributes.items():
+            # print(other_key, value)
             latticejson_key = name_map.get(other_key)
+            # print(latticejson_key)
             if latticejson_key is not None:
                 attributes[latticejson_key] = value
             else:
@@ -108,7 +120,9 @@ def to_madx(latticejson: dict) -> str:
     strings = [f"TITLE, \"{latticejson['title']}\";"]
     element_template = "{}: {}, {};".format
     # TODO: check if equivalent type exists in madx
+
     for name, (type_, attributes) in elements.items():
+        print(name, "boeeee")
         attrs = ", ".join(f"{TO_MADX[k]}={v}" for k, v in attributes.items())
         elegant_type = TO_MADX[type_]
         strings.append(element_template(name, elegant_type, attrs))
