@@ -1,0 +1,6 @@
+D1: DRIFT, L=1
+D2: DRIFT, L=2
+D3: DRIFT, L=3
+L1: LINE = (D1, D2, D3)
+L2: LINE = (D1, L1, D2)
+L3: LINE = (-L2)

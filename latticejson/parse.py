@@ -113,15 +113,24 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
             multiplier *= -1
 
         if multiplier < 0:
-            name_regular = name
-            name += "_REV"
-            if name_regular in self.lattices:
-                line = self.lattices[name_regular][::-1]
-                self.lattices[name] = line
-            elif name_regular in self.elements:
-                self.elements[name] = "REVERSED_ELEMENT", {"ref": name_regular}
+            name = self.reverse_object(name)
 
         return abs(multiplier) * (name,)
+
+    def reverse_object(self, name):
+        reversed_name = name + "_REVERSED"
+        if reversed_name in self.lattices or reversed_name in self.elements:
+            pass
+        elif name in self.lattices:
+            self.lattices[reversed_name] = [
+                self.reverse_object(obj_name)
+                for obj_name in reversed(self.lattices[name])
+            ]
+        elif name in self.elements:
+            # TODO: should elements be reversed too?
+            # self.elements[reversed_name] = "REVERSED_ELEMENT", {"ref": name}
+            return name
+        return reversed_name
 
     def command(self, *items):
         self.commands.append(items)
