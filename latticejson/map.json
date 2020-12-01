@@ -5,12 +5,18 @@
         ["Dipole", ["CSBEND", "SBEND", "BEND"], ["SBEND", "RBEND"]],
         ["Quadrupole", ["KQUAD", "QUAD", "QUADRUPOLE"], ["QUADRUPOLE"]],
         ["Sextupole", ["KSEXT", "SEXT", "SEXTUPOLE"], ["SEXTUPOLE"]],
+        ["Octupole", ["KOCT", "OCTU"], ["OCTUPOLE"]],
+        ["Cavity", ["RFCA"], ["RFCAVITY"]],
         ["Lattice", ["LINE"], ["LINE"]],
         ["length", ["L"], ["L"]],
         ["angle", ["ANGLE"], ["ANGLE"]],
         ["e1", ["E1"], ["E1"]],
         ["e2", ["E2"], ["E2"]],
         ["k1", ["K1"], ["K1"]],
-        ["k2", ["K2"], ["K2"]]
+        ["k2", ["K2"], ["K2"]],
+        ["k3", ["K3"], ["K3"]],
+        ["voltage", ["VOLT"], ["VOLT"]],
+        ["frequency", ["FREQ"], ["FREQ"]],
+        ["phase", ["PHASE"], ["LAG"]]
     ]
 }
