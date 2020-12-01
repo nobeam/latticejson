@@ -92,4 +92,3 @@ def flattened_element_sequence(latticejson, start_lattice=None):
                 yield child
 
     return _helper(start_lattice if start_lattice is not None else latticejson["root"])
-
