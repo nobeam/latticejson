@@ -23,7 +23,7 @@ def cli():
 
 @cli.command()
 # @click.argument("file", type=click.Path(exists=True))
-@click.argument("file")
+@click.argument("files", nargs=-1)
 @click.option(
     "--from",
     "from_",
@@ -39,9 +39,43 @@ def cli():
 @click.option(
     "--validate/--no-validate", default=True, help="Whether to validate the input file."
 )
-def convert(file, from_, to, validate):
+@click.option(
+    "--stdout",
+    is_flag=True,
+    help="Write to stdout instead of creating new files.",
+)
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="overwrite files without prompt",
+)
+def convert(files, from_, to, validate, stdout, force):
     """Convert FILE (path or url) to another lattice file format."""
-    click.echo(io.save_string(io.load(file, from_, validate), to))
+    paths = []
+    for path in map(Path, files):
+        if path.is_dir():
+            if from_ is None:
+                click.echo("Error: Missing option '--from'")
+                exit(1)
+
+            paths.extend(path.rglob(f"*.{from_}"))
+        else:
+            paths.append(path)
+
+    for path in paths:
+        if stdout:
+            click.echo(io.save_string(io.load(path, from_, validate), to))
+        else:
+            target_path = path.with_suffix(f".{to}")
+            click.secho(f"Converting {path} to {target_path} ...", bold=True)
+            if target_path.exists() and not force:
+                click.secho(
+                    f"{target_path} already exists! exiting ...", bold=True, fg="red"
+                )
+                exit(1)
+
+            target = io.save(io.load(path, from_, validate), target_path, to)
 
 
 @cli.command()
