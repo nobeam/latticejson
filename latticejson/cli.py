@@ -1,5 +1,6 @@
 import itertools
 import json
+import sys
 from pathlib import Path
 
 import click
@@ -22,13 +23,18 @@ def cli():
 
 
 @cli.command()
-# @click.argument("file", type=click.Path(exists=True))
-@click.argument("files", nargs=-1)
+@click.option(
+    "--file",
+    type=click.File("r"),
+    default=sys.stdin,
+    help="Path to the lattice file to convert. Defaults to stdin.",
+)
 @click.option(
     "--from",
     "from_",
+    required=True,
     type=click.Choice(FORMATS, case_sensitive=False),
-    help="Source format [optional, default: use file extension]",
+    help="Source format",
 )
 @click.option(
     "--to",
@@ -39,43 +45,11 @@ def cli():
 @click.option(
     "--validate/--no-validate", default=True, help="Whether to validate the input file."
 )
-@click.option(
-    "--stdout",
-    is_flag=True,
-    help="Write to stdout instead of creating new files.",
-)
-@click.option(
-    "--force",
-    "-f",
-    is_flag=True,
-    help="overwrite files without prompt",
-)
-def convert(files, from_, to, validate, stdout, force):
-    """Convert FILE (path or url) to another lattice file format."""
-    paths = []
-    for path in map(Path, files):
-        if path.is_dir():
-            if from_ is None:
-                click.echo("Error: Missing option '--from'")
-                exit(1)
-
-            paths.extend(path.rglob(f"*.{from_}"))
-        else:
-            paths.append(path)
-
-    for path in paths:
-        if stdout:
-            click.echo(io.save_string(io.load(path, from_, validate), to))
-        else:
-            target_path = path.with_suffix(f".{to}")
-            click.secho(f"Converting {path} to {target_path} ...", bold=True)
-            if target_path.exists() and not force:
-                click.secho(
-                    f"{target_path} already exists! exiting ...", bold=True, fg="red"
-                )
-                exit(1)
-
-            target = io.save(io.load(path, from_, validate), target_path, to)
+def convert(file, from_, to, validate):
+    """Convert stdin or FILE to another lattice file format."""
+    with file:
+        data = file.read()
+    click.echo(io.save_string(io.load_string(data, from_, validate), to))
 
 
 @cli.command()
