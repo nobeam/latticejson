@@ -20,7 +20,7 @@ def test_elegant_nested_reversed(base_dir):
     lattice_file = (base_dir / "nested_reversed_lattice.lte").read_text()
     lattice = from_elegant(lattice_file)
     flattend_sequence = list(flattened_element_sequence(lattice))
-    assert ["D2", "D3", "D2", "D1", "D1"] == flattend_sequence
+    assert ["d2", "d3", "d2", "d1", "d1"] == flattend_sequence
 
 
 # Uncomment to test for elegant examples
