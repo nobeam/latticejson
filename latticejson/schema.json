@@ -14,7 +14,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "pattern": "^2.[0-1]$",
+      "pattern": "^2.[0-2]$",
       "description": "LatticeJSON version"
     },
     "title": {
