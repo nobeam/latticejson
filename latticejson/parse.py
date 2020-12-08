@@ -84,17 +84,17 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
     int = int
     float = float
     word = str
-    name = lambda self, item: item.value.upper()
+    name = lambda self, item: item.value.lower()
     string = lambda self, item: item[1:-1]
 
     def element(self, name, type_, *attributes):
-        self.elements[name.upper()] = type_.upper(), dict(attributes)
+        self.elements[name.lower()] = type_.lower(), dict(attributes)
 
     def attribute(self, name, value):
-        return name.upper(), value
+        return name.lower(), value
 
     def lattice(self, name, arangement):
-        self.lattices[name.upper()] = list(arangement)
+        self.lattices[name.lower()] = list(arangement)
 
     def arrangement(self, multiplier, is_reversed, *items):
         multiplier = int(multiplier) if multiplier is not None else 1
@@ -107,7 +107,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
         return [x for _ in range(abs(multiplier)) for y in items for x in y]
 
     def ref_name(self, mutliplier, is_reversed, name):
-        name = str(name).upper()
+        name = str(name).lower()
         multiplier = int(mutliplier) if mutliplier is not None else 1
         if is_reversed is not None:
             multiplier *= -1
