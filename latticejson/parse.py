@@ -118,7 +118,11 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
         return abs(multiplier) * (name,)
 
     def reverse_object(self, name):
-        reversed_name = name + "_REVERSED"
+        REVERSED_SUFFIX = "_reversed"
+        if name.endswith(REVERSED_SUFFIX):
+            reversed_name = name[: -len(REVERSED_SUFFIX)]
+        else:
+            reversed_name = name + REVERSED_SUFFIX
         if reversed_name in self.lattices or reversed_name in self.elements:
             pass
         elif name in self.lattices:
