@@ -89,6 +89,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
 
     def element(self, name, type_, *attributes):
         self.elements[name.upper()] = type_.upper(), dict(attributes)
+        return name
 
     def attribute(self, name, value):
         return name.upper(), value
@@ -138,7 +139,12 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
 
 @v_args(inline=True)
 class MADXTransformer(ArithmeticTransformer, AbstractLatticeFileTransformer):
-    pass
+    def sequence(self, name, *items):
+        *attributes, elements = items
+        self.lattices[name.upper()] = elements
+
+    def seq_elements(self, *elements):
+        return list(elements)
 
 
 @v_args(inline=True)
