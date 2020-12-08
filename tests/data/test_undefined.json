@@ -2,9 +2,9 @@
   "version": "2.0",
   "title": "Faulty Fodo Cell",
   "info": "This is faulty lattice file. Where elements are referenced but no definiton exists.",
-  "root": "MAIN",
+  "root": "main",
   "elements": {},
   "lattices": {
-    "MAIN": ["Q1", "D1", "B1", "D1", "Q2", "D1", "B1", "D1", "Q1"]
+    "main": ["q1", "d1", "b1", "d1", "q2", "d1", "b1", "d1", "q1"]
   }
 }
