@@ -136,7 +136,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
             # for all other elements we can return the old reference
             # TODO: must other elemetns be reversed too?
             type_, attrs = self.elements[name]
-            if type_ not in {"sbend", "csbend"} or attrs["e1"] == attrs["e2"]:
+            if type_ not in {"sbend", "csbend"} or attrs.get("e1") == attrs.get("e2"):
                 return name
 
             attrs = attrs.copy()
