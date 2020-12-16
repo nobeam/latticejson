@@ -15,12 +15,19 @@ def test_from_elegant(fodo_lte):
 def test_elegant_nested_reversed(base_dir):
     """If a lattices is reversed, its sublattices must be reversed too."""
     from latticejson.convert import from_elegant
+    from latticejson.parse import AbstractLatticeFileTransformer
     from latticejson.utils import flattened_element_sequence
 
+    rev = AbstractLatticeFileTransformer.REVERSED_SUFFIX
     lattice_file = (base_dir / "nested_reversed_lattice.lte").read_text()
-    lattice = from_elegant(lattice_file)
-    flattend_sequence = list(flattened_element_sequence(lattice))
-    assert ["d2", "d3", "d2", "d1", "d1"] == flattend_sequence
+    lattice_dict = from_elegant(lattice_file)
+    l1, l2, l3 = (
+        list(flattened_element_sequence(lattice_dict, sequence))
+        for sequence in ("l1", "l2", "l3")
+    )
+    assert ["b" + rev, "d"] == l1
+    assert ["b" + rev, "d", "b", "d"] == l2
+    assert ["b" + rev, "d", "b" + rev, "d", "b", "d"] == l3
 
 
 # Uncomment to test for elegant examples
