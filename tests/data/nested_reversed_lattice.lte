@@ -1,6 +1,5 @@
-D1: DRIFT, L=1
-D2: DRIFT, L=2
-D3: DRIFT, L=3
-L1: LINE = (D1, D2, D3)
-L2: LINE = (D1, L1, D2)
-L3: LINE = (-L2)
+d: drift, l=1
+b : csbend, l=1, angle=0.1, e1=0.1, e2=0.2
+l1: line = (-b, d)
+l2: line = (-b, -l1, d)
+l3: line = (-b, -l2, d)

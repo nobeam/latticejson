@@ -65,6 +65,8 @@ class RPNTransformer(ArithmeticTransformer):
 
 @v_args(inline=True)
 class AbstractLatticeFileTransformer(ABC, Transformer):
+    REVERSED_SUFFIX = "_reversed"
+
     @abstractproperty
     def variables(self):
         pass
@@ -118,11 +120,10 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
         return abs(multiplier) * (name,)
 
     def reverse_object(self, name):
-        REVERSED_SUFFIX = "_reversed"
-        if name.endswith(REVERSED_SUFFIX):
-            reversed_name = name[: -len(REVERSED_SUFFIX)]
+        if name.endswith(self.REVERSED_SUFFIX):
+            reversed_name = name[: -len(self.REVERSED_SUFFIX)]
         else:
-            reversed_name = name + REVERSED_SUFFIX
+            reversed_name = name + self.REVERSED_SUFFIX
         if reversed_name in self.lattices or reversed_name in self.elements:
             pass
         elif name in self.lattices:
@@ -131,9 +132,16 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
                 for obj_name in reversed(self.lattices[name])
             ]
         elif name in self.elements:
-            # TODO: should elements be reversed too?
-            # self.elements[reversed_name] = "REVERSED_ELEMENT", {"ref": name}
-            return name
+            # a sector bend with different exit and entrance angles must be reversed
+            # for all other elements we can return the old reference
+            # TODO: must other elemetns be reversed too?
+            type_, attrs = self.elements[name]
+            if type_ not in {"sbend", "csbend"} or attrs["e1"] == attrs["e2"]:
+                return name
+
+            attrs = attrs.copy()
+            attrs["e1"], attrs["e2"] = attrs["e2"], attrs["e1"]
+            self.elements[reversed_name] = type_, attrs
         return reversed_name
 
     def command(self, *items):
