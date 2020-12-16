@@ -132,7 +132,7 @@ class AbstractLatticeFileTransformer(ABC, Transformer):
                 for obj_name in reversed(self.lattices[name])
             ]
         elif name in self.elements:
-            # a sector bend with different exit and entrance angles must be reversed
+            # a bend with different exit and entrance angles must be reversed
             # for all other elements we can return the old reference
             # TODO: must other elemetns be reversed too?
             type_, attrs = self.elements[name]
