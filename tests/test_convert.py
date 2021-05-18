@@ -1,22 +1,33 @@
-import json
-from pathlib import Path
-from pprint import pprint as print
+def test_to_elegant(fodo_json):
+    from latticejson.convert import to_elegant
 
-from latticejson.convert import from_elegant, to_elegant
-
-base_dir = Path(__file__).resolve().parent / "data"
-fodo_lte = (base_dir / "fodo.lte").read_text()
-fodo_json = json.loads((base_dir / "fodo.json").read_text())
-
-
-def test_to_elegant():
     elegant = to_elegant(fodo_json)
     print(elegant)
 
 
-def test_from_elegant():
+def test_from_elegant(fodo_lte):
+    from latticejson.convert import from_elegant
+
     latticejson = from_elegant(fodo_lte)
     print(latticejson)
+
+
+def test_elegant_nested_reversed(base_dir):
+    """If a lattices is reversed, its sublattices must be reversed too."""
+    from latticejson.convert import from_elegant
+    from latticejson.parse import AbstractLatticeFileTransformer
+    from latticejson.utils import flattened_element_sequence
+
+    rev = AbstractLatticeFileTransformer.REVERSED_SUFFIX
+    lattice_file = (base_dir / "nested_reversed_lattice.lte").read_text()
+    lattice_dict = from_elegant(lattice_file)
+    l1, l2, l3 = (
+        list(flattened_element_sequence(lattice_dict, sequence))
+        for sequence in ("l1", "l2", "l3")
+    )
+    assert ["b" + rev, "d"] == l1
+    assert ["b" + rev, "d", "b", "d"] == l2
+    assert ["b" + rev, "d", "b" + rev, "d", "b", "d"] == l3
 
 
 # Uncomment to test for elegant examples

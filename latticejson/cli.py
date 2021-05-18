@@ -1,5 +1,6 @@
 import itertools
 import json
+import sys
 from pathlib import Path
 
 import click
@@ -22,13 +23,18 @@ def cli():
 
 
 @cli.command()
-# @click.argument("file", type=click.Path(exists=True))
-@click.argument("file")
+@click.option(
+    "--file",
+    type=click.File("r"),
+    default=sys.stdin,
+    help="Path to the lattice file to convert. Defaults to stdin.",
+)
 @click.option(
     "--from",
     "from_",
+    required=True,
     type=click.Choice(FORMATS, case_sensitive=False),
-    help="Source format [optional, default: use file extension]",
+    help="Source format",
 )
 @click.option(
     "--to",
@@ -40,8 +46,10 @@ def cli():
     "--validate/--no-validate", default=True, help="Whether to validate the input file."
 )
 def convert(file, from_, to, validate):
-    """Convert FILE (path or url) to another lattice file format."""
-    click.echo(io.save_string(io.load(file, from_, validate), to))
+    """Convert stdin or FILE to another lattice file format."""
+    with file:
+        data = file.read()
+    click.echo(io.save_string(io.load_string(data, from_, validate), to))
 
 
 @cli.command()
