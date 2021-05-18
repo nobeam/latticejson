@@ -12,16 +12,18 @@ string      : ESCAPED_STRING
 word        : /[\w\.]+/
 
 start       : (_statement ";")*
-_statement  : element | lattice | command | assignment
+_statement  : element | lattice | sequence | command | assignment
 
 element     : word ":" [word] ("," attribute)* ","?
 attribute   : word ("=" | ":=") (expr | string)
-
 
 lattice     : word ":" "LINE"i "=" arrangement
 arrangement : [int "*"] [/-/] "(" object ("," object)* ")"
 ?object     : ref_name | arrangement
 ref_name    : [int "*"] [/-/] word
+
+sequence    : word ":" "SEQUENCE"i ("," attribute)* ";" seq_elements "ENDSEQUENCE"i
+seq_elements: (element ";")*
 
 command     : word ("," (word | string | attribute))*
 
