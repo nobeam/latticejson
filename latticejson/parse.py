@@ -42,6 +42,8 @@ class ArithmeticTransformer(Transformer):
         return value
 
     def function(self, function, operand):
+        # some math functions are named differently in Python
+        function = {"arctan": "atan"}.get(function, function)
         return getattr(math, function.lower())(operand)
 
     def variable(self, name):
