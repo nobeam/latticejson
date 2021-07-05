@@ -1,7 +1,7 @@
 {
   "$id": "https://raw.githubusercontent.com/nobeam/latticejson/master/latticejson/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "LatticeJSON Schema, version 2.1",
+  "title": "LatticeJSON Schema, version 2.2",
   "description": "A JSON based lattice file format",
   "additionalProperties": false,
   "required": [
@@ -14,7 +14,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "pattern": "^2.[0-1]$",
+      "pattern": "^2.[0-2]$",
       "description": "LatticeJSON version"
     },
     "title": {
@@ -173,6 +173,10 @@
             "radius": {
               "type": "number",
               "description": "Radius of curvature"
+            },
+            "k1": {
+              "type": "number",
+              "description": "Geometric quadrupole strength"
             },
             "e1": {
               "type": "number"

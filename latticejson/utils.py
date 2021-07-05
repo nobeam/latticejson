@@ -79,3 +79,16 @@ def remove_unused(latticejson, root=None, warn_unused=False):
         for obj in chain(elements_set, lattices_set):
             warn(f"Discard unused object '{obj}'.")
     return latticejson_new
+
+
+def flattened_element_sequence(latticejson, start_lattice=None):
+    "Returns a flattened generator of the element names in the physical order."
+
+    def _helper(lattice_name, lattices=latticejson["lattices"]):
+        for child in lattices[lattice_name]:
+            if child in lattices:
+                yield from _helper(child)
+            else:
+                yield child
+
+    return _helper(start_lattice if start_lattice is not None else latticejson["root"])
