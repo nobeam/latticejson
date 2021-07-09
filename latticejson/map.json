@@ -1,7 +1,7 @@
 {
     "description": "LatticeJSON, elegant, MADX",
     "map": [
-        ["Drift", ["drif", "drift"], ["drift"]],
+        ["Drift", ["drif", "drift", "edrift"], ["drift"]],
         ["Dipole", ["csbend", "sbend", "bend"], ["sbend", "rbend"]],
         ["Quadrupole", ["kquad", "quad", "quadrupole"], ["quadrupole"]],
         ["Sextupole", ["ksext", "sext", "sextupole"], ["sextupole"]],
